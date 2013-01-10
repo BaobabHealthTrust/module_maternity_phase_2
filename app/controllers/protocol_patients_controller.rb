@@ -1,53 +1,121 @@
 
 class ProtocolPatientsController < ApplicationController
 
-	def surgical_history
+	def update_outcome_mum
 
-    @patient = Patient.find(params[:patient_id]) rescue nil
+	@patient = Patient.find(params[:patient_id]) rescue nil
 
-    redirect_to '/encounters/no_patient' and return if @patient.nil?
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-    if params[:user_id].nil?
-      redirect_to '/encounters/no_user' and return
-    end
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
 
-    @user = User.find(params[:user_id]) rescue nil?
+	@user = User.find(params[:user_id]) rescue nil?
 
-    redirect_to '/encounters/no_patient' and return if @user.nil?
+	redirect_to '/encounters/no_patient' and return if @user.nil?
 	
 
 	end
 
-	def another_patient_medical_history
+	def baby_delivery
 
-    @patient = Patient.find(params[:patient_id]) rescue nil
+	@patient = Patient.find(params[:patient_id]) rescue nil
 
-    redirect_to '/encounters/no_patient' and return if @patient.nil?
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-    if params[:user_id].nil?
-      redirect_to '/encounters/no_user' and return
-    end
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
 
-    @user = User.find(params[:user_id]) rescue nil?
+	@user = User.find(params[:user_id]) rescue nil?
 
-    redirect_to '/encounters/no_patient' and return if @user.nil?
+	redirect_to '/encounters/no_patient' and return if @user.nil?
 	
 
 	end
 
-	def medical_history
+	def admit_patient
 
-    @patient = Patient.find(params[:patient_id]) rescue nil
+	@patient = Patient.find(params[:patient_id]) rescue nil
 
-    redirect_to '/encounters/no_patient' and return if @patient.nil?
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-    if params[:user_id].nil?
-      redirect_to '/encounters/no_user' and return
-    end
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
 
-    @user = User.find(params[:user_id]) rescue nil?
+	@user = User.find(params[:user_id]) rescue nil?
 
-    redirect_to '/encounters/no_patient' and return if @user.nil?
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def baby_delivery_count
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def admit_baby
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def kangaroo_review_visit
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def update_baby_outcome
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
 	
 
 	end

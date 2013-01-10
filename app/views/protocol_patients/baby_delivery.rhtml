@@ -1,0 +1,118 @@
+<script type='text/javascript' language='javascript'>
+<!--
+	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
+	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
+	</script>
+
+<form method='post' action='/encounters/create'>
+	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='encounter_type' value='Baby delivery ' />
+	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
+	<input type='hidden' name='user_id' value='<%= @user.id %>' />
+	<table>
+		<tr>
+			<td>
+				Next URL 
+			</td>
+			<td>
+<input  id='1.1.10'   helpText='Next URL '  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  type='hidden'  value='/protocol_patients/baby_delivery?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>'  name='next_url' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Date of delivery 
+			</td>
+			<td>
+<input type='text' id='1.1.2'     helpText='Date of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Date of delivery]'  field_type='date' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Time of delivery 
+			</td>
+			<td>
+<input type='text' id='1.1.3'     helpText='Time of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Time of delivery]'  field_type='advancedTime' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Gender 
+			</td>
+			<td>
+<select id='1.1.4'   helpText='Gender <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Gender]' >
+<option></option>
+<option value='Female'>Female</option>
+ <option value='Male'>Male</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Birth weight 
+			</td>
+			<td>
+<input type='text' id='1.1.5'     helpText='Birth weight <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Birth weight]'  tt_pageStyleclass='NumbersOnlyWithDecimal'  field_type='number' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Apgar score 
+			</td>
+			<td>
+<input type='text' id='1.1.6'     tt_beforeUnLoad='unloadAPGAR()'  tt_onLoad='showAPGAR()'  helpText='APGAR score <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Apgar]' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Place of delivery 
+			</td>
+			<td>
+<select id='1.1.7'   helpText='Place of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Place of delivery]' >
+<option></option>
+<option value='Home/TBA'>Home/TBA</option>
+ <option value='Other facility'>Other facility</option>
+ <option value='In transit'>In transit</option>
+ <option value='This facility'>This facility</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery mode 
+			</td>
+			<td>
+<select id='1.1.8'   helpText='Delivery mode <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Delivery mode]' >
+<option></option>
+<option value='Caesarean section'>Caesarean section</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Newborn baby complications 
+			</td>
+			<td>
+<select id='1.1.9'   helpText='Newborn baby complications <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Newborn baby complications]' >
+<option></option>
+<option value='Other'>Other</option>
+ <option value='Sepsis'>Sepsis</option>
+ <option value='Asphyxia'>Asphyxia</option>
+ <option value='Prematurity'>Prematurity</option>
+ <option value='Weight less than 2500g'>Weight less than 2500g</option>
+ <option value='None'>None</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+		<tr>
+			<td>
+		<tr>
+			<td>
+		<tr>
+			<td>
+	</table>
+</form>

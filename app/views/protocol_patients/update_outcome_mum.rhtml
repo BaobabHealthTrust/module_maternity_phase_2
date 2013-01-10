@@ -1,0 +1,150 @@
+<script type='text/javascript' language='javascript'>
+<!--
+	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
+	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
+	</script>
+
+<form method='post' action='/encounters/create'>
+	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='encounter_type' value='Update outcome ' />
+	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
+	<input type='hidden' name='user_id' value='<%= @user.id %>' />
+	<table>
+		<tr>
+			<td>
+				Complications
+			</td>
+			<td>
+<select id='1.1' name='concept[Complications]' helpText='Complications'>
+<option></option>
+<option value='Other'>Other</option>
+ <option value='Ruptured uterus'>Ruptured uterus</option>
+ <option value='Sepsis'>Sepsis</option>
+ <option value='(pre) Eclampsia '>(pre) Eclampsia </option>
+ <option value='Prolonged second stage of labour'>Prolonged second stage of labour</option>
+ <option value='Prolonged first stage of labour'>Prolonged first stage of labour</option>
+ <option value='Post part hemorrhage'>Post part hemorrhage</option>
+ <option value='Ante part hemorrhage'>Ante part hemorrhage</option>
+ <option value='None'>None</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Specify
+			</td>
+			<td>
+<input type='text' id='1.1.9.1'  name='concept[Specify]' helpText='Specify'  condition='__$("1.1").value == "Other"' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Blood transfusion done? 
+			</td>
+			<td>
+<select id='1.2' name='concept[Blood transfusion]' helpText='Blood transfusion done? '>
+<option></option>
+<option value='No'>No</option>
+ <option value='Yes'>Yes</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Placenta removed manually?
+			</td>
+			<td>
+<select id='1.3' name='concept[Placenta removed manually?]' helpText='Placenta removed manually?'>
+<option></option>
+<option value='No'>No</option>
+ <option value='Yes'>Yes</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Vitamin A given?
+			</td>
+			<td>
+<select id='1.4' name='concept[Vitamin A given?]' helpText='Vitamin A given?'>
+<option></option>
+<option value='No'>No</option>
+ <option value='Yes'>Yes</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Staff conducting delivery
+			</td>
+			<td>
+<select id='1.5' name='concept[Staff conducting delivery]' helpText='Staff conducting delivery'>
+<option></option>
+<option value='Other'>Other</option>
+ <option value='Patient Attendant / Ward Attendant /Health Surveillance Assistant'>Patient Attendant / Ward Attendant /Health Surveillance Assistant</option>
+ <option value='Medical Doctor /Clinical Officer /Medical Assistant'>Medical Doctor /Clinical Officer /Medical Assistant</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Specify
+			</td>
+			<td>
+<input type='text' id='1.5.3.1'  name='concept[Specify]' helpText='Specify'  condition='__$("1.5").value == "Other"' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Maternity outcome
+			</td>
+			<td>
+<select id='1.6' name='concept[Maternity outcome]' helpText='Maternity outcome'>
+<option></option>
+<option value='Patient died'>Patient died</option>
+ <option value='Alive'>Alive</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Sutures removed 
+			</td>
+			<td>
+<select id='1.7' name='concept[Sutures removed ]' helpText='Sutures removed ' condition='<%= @patient.current_procedures.include?("caesarean section") %>' >
+<option></option>
+<option value='No'>No</option>
+ <option value='Yes'>Yes</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Refer out
+			</td>
+			<td>
+<select id='1.8' name='concept[Refer out]' helpText='Refer out'>
+<option></option>
+<option value='Yes'>Yes</option>
+ <option value='No'>No</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Referred 
+			</td>
+			<td>
+<input type='text' id='1.8.2.1'  name='concept[Referred ]' helpText='Referred '  condition='__$("1.8").value == "Yes"'  ajaxUrl='/encounters/static_locations' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+		<tr>
+			<td>
+		<tr>
+			<td>
+		<tr>
+			<td>
+	</table>
+</form>

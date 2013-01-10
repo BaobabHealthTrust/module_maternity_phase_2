@@ -1,0 +1,58 @@
+<script type='text/javascript' language='javascript'>
+<!--
+	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
+	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
+	</script>
+
+<form method='post' action='/encounters/create'>
+	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='encounter_type' value='Admit patient ' />
+	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
+	<input type='hidden' name='user_id' value='<%= @user.id %>' />
+	<table>
+		<tr>
+			<td>
+				Ward
+			</td>
+			<td>
+<select id='1.1' name='concept[Ward]' helpText='Ward'>
+<option></option>
+<option value='Kangaroo'>Kangaroo</option>
+ <option value='Nursery'>Nursery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Admission date 
+			</td>
+			<td>
+<input type='text' id='1.2'  name='concept[Admission date ]' helpText='Admission date '  field_type='date' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Baby weight at admission 
+			</td>
+			<td>
+<input type='text' id='1.3'  name='concept[Baby weight at admission ]' helpText='Baby weight at admission '  absoluteMax='10'  tt_pageStyleClass='NumbersOnlyWithDecimal'  max='5'  min='0.5'  field_type='number' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Reason for admission
+			</td>
+			<td>
+<input type='text' id='1.4'  name='concept[Reason for admission]' helpText='Reason for admission' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+		<tr>
+			<td>
+		<tr>
+			<td>
+		<tr>
+			<td>
+	</table>
+</form>

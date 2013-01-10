@@ -2,6 +2,8 @@ class Encounter < ActiveRecord::Base
   set_table_name :encounter
   set_primary_key :encounter_id
   include Openmrs
+  
+  has_one :program_encounter, :foreign_key => :encounter_id, :conditions => {:voided => 0}
   has_many :observations, :dependent => :destroy, :conditions => {:voided => 0}
   has_many :drug_orders,  :through   => :orders,  :foreign_key => 'order_id'
   has_many :orders, :dependent => :destroy, :conditions => {:voided => 0}

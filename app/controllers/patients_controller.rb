@@ -21,7 +21,13 @@ class PatientsController < ApplicationController
     @links = {}
 
     @task.tasks.each{|task|
-      @links[task.titleize] = "/protocol_patients/#{task.gsub(/\s/, "_")}?patient_id=#{@patient.id}&user_id=#{params[:user_id]}"
+
+      next if task.downcase == "update baby outcome" and @patient.current_babies.length == 0
+
+      @links[task.titleize] = "/protocol_patients/#{task.gsub(/\s/, "_")}?patient_id=#{
+      @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
+          "&baby=1&baby_total=#{@patient.current_babies.length}" : "")
+      
     }
 
     @project = get_global_property_value("project.name") rescue "Unknown"
@@ -33,6 +39,8 @@ class PatientsController < ApplicationController
     end
 
     @task.next_task
+
+    @babies = @patient.current_babies rescue []
 
   end
 
@@ -103,4 +111,20 @@ class PatientsController < ApplicationController
 
   end
 
+  def number_of_booked_patients
+    date = params[:date].to_date
+    encounter_type = EncounterType.find_by_name('Kangaroo review visit') rescue nil
+    concept_id = ConceptName.find_by_name('APPOINTMENT DATE').concept_id
+
+    count = Observation.count(:all,
+      :joins => "INNER JOIN encounter e USING(encounter_id)",:group => "value_datetime",
+      :conditions =>["concept_id = ? AND encounter_type = ? AND value_datetime >= ? AND value_datetime <= ?",
+        concept_id,encounter_type.id,date.strftime('%Y-%m-%d 00:00:00'),date.strftime('%Y-%m-%d 23:59:59')]) rescue nil
+
+    count = count.values unless count.blank?
+    count = '0' if count.blank?
+
+    render :text => (count.first.to_i > 0 ? {params[:date] => count}.to_json : 0)
+  end
+  
 end

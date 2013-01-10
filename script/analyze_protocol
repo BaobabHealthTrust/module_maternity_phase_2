@@ -167,11 +167,14 @@ def build_page(obj)
       result = result + "\t\t\t\t#{value["question"]}\n\t\t\t</td>\n\t\t\t<td>"
 
       if !value["options"].nil?
-        result = result + "\n<select id='#{key}' name='concept[#{
+        result = result + "\n<select id='#{key}' #{
+        (!value["attributes"].nil? && !value["attributes"]["name"].nil? ? "" : "name='concept[#{
         (!value["attributes"].nil? ? (!value["attributes"]["concept"].nil? ?
-        value["attributes"]["concept"] : value["question"]) : value["question"])
-        }]#{(!value["attributes"].nil? ? (!value["attributes"]["multiple"].nil? ? "[]" : "") : "")
-        }' helpText='#{value["question"]}'"
+        value["attributes"]["concept"] : value["question"]) : value["question"])}]")
+        }#{(!value["attributes"].nil? ? (!value["attributes"]["multiple"].nil? ? "[]'" :
+        (!value["attributes"].nil? && !value["attributes"]["name"].nil? ? "" : "'")) : "'")
+        } #{(!value["attributes"].nil? ? (!value["attributes"]["helpText"].nil? ? "" :
+        "helpText='#{value["question"]}'" ) : "helpText='#{value["question"]}'")}"
 
         if !value["condition"].nil?
           parts = value["condition"].to_s.match(/\[([^\]]+)\](\s)?([^\s|^\[]+)(\s)?\[([^\]]+)\]/)
@@ -186,7 +189,10 @@ def build_page(obj)
 
           value["attributes"].each do |f, fv|
 
-            result = result + "#{f}='#{fv}' " if f.downcase != "concept"
+            result = result + " #{f}='#{(f.downcase == "helptext" ? 
+            fv.strip.gsub(/\|/, ":") : fv.strip )}' " if f.downcase != "concept" and f.downcase != "ruby"
+
+            result = result + " #{fv.strip.gsub(/\|/, ":")} " if f.downcase == "ruby"
 
           end
 
@@ -208,10 +214,13 @@ def build_page(obj)
 
       else
         
-        result = result + "\n<input type id='#{key}' name='concept[#{
+        result = result + "\n<input #{(!value["attributes"].nil? && 
+        !value["attributes"]["type"].nil? ? "" : "type='text'")} id='#{key}'  #{
+        (!value["attributes"].nil? && !value["attributes"]["name"].nil? ? "" : "name='concept[#{
         (!value["attributes"].nil? ? (!value["attributes"]["concept"].nil? ?
-        value["attributes"]["concept"] : value["question"]) : value["question"])
-        }]' helpText='#{value["question"]}' "
+        value["attributes"]["concept"] : value["question"]) : value["question"])}]'")
+        } #{(!value["attributes"].nil? && !value["attributes"]["helpText"].nil? ? "" :
+        "helpText='#{value["question"]}'" )} "
 
         if !value["condition"].nil?
           parts = value["condition"].to_s.gsub(/\[/, "").gsub(/\]/, "").strip.split(" ")
@@ -226,7 +235,10 @@ def build_page(obj)
 
           value["attributes"].each do |f, fv|
 
-            result = result + "#{f}='#{fv}' " if f.downcase != "concept"
+            result = result + " #{f}='#{(f.downcase == "helptext" ? 
+            fv.strip.gsub(/\|/, ":") : fv.strip )}' " if f.downcase != "concept" and f.downcase != "ruby"
+
+            result = result + " #{fv.strip.gsub(/\|/, ":")} " if f.downcase == "ruby"
 
           end
 
@@ -569,35 +581,39 @@ Dir.foreach(File.expand_path('../../spec', __FILE__)) do |filename|
 
     @questions.each do |key, value|
 
-      @flow << "#{key}"
+      @flow << "#{key}" if (!value["ignore"].nil? ? (!value["ignore"].downcase == "true" ? false : true ) : true)
 
       name = value["text"].strip.downcase.gsub(/\s/, "_").gsub(/\//, "")
 
-      @controller_content = @controller_content + "\tdef #{name}\n\n\t" +
+      label = value["label"] if !value["label"].nil?
+
+      @label[label] = label if !value["label"].nil?
+
+      labeltxt = label.strip.downcase.gsub(/\s/, "_").gsub(/\//, "") rescue nil
+
+      @controller_content = @controller_content + "\tdef #{(!label.nil? ? labeltxt : name)}\n\n\t" +
         "@patient = Patient.find(params[:patient_id]) rescue nil\n\n\t" + 
         "redirect_to '/encounters/no_patient' and return if @patient.nil?" +
         "\n\nif params[:user_id].nil?\n\t" +
         "redirect_to '/encounters/no_user' and return\n\tend\n\n\t@user = User.find(params[:user_id]) rescue nil?\n\n\t" +
         "redirect_to '/encounters/no_patient' and return if @user.nil?\n\t" +
-        "\n\n\tend\n\n" if !@written["#{name}"]
+        "\n\n\tend\n\n" if !@written["#{(!label.nil? ? labeltxt : name)}"]
 
-      @written["#{name}"] = true
+      @written["#{(!label.nil? ? labeltxt : name)}"] = true
 
-      @pages << "#{name}"
+      @pages << "#{(!label.nil? ? labeltxt : name)}" if (value["ignore"].downcase != "true" rescue true)
 
-      @scope[name] = value["scope"] rescue "TODAY"
+      @scope[(!label.nil? ? labeltxt : name)] = value["scope"] rescue "TODAY"
 
-      @concept[name] = value["concept"] if !value["concept"].nil?
+      @concept[(!label.nil? ? labeltxt : name)] = value["concept"] if !value["concept"].nil?
 
-      @except_concept[name] = value["except_concept"] if !value["except_concept"].nil?
+      @except_concept[(!label.nil? ? labeltxt : name)] = value["except_concept"] if !value["except_concept"].nil?
 
-      @drug_concept[name] = value["drug_concept"] if !value["drug_concept"].nil?
+      @drug_concept[(!label.nil? ? labeltxt : name)] = value["drug_concept"] if !value["drug_concept"].nil?
 
-      @special_field[name] = value["special_field"] if !value["special_field"].nil?
+      @special_field[(!label.nil? ? labeltxt : name)] = value["special_field"] if !value["special_field"].nil?
 
-      @label[name] = value["label"] if !value["label"].nil?
-
-      f = File.open("#{File.expand_path('../../app/views', __FILE__)}/protocol_patients/#{name}.rhtml", "w")
+      f = File.open("#{File.expand_path('../../app/views', __FILE__)}/protocol_patients/#{(!label.nil? ? labeltxt : name)}.rhtml", "w")
 
       result = build_page(value)
 

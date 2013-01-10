@@ -1,0 +1,104 @@
+<script type='text/javascript' language='javascript'>
+<!--
+	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
+	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
+	</script>
+
+<form method='post' action='/encounters/create'>
+	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='encounter_type' value='Admit patient ' />
+	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
+	<input type='hidden' name='user_id' value='<%= @user.id %>' />
+	<table>
+		<tr>
+			<td>
+				Gravida 
+			</td>
+			<td>
+<input type='text' id='1.1'  name='concept[Gravida ]' helpText='Gravida '  absoluteMax='20'  tt_pageStyleClass='NumbersOnly'  max='10'  tt_onUnLoad='setMax("1.2")'  absoluteMin='1'  field_type='number' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Parity 
+			</td>
+			<td>
+<input type='text' id='1.2'  name='concept[Parity ]' helpText='Parity '  condition='__$("1.1").value > 1'  absoluteMax='20'  tt_pageStyleClass='NumbersOnly'  max='10'  absoluteMin='1'  field_type='number' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Gestation weeks 
+			</td>
+			<td>
+<input type='text' id='1.3'  name='concept[Gestation weeks ]' helpText='Gestation weeks '  absoluteMax='45'  tt_pageStyleClass='NumbersOnly'  max='42'  min='36'  absoluteMin='1'  field_type='number' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Previous HIV Test Status From Before Current Facility Visit
+			</td>
+			<td>
+<select id='1.4' name='concept[Previous HIV Test Status From Before Current Facility Visit]' helpText='Previous HIV Test Status From Before Current Facility Visit'>
+<option></option>
+<option value='Unknown'>Unknown</option>
+ <option value='Reactive'>Reactive</option>
+ <option value='Non-reactive less than 3 months'>Non-reactive less than 3 months</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				HIV status
+			</td>
+			<td>
+<select id='1.4.3.1' name='concept[HIV status]' helpText='HIV status' condition='__$("1.4").value == "Unknown"' >
+<option></option>
+<option value='Reactive'>Reactive</option>
+ <option value='Not done'>Not done</option>
+ <option value='Non-reactive'>Non-reactive</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				On ART
+			</td>
+			<td>
+<select id='1.4.3.1.3.1' name='concept[On ART]' helpText='On ART' condition='__$("1.4.3.1").value == "Reactive"' >
+<option></option>
+<option value='Yes'>Yes</option>
+ <option value='No'>No</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Date antiretrovirals started 
+			</td>
+			<td>
+<select id='1.4.3.1.3.1.2.1' name='concept[Date antiretrovirals started ]'  condition='__$("1.4.3.1.3.1").value == "Yes"'  helpText='When was ART started?' >
+<option></option>
+<option value='On ART during labour'>On ART during labour</option>
+ <option value='On ART since third trimester'>On ART since third trimester</option>
+ <option value='On ART since first or second trimester'>On ART since first or second trimester</option>
+ <option value='On ART before pregnancy'>On ART before pregnancy</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Mother ART registration number
+			</td>
+			<td>
+<input type='text' id='1.4.3.1.3.1.2.2'  name='concept[Mother ART registration number]' helpText='Mother ART registration number'  condition='__$("1.4.3.1.3.1").value == "Yes"' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+		<tr>
+			<td>
+		<tr>
+			<td>
+	</table>
+</form>

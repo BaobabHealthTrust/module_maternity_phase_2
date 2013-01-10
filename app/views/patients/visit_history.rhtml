@@ -159,7 +159,7 @@
 
                           <div id="<%= "parent_program#{@programs[e][0]}" %>" style="display: table-row;"
                                onclick="__$('obs').innerHTML = '';checkRadio('program<%= @programs[e][0] %>', controlsSet1);
-                                   ajaxCustomRequest(__$('encounters'), '/list_encounters?user_id=<%= params[:user_id]
+                                 ajaxCustomRequest(__$('encounters'), '/list_encounters?user_id=<%= params[:user_id]
                              %>&program_id=<%= @programs[e][0] %>', 'program')">
 
                             <div style="display: table-cell; vertical-align: middle; cursor: pointer;
@@ -223,8 +223,10 @@
 
       function checkRadio(id, controls){
         for(var i = 0; i < controls.length; i++){
-          __$(controls[i]).src = "/touchscreentoolkit/lib/images/unchecked.png";
-          __$("parent_" + controls[i].trim()).style.backgroundColor = "white";
+          if(__$(controls[i])){
+            __$(controls[i]).src = "/touchscreentoolkit/lib/images/unchecked.png";
+            __$("parent_" + controls[i].trim()).style.backgroundColor = "white";
+          }
         }
 
         __$(id).src = "/touchscreentoolkit/lib/images/checked.png";
@@ -254,7 +256,6 @@
           optionsList.innerHTML = "";
 
           var result = JSON.parse(aXMLHttpRequest.responseText);
-          var session_date = "<%= (session[:date_time] || Time.now).strftime("%d-%b-%Y") %>";
 
           if(cat == "program"){
 
@@ -265,6 +266,7 @@
               controlsSet2.push("encounter" + result[i][0]);
 
               var li = document.createElement("li");
+              li.id = "tblEncounter" + result[i][0];
 
               optionsList.appendChild(li);
 
@@ -332,7 +334,7 @@
               }
 
               cell1.appendChild(imgRadio);
-              
+
               var cell2 = document.createElement("div");
               cell2.style.display = "table-cell";
               cell2.style.padding = "5px";
@@ -342,24 +344,18 @@
 
               row.appendChild(cell2);
 
-              console.log(session_date + " : " + result[i][4]);
-
-              if(result[i][4] == session_date.trim()){
-                var imgDel = document.createElement("img");
-                imgDel.src = "/touchscreentoolkit/lib/images/cancel_flat_small_red.png";
-                imgDel.alt = "X";
-                imgDel.setAttribute("encounter_id", result[i][0]);
-                imgDel.onclick = function(){
-                  confirmDeletion('Do you really want to delete this encounter?', this.getAttribute("encounter_id"));
-                }
-
-                cell2.appendChild(imgDel);
-              } else {
-                cell2.innerHTML = "&nbsp;";
+              var imgDel = document.createElement("img");
+              imgDel.src = "/touchscreentoolkit/lib/images/cancel_flat_small_red.png";
+              imgDel.alt = "X";
+              imgDel.setAttribute("encounter_id", result[i][0]);
+              imgDel.onclick = function(){
+                confirmDeletion('Do you really want to delete this encounter?', this.getAttribute("encounter_id"));
               }
-              
+
+              cell2.appendChild(imgDel);
+
             }
-            
+
           } else {
 
             for(var i = 0; i < result.length; i++){
@@ -398,7 +394,7 @@
               cell1.style.width = "200px";
               cell1.style.color = "#1f3b5e";
               cell1.style.verticalAlign = "top";
-              cell1.innerHTML = result[i][1].trim().split(":")[0];
+              cell1.innerHTML = result[i][1].trim().split("|")[0];
 
               row.appendChild(cell1);
 
@@ -409,7 +405,7 @@
               cell2.style.textAlign = "left";
               cell2.style.color = "green";
               cell2.style.verticalAlign = "top";
-              cell2.innerHTML = result[i][1].trim().split(":")[1];
+              cell2.innerHTML = result[i][1].trim().split("|")[1];
 
               row.appendChild(cell2);
 
@@ -421,7 +417,7 @@
       function runCmd(id){
         ajaxCustomRequest(__$('obs'), '/void?user_id=<%= @user["user_id"] %>&encounter_id=' + id);
 
-        __$("tblMain").removeChild(__$("row" + id));
+        __$("encounters").removeChild(__$("tblEncounter" + id));
       }
 
       function confirmDeletion(message, id) {

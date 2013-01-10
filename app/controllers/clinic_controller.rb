@@ -18,7 +18,7 @@ class ClinicController < ApplicationController
 
     @facility = get_global_property_value("facility.name") rescue "Unknown"
 
-    @patient_registration = get_global_property_value("patient.registation.url") rescue ""
+    @patient_registration = get_global_property_value("patient.registration.url") rescue ""
 
     @link = get_global_property_value("user.management.url").to_s rescue nil
 

@@ -5,8 +5,8 @@ class ProgramEncounter < ActiveRecord::Base
 
   named_scope :current, :conditions => ['DATE(date_time) = CURRENT_DATE()']
   
-  has_many :program_encounter_types, :class_name => 'ProgramEncounterDetails',
-    :foreign_key => :program_encounter_id, :dependent => :destroy, :conditions => ["COALESCE(voided, 0) = ?", 0]
+  has_many :program_encounter_types, :class_name => 'ProgramEncounterDetail',
+    :foreign_key => :program_encounter_id, :dependent => :destroy, :conditions => ["COALESCE(program_encounter_details.voided, 0) = ?", 0]
 
   belongs_to :patient, :foreign_key => :patient_id, :dependent => :destroy
 

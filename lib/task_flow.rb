@@ -122,7 +122,7 @@ class TaskFlow
         "#{self.task_scopes[tsk.downcase][:scope]}", "#{self.task_scopes[tsk.downcase][:drug_concept]}",
         "#{self.task_scopes[tsk.downcase][:special_field]}", 
         (self.current_user_activities.include?(tsk.downcase))
-      ]
+      ] rescue (raise self.task_scopes.to_yaml)
 
     }
 

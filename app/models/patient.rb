@@ -17,9 +17,9 @@ class Patient < ActiveRecord::Base
     def find_by_date(encounter_date)
       encounter_date = Date.today unless encounter_date
       find(:all, :conditions => ["encounter_datetime BETWEEN ? AND ?", 
-           encounter_date.to_date.strftime('%Y-%m-%d 00:00:00'), 
-           encounter_date.to_date.strftime('%Y-%m-%d 23:59:59')
-      ]) # Use the SQL DATE function to compare just the date part
+          encounter_date.to_date.strftime('%Y-%m-%d 00:00:00'),
+          encounter_date.to_date.strftime('%Y-%m-%d 23:59:59')
+        ]) # Use the SQL DATE function to compare just the date part
     end
   end
 
@@ -61,6 +61,40 @@ class Patient < ActiveRecord::Base
 
   def gender
     self.person.gender rescue nil
+  end
+
+  def hiv_status
+    test_status = Observation.find(
+      :last, :conditions => ["person_id = ? AND concept_id = ?", self.id,
+        ConceptName.find_by_name("HIV status").concept_id]).answer_string rescue "UNKNOWN"
+    
+    return test_status
+  end
+
+  def current_babies(session_date = Date.today)
+    ProgramEncounterDetail.find(:all, :joins => [:program_encounter],
+      :conditions => ["patient_id = ? AND (DATE(date_time) >= ? AND DATE(date_time) <= ?)",
+        self.id, (session_date.to_date - 1.year).strftime("%Y-%m-%d"), 
+        (session_date.to_date).strftime("%Y-%m-%d")]).collect{|e|
+
+      e.encounter.observations.collect{|o|
+        o.name.strip if o.concept.concept_names.first.name.downcase == "baby outcome"
+      } if e.encounter.type.name.downcase == "baby delivery"
+
+    }.flatten.delete_if{|x| x.nil?}
+  end
+
+  def current_procedures(session_date = Date.today)
+    ProgramEncounterDetail.find(:all, :joins => [:program_encounter],
+      :conditions => ["patient_id = ? AND (DATE(date_time) >= ? AND DATE(date_time) <= ?)",
+        self.id, (session_date.to_date - 1.year).strftime("%Y-%m-%d"),
+        (session_date.to_date).strftime("%Y-%m-%d")]).collect{|e|
+
+      e.encounter.observations.collect{|o|
+        o.name.strip.downcase if o.concept.concept_names.first.name.downcase == "delivery mode"
+      } if e.encounter.type.name.downcase == "baby delivery"
+
+    }.flatten.delete_if{|x| x.nil?}
   end
 
 end

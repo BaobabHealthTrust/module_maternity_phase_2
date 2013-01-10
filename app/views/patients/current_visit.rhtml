@@ -223,8 +223,10 @@
 
       function checkRadio(id, controls){
         for(var i = 0; i < controls.length; i++){
-          __$(controls[i]).src = "/touchscreentoolkit/lib/images/unchecked.png";
-          __$("parent_" + controls[i].trim()).style.backgroundColor = "white";
+          if(__$(controls[i])){
+            __$(controls[i]).src = "/touchscreentoolkit/lib/images/unchecked.png";
+            __$("parent_" + controls[i].trim()).style.backgroundColor = "white";
+          }
         }
 
         __$(id).src = "/touchscreentoolkit/lib/images/checked.png";
@@ -264,6 +266,7 @@
               controlsSet2.push("encounter" + result[i][0]);
 
               var li = document.createElement("li");
+              li.id = "tblEncounter" + result[i][0];
 
               optionsList.appendChild(li);
 
@@ -391,7 +394,7 @@
               cell1.style.width = "200px";
               cell1.style.color = "#1f3b5e";
               cell1.style.verticalAlign = "top";
-              cell1.innerHTML = result[i][1].trim().split(":")[0];
+              cell1.innerHTML = result[i][1].trim().split("|")[0];
 
               row.appendChild(cell1);
 
@@ -402,7 +405,7 @@
               cell2.style.textAlign = "left";
               cell2.style.color = "green";
               cell2.style.verticalAlign = "top";
-              cell2.innerHTML = result[i][1].trim().split(":")[1];
+              cell2.innerHTML = result[i][1].trim().split("|")[1];
 
               row.appendChild(cell2);
 
@@ -414,7 +417,7 @@
       function runCmd(id){
         ajaxCustomRequest(__$('obs'), '/void?user_id=<%= @user["user_id"] %>&encounter_id=' + id);
 
-        __$("tblMain").removeChild(__$("row" + id));
+        __$("encounters").removeChild(__$("tblEncounter" + id));
       }
 
       function confirmDeletion(message, id) {

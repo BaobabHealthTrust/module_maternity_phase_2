@@ -2,7 +2,7 @@
 class EncountersController < ApplicationController
 
   def create
-
+    
     patient = Patient.find(params[:patient_id]) rescue nil
 
     if !patient.nil?
@@ -39,7 +39,7 @@ class EncountersController < ApplicationController
 
             end
 
-            ProgramEncounterDetails.create(
+            ProgramEncounterDetail.create(
               :encounter_id => @encounter.id.to_i,
               :program_encounter_id => @program_encounter.id,
               :program_id => @program.id
@@ -76,7 +76,7 @@ class EncountersController < ApplicationController
 
             concept = ConceptName.find_by_name(key.strip).concept_id rescue nil
 
-            if !concept.nil?
+            if !concept.nil? and !value.blank?
 
               if !@program.nil? and !@current.nil?
                 
@@ -99,6 +99,10 @@ class EncountersController < ApplicationController
               elsif value.strip.match(/^\d{4}-\d{2}-\d{2}$/)
 
                 concept_type = "date"
+
+              elsif value.strip.match(/^\d{2}\:\d{2}\:\d{2}$/)
+
+                concept_type = "time"
 
               else
 
@@ -129,6 +133,10 @@ class EncountersController < ApplicationController
 
                 obs.update_attribute("value_datetime", value)
 
+              when "time"
+
+                obs.update_attribute("value_datetime", "#{Date.today.strftime("%Y-%m-%d")} " + value)
+
               when "number"
 
                 obs.update_attribute("value_numeric", value)
@@ -146,7 +154,7 @@ class EncountersController < ApplicationController
 
             else
 
-              redirect_to "/encounters/missing_concept?concept=#{key}" and return
+              redirect_to "/encounters/missing_concept?concept=#{key}" and return if !value.blank?
 
             end
 
@@ -156,7 +164,7 @@ class EncountersController < ApplicationController
 
               concept = ConceptName.find_by_name(key.strip).concept_id rescue nil
 
-              if !concept.nil?
+              if !concept.nil? and !item.blank?
 
                 if !@program.nil? and !@current.nil?
                   selected_state = @program.program_workflows.map(&:program_workflow_states).flatten.select{|pws|
@@ -178,6 +186,10 @@ class EncountersController < ApplicationController
                 elsif item.strip.match(/^\d{4}-\d{2}-\d{2}$/)
 
                   concept_type = "date"
+
+                elsif item.strip.match(/^\d{2}\:\d{2}\:\d{2}$/)
+
+                  concept_type = "time"
 
                 else
 
@@ -208,6 +220,10 @@ class EncountersController < ApplicationController
 
                   obs.update_attribute("value_datetime", item)
 
+                when "time"
+
+                  obs.update_attribute("value_datetime", "#{Date.today.strftime("%Y-%m-%d")} " + item)
+
                 when "number"
 
                   obs.update_attribute("value_numeric", item)
@@ -225,7 +241,7 @@ class EncountersController < ApplicationController
 
               else
 
-                redirect_to "/encounters/missing_concept?concept=#{item}" and return
+                redirect_to "/encounters/missing_concept?concept=#{item}" and return if !item.blank?
 
               end
 
@@ -235,9 +251,41 @@ class EncountersController < ApplicationController
 
         end
 
+      else
+
+        redirect_to "/encounters/missing_encounter_type?encounter_type=#{params[:encounter_type]}" and return
+
+      end
+
+      if params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].nil?
+
+        baby = Baby.new(params[:user_id], params[:patient_id], session[:location_id], (session[:datetime] || Date.today))
+
+        mother = Person.find(params[:patient_id]) rescue nil
+
+        link = get_global_property_value("patient.registration.url").to_s rescue nil
+
+        baby_id = baby.associate_with_mother("#{link}", "Baby #{((params[:baby].to_i - 1) rescue 1)}",
+          "#{(!mother.nil? ? (mother.names.first.family_name rescue "Unknown") : 
+          "Unknown")}", params["concept"]["Gender]"], params["concept"]["Date of delivery]"]) # rescue nil
+
+        # Baby identifier
+        concept = ConceptName.find_by_name("Baby outcome").concept_id rescue nil
+
+        obs = Observation.create(
+          :person_id => @encounter.patient_id,
+          :concept_id => concept,
+          :location_id => @encounter.location_id,
+          :obs_datetime => @encounter.encounter_datetime,
+          :encounter_id => @encounter.id,
+          :value_text => baby_id
+        ) if !baby_id.nil?
+
       end
 
       @task = TaskFlow.new(params[:user_id] || User.first.id, patient.id)
+
+      redirect_to params[:next_url] and return if !params[:next_url].nil?
 
       redirect_to @task.next_task.url and return
 
@@ -249,8 +297,8 @@ class EncountersController < ApplicationController
     obs = []
 
     obs = Encounter.find(params[:encounter_id]).observations.collect{|o|
-      [o.id, o.to_s]
-    } rescue []
+      [o.id, o.to_piped_s] rescue nil
+    }.compact 
 
     render :text => obs.to_json
   end
@@ -279,7 +327,8 @@ class EncountersController < ApplicationController
     program = ProgramEncounter.find(params[:program_id]) rescue nil
 
     unless program.nil?
-      result = program.program_encounter_types.find(:all).collect{|e|
+      result = program.program_encounter_types.find(:all, :joins => [:encounter], 
+        :order => ["encounter_datetime DESC"]).collect{|e|
         [
           e.encounter_id, e.encounter.type.name.titleize,
           e.encounter.encounter_datetime.strftime("%H:%M"),
@@ -292,4 +341,22 @@ class EncountersController < ApplicationController
     render :text => result.to_json
   end
 
+  def static_locations
+    search_string = (params[:search_string] || "").upcase
+    extras = ["Health Facility", "Home", "TBA", "Other"]
+
+    locations = []
+
+    File.open(RAILS_ROOT + "/public/data/locations.txt", "r").each{ |loc|
+      locations << loc if loc.upcase.strip.match(search_string)
+    }
+
+    if params[:extras]
+      extras.each{|loc| locations << loc if loc.upcase.strip.match(search_string)}
+    end
+
+    render :text => "<li></li><li " + locations.map{|location| "value=\"#{location.strip}\">#{location.strip}" }.join("</li><li ") + "</li>"
+
+  end
+  
 end
