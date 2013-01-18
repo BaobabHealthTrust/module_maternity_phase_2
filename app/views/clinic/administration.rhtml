@@ -72,12 +72,12 @@
       </td>
     </tr>
     <tr>
-      <td rowspan="4" style="width: 650px;">
-        <iframe width="635" height="300" src="/project_users?user_id=<%= params[:user_id]
-              %>&location_id=<%= params[:location_id] %>" style="border: 1px solid #ccc;">
+      <td rowspan="4" style="">
+        <iframe height="300" src="/project_users?user_id=<%= params[:user_id]
+              %>&location_id=<%= params[:location_id] %>" style="border: 1px solid #ccc; width: 100%;">
         </iframe>
       </td>
-      <td style="height: 70px;">
+      <td style="height: 70px; width: 250px;">
         <button class="btn" onclick="window.parent.location='/manage_activities?user_id=<%= params[:user_id]
               %>&location_id=<%= session[:location_id] || params[:location_id] %>'">
           <span>
