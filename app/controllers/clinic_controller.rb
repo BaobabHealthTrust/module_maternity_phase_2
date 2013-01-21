@@ -491,4 +491,90 @@ class ClinicController < ApplicationController
     render :text => activities.to_json
   end
 
+  def demographics_fields
+  end
+
+  def show_selected_fields
+    fields = ["Middle Name", "Maiden Name", "Home of Origin", "Current District",
+      "Current T/A", "Current Village", "Landmark or Plot", "Cell Phone Number",
+      "Office Phone Number", "Home Phone Number", "Occupation", "Nationality"]
+
+    selected = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
+        }"]["demographic.fields"].split(",") rescue []
+
+    @fields = {}
+
+    fields.each{|field|
+      if selected.include?(field)
+        @fields[field] = 1
+      else
+        @fields[field] = 0
+      end
+    }
+    
+    render :text => @fields.to_json
+  end
+
+  def remove_field
+    initial = YAML.load_file("#{Rails.root}/config/application.yml").to_hash rescue {}
+
+    demographics = initial["#{Rails.env}"]["demographic.fields"].split(",") rescue []
+
+    demographics = demographics - [params[:target]]
+
+    initial["#{Rails.env}"]["demographic.fields"] = demographics.join(",")
+
+    File.open("#{Rails.root}/config/application.yml", "w+") { |f| f.write(initial.to_yaml) }
+
+    fields = ["Middle Name", "Maiden Name", "Home of Origin", "Current District",
+      "Current T/A", "Current Village", "Landmark or Plot", "Cell Phone Number",
+      "Office Phone Number", "Home Phone Number", "Occupation", "Nationality"]
+
+    selected = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
+        }"]["demographic.fields"].split(",") rescue []
+
+    @fields = {}
+
+    fields.each{|field|
+      if selected.include?(field)
+        @fields[field] = 1
+      else
+        @fields[field] = 0
+      end
+    }
+
+    render :text => @fields.to_json
+  end
+
+  def add_field
+    initial = YAML.load_file("#{Rails.root}/config/application.yml").to_hash rescue {}
+
+    demographics = initial["#{Rails.env}"]["demographic.fields"].split(",") rescue []
+
+    demographics = demographics + [params[:target]]
+
+    initial["#{Rails.env}"]["demographic.fields"] = demographics.join(",")
+
+    File.open("#{Rails.root}/config/application.yml", "w+") { |f| f.write(initial.to_yaml) }
+
+    fields = ["Middle Name", "Maiden Name", "Home of Origin", "Current District",
+      "Current T/A", "Current Village", "Landmark or Plot", "Cell Phone Number",
+      "Office Phone Number", "Home Phone Number", "Occupation", "Nationality"]
+
+    selected = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
+        }"]["demographic.fields"].split(",") rescue []
+
+    @fields = {}
+
+    fields.each{|field|
+      if selected.include?(field)
+        @fields[field] = 1
+      else
+        @fields[field] = 0
+      end
+    }
+
+    render :text => @fields.to_json
+  end
+
 end

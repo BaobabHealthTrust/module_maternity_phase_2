@@ -53,6 +53,14 @@ ActionController::Routing::Routes.draw do |map|
 
   map.list_encounters '/list_encounters', :controller => 'encounters', :action => 'list_encounters'
 
+  map.demographics_fields '/demographics_fields', :controller => 'clinic', :action => 'demographics_fields'
+
+  map.show_selected_fields '/show_selected_fields', :controller => 'clinic', :action => 'show_selected_fields'
+
+  map.remove_field '/remove_field', :controller => 'clinic', :action => 'remove_field'
+
+  map.add_field '/add_field', :controller => 'clinic', :action => 'add_field'
+
   # The priority is based upon order of creation: first created -> highest priority.
 
   # Sample of regular route:
