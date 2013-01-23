@@ -28,7 +28,9 @@ class ClinicController < ApplicationController
       redirect_to "/no_user" and return
     end
 
-    # raise @link.to_yaml
+    @selected = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
+        }"]["demographic.fields"].split(",") rescue []
+
   end
 
   def user_login

@@ -1,17 +1,17 @@
 --- 
-development: 
-  user.management.url: http://localhost:3004
-  project.name: Maternity Phase 2
-  facility.name: Test Centre
-  patient.registration.url: http://localhost:3005
-  demographic.fields: Nationality,Current District,Current Village,Current T/A,Maiden Name
-production: 
-  user.management.url: http://localhost:3004
-  project.name: Maternity Phase 2
-  facility.name: Test Centre
-  patient.registration.url: http://localhost:3005
 test: 
   user.management.url: http://localhost:3004
+  patient.registration.url: http://localhost:3005
   project.name: Maternity Phase 2
   facility.name: Test Centre
+development: 
+  user.management.url: http://localhost:3004
+  demographic.fields: Nationality,Current District,Current Village,Current T/A,Maiden Name,Cell Phone Number
   patient.registration.url: http://localhost:3005
+  project.name: Maternity Phase 2
+  facility.name: Test Centre
+production: 
+  user.management.url: http://localhost:3004
+  patient.registration.url: http://localhost:3005
+  project.name: Maternity Phase 2
+  facility.name: Test Centre

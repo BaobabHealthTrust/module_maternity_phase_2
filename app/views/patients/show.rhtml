@@ -34,7 +34,7 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
 <% if !next_task.nil? %>
     setTimeout("showNexttask()", 500);
 <% end %>
-
+  
 </script>
 
 <style type="text/css">
@@ -87,7 +87,7 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
     <form id = 'dashboard' action='home.html'>
       <div>Patient Dashboard</div>
       <div id='project_name'>
-        <div style="margin-top: 0px; color: #6281A7; font-size: 0.5em;">
+        <div style="margin-top: 0px; color: #6281A7; font-size: 1em;">
           <%= @project %>
         </div>
       </div>
@@ -96,7 +96,7 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
       </span>
       <span id='patient_id'><%= "#{@patient.national_id}" %></span>
       <span id='patient_residence'><%= "#{@patient.address}" %></span>
-      <span id='patient_age'><%= "#{@patient.age}" %></span>
+      <span id='patient_age'><%= "#{(@patient.age > 0 ? @patient.age : "#{@patient.age_in_months} months")}" %></span>
       <span id='patient_gender'><%= "#{@patient.gender}" %></span>
       <select id="tabs">
         <option value='/patients/current_visit/<%= @patient.id %>?user_id=<%= @user.id %>'>Current Visit</option>

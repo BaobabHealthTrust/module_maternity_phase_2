@@ -136,8 +136,8 @@
 
       <table id="stats" style="margin-bottom: 8px;" cellpadding="5">
         <tr style="color: #fff; background-color: #6281a7;">
-          <th style="text-align:left; width: 220px;">Category</th>
-          <th style="width: 270px;">Interaction Type</th>
+          <th style="text-align:left; width: 20.5%;">Category</th>
+          <th style="width: 29.5%;">Interaction Type</th>
           <th style="">Details</th>
         </tr>
         <tr>
@@ -145,7 +145,7 @@
             <div style="height: 235px; overflow: hidden; border: 1px solid #ccc;">
               <table width="100%" cellpadding="5">
                 <tr>
-                  <td style="width: 210px; text-align: left;
+                  <td style="width: 20%; text-align: left;
                       vertical-align: top; font-size: 1.5em; color: #1f3b5e;">
 
                     <div style="width: 100%; height: 220px; overflow: auto;">
@@ -191,14 +191,14 @@
                     </div>
 
                   </td>
-                  <td style="width: 270px; border-left: 1px dotted #ccc; vertical-align: top;">
+                  <td style="width: 30%; border-left: 1px dotted #ccc; vertical-align: top;">
                     <div style="width: 100%; height: 220px; overflow: auto;">
-                      <ul id="encounters"></ul>
+                      <ul id="encounters" style="width: 100%;"></ul>
                     </div>
                   </td>
                   <td style="border-left: 1px dotted #ccc;">
                     <div style="width: 100%; height: 220px; overflow: auto;">
-                      <ul id="obs"></ul>
+                      <ul id="obs" style="width: 100%;"></ul>
                     </div>
                   </td>
                 </tr>
@@ -338,6 +338,7 @@
               var cell2 = document.createElement("div");
               cell2.style.display = "table-cell";
               cell2.style.padding = "5px";
+              cell2.style.width = "30px";
               cell2.style.textAlign = "right";
               cell2.style.cursor = "pointer";
               cell2.style.verticalAlign = "middle";

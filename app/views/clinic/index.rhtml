@@ -43,10 +43,7 @@
 
   <select id="links">
     <option value='' link='/logout?user_id=<%= params[:user_id] %>'>Logout</option>
-    <option value='<%= @patient_registration %>/search?user_id=<%= params[:user_id] 
-          %>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>'
-            link='<%= @patient_registration %>/search?user_id=<%= params[:user_id] 
-          %>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>' ttSize="290px">
+    <option value='javascript:document.forms[0].submit()' ttSize="290px">
       Find / Register Patient
     </option>
     <option value='<%= (!session[:datetime].nil? ?
@@ -54,5 +51,16 @@
                 "/set_datetime?user_id=#{ params[:user_id] }&location_id=#{ session[:location_id] || params[:location_id] }") %>'
             ttSize="100px"><%= (!session[:datetime].nil? ? "Reset Date" : "Set Date") %></option>
   </select>
+
+  <form id="register" action="<%= @patient_registration %>/search?user_id=<%= params[:user_id] 
+      %>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>" method="post">
+
+    <% @selected.each do |item| %>
+
+    <%= hidden_field_tag "#{item}", true %>
+
+    <% end %>
+
+  </form>
 
 </div>
