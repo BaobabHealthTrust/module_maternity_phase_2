@@ -22,17 +22,17 @@ class PatientsController < ApplicationController
 
     @task.tasks.each{|task|
 
-      next if task.downcase == "update baby outcome" and @patient.current_babies.length == 0
+      next if task.downcase == "update baby outcome" and (@patient.current_babies.length == 0 rescue false)
 
       @links[task.titleize] = "/protocol_patients/#{task.gsub(/\s/, "_")}?patient_id=#{
       @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
-          "&baby=1&baby_total=#{@patient.current_babies.length}" : "")
+          "&baby=1&baby_total=#{(@patient.current_babies.length rescue 0)}" : "")
       
     }
 
     @project = get_global_property_value("project.name") rescue "Unknown"
 
-    @demographics_url = get_global_property_value("patient.registation.url") rescue nil
+    @demographics_url = get_global_property_value("patient.registration.url") rescue nil
 
     if !@demographics_url.nil?
       @demographics_url = @demographics_url + "/demographics/#{@patient.id}?user_id=#{@user.id}&ext=true"
