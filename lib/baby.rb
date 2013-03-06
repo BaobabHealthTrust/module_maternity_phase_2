@@ -29,4 +29,39 @@ class Baby
     result
   end
 
+  def self.baby_wrist_band_barcode_label(baby_id, mother_id)
+    baby = Patient.find(baby_id) rescue nil
+
+    mother = Patient.find(mother_id) rescue nil
+
+    "^XA~TA000~JSN^LT0^MNM^MTD^PON^PMN^LH0,0^JMA^PR2,2^MD21^JUS^LRN^CI0^XZ
+^XA
+^FO80,0^BY4^BCR,200,N,N,N^FD#{mother.national_id_with_dashes}^FS
+^FO40,60^ADR,36,20^FDMUM #{mother.national_id}^FS
+^FO200,420^ADR,36,20^FD#{(mother.name rescue nil)}^FS
+^FO160,420^ADR,36,20^FD#{(mother.address rescue nil)}^FS
+^FO120,420^ADR,36,20^FD#{(mother.address1 rescue nil)}^FS
+^FO80,420^ADR,36,20^FD#{(mother.address2 rescue nil)}^FS
+^FO80,800^BY4^BCR,200,N,N,N^FD#{baby.national_id_with_dashes}^FS
+^FO40,850^ADR,36,20^FDBABY #{baby.national_id}^FS
+^XZ"
+  end
+
+  def self.mother_wrist_band_barcode_label(patient_id, ward = "", provider = "", session_date = Date.today)
+    my_mother = Patient.find(patient_id) rescue nil
+    
+    "^XA~TA000~JSN^LT0^MNM^MTD^PON^PMN^LH0,0^JMA^PR2,2^MD21^JUS^LRN^CI0^XZ
+^XA
+^FO200,1250^ADR,36,20^FD#{(my_mother.name rescue nil)}^FS
+^FO160,1250^ADR,36,20^FD#{(my_mother.address rescue nil)}^FS
+^FO120,1250^ADR,36,20^FD#{(my_mother.address1 rescue nil)}^FS
+^FO80,1250^ADR,36,20^FD#{(my_mother.address2 rescue nil)}^FS
+^FO80,1850^BY4^BCR,200,N,N,N^FD#{(my_mother.national_id rescue nil)}^FS
+^FO40,1950^ADR,36,20^FD#{(my_mother.national_id_with_dashes rescue nil)}^FS
+^FO200,2400^ADR,36,20^FD#{ward}^FS
+^FO160,2400^ADR,36,20^FD#{provider}^FS
+^FO120,2400^ADR,36,20^FD#{(session_date || Date.today).strftime("%d/%b/%Y")}^FS
+^XZ"
+  end
+
 end

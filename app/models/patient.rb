@@ -39,8 +39,21 @@ class Patient < ActiveRecord::Base
     self.patient_identifiers.find_by_identifier_type(PatientIdentifierType.find_by_name("National id").id).identifier rescue nil
   end
 
+  def national_id_with_dashes
+    id = self.national_id
+    id[0..4] + "-" + id[5..8] + "-" + id[9..-1] rescue id
+  end
+
   def address
     "#{self.person.addresses.first.city_village}" rescue nil
+  end
+
+  def address1
+    "#{self.person.addresses.first.address1}" rescue nil
+  end
+
+  def address2
+    "#{self.person.addresses.first.address2}" rescue nil
   end
 
   def age(today = Date.today)
