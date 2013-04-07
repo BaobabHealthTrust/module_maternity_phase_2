@@ -122,6 +122,10 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
           </option>
         <% end %>
 
+        <option link="<%= @list_band_url %>" ttSize = "160px">
+          Wrist Bands
+        </option>
+
         <% if @task.url != "/patients/show/#{@patient.id}?user_id=#{@user.id}" %>
           <option link="<%= @task.url  %>" ttSize = "160px">Continue</option>
         <% end %>

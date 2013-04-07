@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
 
   before_filter :check_user, :except => [:user_login, :user_logout, :missing_program, :missing_encounter_type,
     :missing_concept, :no_user, :no_patient, :project_users_list, :check_role_activities, 
-    :static_locations, :number_of_booked_patients, :show_selected_fields]
+    :static_locations, :number_of_booked_patients, :show_selected_fields, :send_data]
   
   def get_global_property_value(global_property)
 		property_value = Settings[global_property]

@@ -30,6 +30,8 @@ class PatientsController < ApplicationController
       
     }
 
+    @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
+    
     @project = get_global_property_value("project.name") rescue "Unknown"
 
     @demographics_url = get_global_property_value("patient.registration.url") rescue nil
@@ -92,6 +94,29 @@ class PatientsController < ApplicationController
     # raise @programs.inspect
 
     render :layout => false
+  end
+
+  def wrist_band
+    @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
+
+    @children = Relationship.find(:all, :conditions => ["person_a = ? AND relationship = ?", @patient.id, RelationshipType.find_by_a_is_to_b("Parent").id])
+    
+    render :layout => false
+  end
+
+  def band_print
+    
+    @patient = Patient.find(params[:patient_id]) rescue nil
+      
+    print_string = Baby.baby_wrist_band_barcode_label(200, @patient.id) rescue (raise "Unable to find patient (#{params[:baby_id]}) or generate a baby wrist band label for that baby")
+     
+    send_data(print_string,
+      :type=>"application/label; charset=utf-8",
+      :stream=> false,
+      :filename=>"#{params[:patient_id]}#{rand(10000)}.bcs",
+      :disposition => "inline") and return    
+
+    redirect_to "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
   end
 
   def demographics
