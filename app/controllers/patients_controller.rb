@@ -99,7 +99,7 @@ class PatientsController < ApplicationController
   def wrist_band
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
 
-    @children = Relationship.find(:all, :conditions => ["person_a = ? AND relationship = ?", @patient.id, RelationshipType.find_by_a_is_to_b("Parent").id])
+    @children = Relationship.find(:all, :conditions => ["person_b = ? AND relationship = ? AND voided = 0", @patient.id, RelationshipType.find_by_b_is_to_a("Parent").id])
     
     render :layout => false
   end
@@ -107,16 +107,40 @@ class PatientsController < ApplicationController
   def band_print
     
     @patient = Patient.find(params[:patient_id]) rescue nil
+    
+    if params[:cat] == "mother"
+
+      ward_loc = Location.find(session[:location_id]).name rescue ""
+
+      provider_first_name = UserProperty.find_by_user_id_and_property(params[:user_id], "First Name").property_value rescue ""
+
+      provider_last_name = UserProperty.find_by_user_id_and_property(params[:user_id], "Last Name").property_value rescue ""
+
+      provider_name = "#{provider_first_name} #{provider_last_name}" rescue ""
+
+      print_string = Baby.mother_wrist_band_barcode_label(@patient.id, ward_loc, provider_name, Date.today)
       
-    print_string = Baby.baby_wrist_band_barcode_label(200, @patient.id) rescue (raise "Unable to find patient (#{params[:baby_id]}) or generate a baby wrist band label for that baby")
-     
-    send_data(print_string,
-      :type=>"application/label; charset=utf-8",
-      :stream=> false,
-      :filename=>"#{params[:patient_id]}#{rand(10000)}.bcs",
-      :disposition => "inline") and return    
+    elsif params[:cat] == "baby"
+      
+      baby_id = params[:baby_id]
+      
+      print_string = Baby.baby_wrist_band_barcode_label(baby_id, @patient.id) rescue (raise "Unable to find patient (#{params[:baby_id]}) or generate a baby wrist band label for that baby")
+      
+    else
+      print_string = (raise "Unable to resolve relations")
+    end
+
+    if !print_string.blank?
+
+      send_data(print_string,
+        :type=>"application/label; charset=utf-8",
+        :stream=> false,
+        :filename=>"#{params[:patient_id]}#{rand(10000)}.bcs",
+        :disposition => "inline") and return
+    end
 
     redirect_to "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
+
   end
 
   def demographics
