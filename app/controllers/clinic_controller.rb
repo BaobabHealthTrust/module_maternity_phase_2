@@ -1,9 +1,15 @@
 
 class ClinicController < ApplicationController
 
+ 	before_filter :check_user, :except => [:user_login, :user_logout, :missing_program, :static_locations,
+    :missing_concept, :no_user, :no_patient, :project_users_list, :show_selected_fields, :check_role_activities,
+    :missing_encounter_type, :diagnoses]
+
   def index
 
-    User.current = User.find(@user["user_id"]) rescue nil
+	  User.current = User.find(@user["user_id"]) rescue nil
+
+		User.current = User.find(params[:user_id]) rescue nil if User.current.blank?
 
     Location.current = Location.find(params[:location_id] || session[:location_id]) rescue nil
 
@@ -19,6 +25,7 @@ class ClinicController < ApplicationController
     @facility = get_global_property_value("facility.name") rescue "Unknown"
 
     @patient_registration = get_global_property_value("patient.registration.url") rescue ""
+    @user_management = get_global_property_value("user.management.url") rescue ""
 
     @link = get_global_property_value("user.management.url").to_s rescue nil
 
@@ -27,9 +34,10 @@ class ClinicController < ApplicationController
 
       redirect_to "/no_user" and return
     end
-
+		
     @selected = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
         }"]["demographic.fields"].split(",") rescue []
+
 
   end
 
@@ -52,7 +60,6 @@ class ClinicController < ApplicationController
   def user_logout
 
     link = get_global_property_value("user.management.url").to_s rescue nil
-
 
     if link.nil?
       flash[:error] = "Missing configuration for <br/>user management connection!"
