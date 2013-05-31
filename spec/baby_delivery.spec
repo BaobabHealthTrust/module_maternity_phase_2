@@ -11,8 +11,6 @@ O.1.1.4.2. Female
 
 Q.1.1.5. Birth weight [pos: 3, name: concept[Birth weight], field_type: number, tt_pageStyleclass: NumbersOnlyWithDecimal, concept: Birth weight, helpText: Birth weight <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" | ((params["baby"].to_i == 2) ? "<sup>nd</sup>" | ((params["baby"].to_i == 3) ? "<sup>rd</sup>" | "<sup>th</sup>" ))) %> baby]
 
-Q.1.1.6. Apgar score [pos: 4, name: concept[Apgar], concept: Apgar, tt_onLoad: showAPGAR(), tt_beforeUnLoad: unloadAPGAR(), helpText: APGAR score <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" | ((params["baby"].to_i == 2) ? "<sup>nd</sup>" | ((params["baby"].to_i == 3) ? "<sup>rd</sup>" | "<sup>th</sup>" ))) %> baby]
-
 Q.1.1.7. Place of delivery [pos: 5, name: concept[Place of delivery], concept: Place of delivery, helpText: Place of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" | ((params["baby"].to_i == 2) ? "<sup>nd</sup>" | ((params["baby"].to_i == 3) ? "<sup>rd</sup>" | "<sup>th</sup>" ))) %> baby]
 O.1.1.7.1. This facility
 O.1.1.7.2. In transit

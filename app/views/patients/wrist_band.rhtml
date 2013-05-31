@@ -173,7 +173,7 @@
                           &nbsp;
                         </td>
                         <td>
-                          <% name = Patient.find(baby.person_a).name  rescue nil
+                          <% name = Patient.find(baby.person_b).name  rescue nil
                           
                           unknown_babies += 1 if name.blank?
                           
@@ -183,7 +183,7 @@
                           @demographics_url = get_global_property_value("patient.registration.url") rescue nil
 
                           if !@demographics_url.nil?
-                            @demographics_url = @demographics_url + "/demographics/#{baby.person_a}?user_id=#{params[:user_id]}&ext=true"
+                            @demographics_url = @demographics_url + "/demographics/#{baby.person_b}?user_id=#{params[:user_id]}&ext=true"
                           end
 
                         %>
@@ -197,7 +197,7 @@
                           &nbsp;
                         </td>
                         <td>
-                          <button style="min-width: 300px;" onclick="window.location='/patients/band_print?user_id=<%=  params[:user_id]%>&patient_id=<%=  @patient.id %>&baby_id=<%= baby.person_a %>&cat=baby'">
+                          <button style="min-width: 300px;" onclick="window.location='/patients/band_print?user_id=<%=  params[:user_id]%>&patient_id=<%=  @patient.id %>&baby_id=<%= baby.person_b %>&cat=baby'">
                             <span>
                               Print Wrist Band
                             </span>

@@ -88,6 +88,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def dpt1
@@ -97,6 +98,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def dpt2
@@ -106,6 +108,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def dpt3
@@ -115,6 +118,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def pcv1
@@ -124,6 +128,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def pcv2
@@ -133,6 +138,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def pcv3
@@ -142,6 +148,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def polio0
@@ -151,6 +158,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def polio1
@@ -160,6 +168,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def polio2
@@ -169,6 +178,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
   def polio3
@@ -178,7 +188,21 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.first
 
     status = "unknown" if status.nil?
+    status
   end
 
+  def hiv_status
+    
+   @hiv_concepts = ["MOTHER HIV STATUS", "HIV STATUS", "DNA-PCR Testing Result", "Rapid Antibody Testing Result", "Alive On ART"].collect{
+     |concept| ConceptName.find_by_name(concept).concept_id rescue nil}.compact rescue []
+
+    status = self.encounters.collect { |e|
+      e.observations.find(:last, :conditions => ["concept_id IN (?)",
+          @hiv_concepts]).answer_string rescue nil
+    }.compact.flatten.first.strip
+
+    status = "unknown" if status.blank?
+    status
+  end
 
 end

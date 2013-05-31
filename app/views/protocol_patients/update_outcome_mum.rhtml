@@ -20,7 +20,7 @@
 <option value='Other'>Other</option>
  <option value='Ruptured uterus'>Ruptured uterus</option>
  <option value='Sepsis'>Sepsis</option>
- <option value='(pre) Eclampsia '>(pre) Eclampsia </option>
+ <option value='Pre-Eclampsia '>Pre-Eclampsia </option>
  <option value='Prolonged second stage of labour'>Prolonged second stage of labour</option>
  <option value='Prolonged first stage of labour'>Prolonged first stage of labour</option>
  <option value='Post part hemorrhage'>Post part hemorrhage</option>
@@ -111,7 +111,7 @@
 				Sutures removed 
 			</td>
 			<td>
-<select id='1.7' name='concept[Sutures removed ]' helpText='Sutures removed ' pos='8'  condition='<%= @patient.current_procedures.include?("caesarean section") %>' >
+<select id='1.7' name='concept[Sutures removed ]' helpText='Sutures removed ' condition='<%= (@patient.current_procedures rescue []).include?("caesarean section") %>'  pos='8' >
 <option></option>
 <option value='No'>No</option>
  <option value='Yes'>Yes</option>

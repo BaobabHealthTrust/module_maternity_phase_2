@@ -269,7 +269,19 @@ class EncountersController < ApplicationController
 
         link = get_global_property_value("patient.registration.url").to_s rescue nil
 
-        baby_id = baby.associate_with_mother("#{link}", "Baby #{((params[:baby].to_i - 1) rescue 1)}",
+        children = Relationship.find(:all, :conditions => ["person_a = ? AND relationship = ?", params[:patient_id], RelationshipType.find_by_a_is_to_b("Parent").id])
+
+				first_name = "Baby-" + (children.length + 1).to_s
+
+				#Check for duplicate names
+				child_names = PersonName.find(:all, :conditions => ["person_id IN (?)", children.collect{|child| child.person_a}]).collect{|name|
+					name.given_name rescue nil}.uniq
+
+				if child_names.include?(first_name)
+					first_name = first_name +"_"+ Date.today.year.to_s + "/"
+				end
+
+        baby_id = baby.associate_with_mother("#{link}", first_name,
           "#{(!mother.nil? ? (mother.names.first.family_name rescue "Unknown") : 
           "Unknown")}", params["concept"]["Gender]"], params["concept"]["Date of delivery]"]) # rescue nil
 
@@ -308,7 +320,7 @@ class EncountersController < ApplicationController
   end
 
   def void
-    prog = ProgramEncounterDetails.find_by_encounter_id(params[:encounter_id]) rescue nil
+    prog = ProgramEncounterDetail.find_by_encounter_id(params[:encounter_id]) rescue nil
 
     unless prog.nil?
       prog.void
@@ -318,10 +330,10 @@ class EncountersController < ApplicationController
       unless encounter.nil?
         encounter.void
       end
-      
+
     end
 
-    
+
     render :text => [].to_json
   end
 

@@ -15,7 +15,7 @@
 				Date of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.2'     pos='0'  helpText='Date of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Date of delivery]'  field_type='date' />
+<input type='text' id='1.1.2'     name='concept[Date of delivery]'  helpText='Date of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  pos='0'  field_type='date' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Time of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.3'     pos='1'  helpText='Time of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Time of delivery]'  field_type='advancedTime' />
+<input type='text' id='1.1.3'     name='concept[Time of delivery]'  helpText='Time of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  pos='1'  field_type='advancedTime' />
 			</td>
 		</tr>
 		<tr>
@@ -31,7 +31,7 @@
 				Gender 
 			</td>
 			<td>
-<select id='1.1.4'   pos='2'  helpText='Gender <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Gender]' >
+<select id='1.1.4'   name='concept[Gender]'  helpText='Gender <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  pos='2' >
 <option></option>
 <option value='Female'>Female</option>
  <option value='Male'>Male</option>
@@ -43,15 +43,7 @@
 				Birth weight 
 			</td>
 			<td>
-<input type='text' id='1.1.5'     pos='3'  helpText='Birth weight <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  tt_pageStyleclass='NumbersOnlyWithDecimal'  name='concept[Birth weight]'  field_type='number' />
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Apgar score 
-			</td>
-			<td>
-<input type='text' id='1.1.6'     pos='4'  helpText='APGAR score <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  tt_beforeUnLoad='unloadAPGAR()'  name='concept[Apgar]'  tt_onLoad='showAPGAR()' />
+<input type='text' id='1.1.5'     name='concept[Birth weight]'  helpText='Birth weight <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  pos='3'  tt_pageStyleclass='NumbersOnlyWithDecimal'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -59,7 +51,7 @@
 				Place of delivery 
 			</td>
 			<td>
-<select id='1.1.7'   pos='5'  helpText='Place of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Place of delivery]' >
+<select id='1.1.7'   name='concept[Place of delivery]'  helpText='Place of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  pos='5' >
 <option></option>
 <option value='Home/TBA'>Home/TBA</option>
  <option value='Other facility'>Other facility</option>
@@ -73,7 +65,7 @@
 				Delivery mode 
 			</td>
 			<td>
-<select id='1.1.8'   pos='6'  helpText='Delivery mode <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Delivery mode]' >
+<select id='1.1.8'   name='concept[Delivery mode]'  helpText='Delivery mode <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  pos='6' >
 <option></option>
 <option value='Caesarean section'>Caesarean section</option>
  <option value='Breech delivery'>Breech delivery</option>
@@ -87,7 +79,7 @@
 				Newborn baby complications 
 			</td>
 			<td>
-<select id='1.1.9'   pos='7'  helpText='Newborn baby complications <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Newborn baby complications]' >
+<select id='1.1.9'   name='concept[Newborn baby complications]'  helpText='Newborn baby complications <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  pos='7' >
 <option></option>
 <option value='Other'>Other</option>
  <option value='Sepsis'>Sepsis</option>
@@ -103,7 +95,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.10'   helpText='Next URL '  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  pos='8'  value='/protocol_patients/baby_delivery?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>'  type='hidden'  name='next_url' />
+<input  id='1.1.10'   helpText='Next URL '  name='next_url'  pos='8'  value='/protocol_patients/baby_delivery?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>'  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  type='hidden' />
 			</td>
 		</tr>
 	</table>

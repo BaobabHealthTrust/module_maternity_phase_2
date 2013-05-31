@@ -6,7 +6,7 @@ O.1.1.2. Ante part hemorrhage
 O.1.1.3. Post part hemorrhage
 O.1.1.4. Prolonged first stage of labour
 O.1.1.5. Prolonged second stage of labour
-O.1.1.6. (pre) Eclampsia [concept: Pre-Eclampsia]
+O.1.1.6. Pre-Eclampsia [concept: Pre-Eclampsia]
 O.1.1.7. Sepsis
 O.1.1.8. Ruptured uterus
 O.1.1.9. Other
@@ -34,7 +34,7 @@ Q.1.6. Maternity outcome [pos: 7]
 O.1.6.1. Alive
 O.1.6.2. Patient died
 
-Q.1.7. Sutures removed [pos: 8, condition: <%= @patient.current_procedures.include?("caesarean section") %>]
+Q.1.7. Sutures removed [pos: 8, condition: <%= (@patient.current_procedures rescue []).include?("caesarean section") %>]
 O.1.7.1. Yes
 O.1.7.2. No
 

@@ -1,22 +1,7 @@
 
 class ProtocolPatientsController < ApplicationController
 
-	def update_outcome_mum
-
-	@patient = Patient.find(params[:patient_id]) rescue nil
-
-	redirect_to '/encounters/no_patient' and return if @patient.nil?
-
-if params[:user_id].nil?
-	redirect_to '/encounters/no_user' and return
-	end
-
-	@user = User.find(params[:user_id]) rescue nil?
-
-	redirect_to '/encounters/no_patient' and return if @user.nil?
-	
-
-	end
+	before_filter :check_user
 
 	def baby_delivery
 
@@ -52,7 +37,24 @@ if params[:user_id].nil?
 
 	end
 
-	def baby_delivery_count
+	def update_outcome_mum
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def kangaroo_review_visit
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
@@ -86,7 +88,7 @@ if params[:user_id].nil?
 
 	end
 
-	def kangaroo_review_visit
+	def baby_delivery_count
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 

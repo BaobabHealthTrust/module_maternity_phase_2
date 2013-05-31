@@ -15,7 +15,7 @@
 				Baby outcome 
 			</td>
 			<td>
-<select id='1.1.1' name='concept[Baby outcome ]' helpText='Baby outcome ' pos='0'  condition='"<%= @patient.hiv_status.upcase %>" == "NEGATIVE"' >
+<select id='1.1.1' name='concept[Baby outcome ]' helpText='Baby outcome ' condition='"<%= @patient.hiv_status.upcase%>" == "NEGATIVE"'  pos='0' >
 <option></option>
 <option value='Neonatal death'>Neonatal death</option>
  <option value='Macerated stillbirth'>Macerated stillbirth</option>
@@ -29,7 +29,7 @@
 				Baby outcome 
 			</td>
 			<td>
-<select id='1.2.1' name='concept[Baby outcome ]' helpText='Baby outcome ' pos='1'  condition='"<%= @patient.hiv_status.upcase %>" == "POSITIVE"' >
+<select id='1.2.1' name='concept[Baby outcome ]' helpText='Baby outcome ' condition='"<%= @patient.hiv_status.upcase %>" == "POSITIVE"'  pos='1' >
 <option></option>
 <option value='Neonatal death'>Neonatal death</option>
  <option value='Macerated stillbirth'>Macerated stillbirth</option>
@@ -44,7 +44,7 @@
 				Baby outcome 
 			</td>
 			<td>
-<select id='1.3.1' name='concept[Baby outcome ]' helpText='Baby outcome ' pos='2'  condition='"<%= @patient.hiv_status.upcase %>" == "UNKNOWN"' >
+<select id='1.3.1' name='concept[Baby outcome ]' helpText='Baby outcome ' condition='"<%= @patient.hiv_status.upcase %>" == "UNKNOWN"'  pos='2' >
 <option></option>
 <option value='Neonatal death'>Neonatal death</option>
  <option value='Macerated stillbirth'>Macerated stillbirth</option>
@@ -58,7 +58,7 @@
 				Breast feeding initiated within 60 minutes? 
 			</td>
 			<td>
-<select id='1.4.1' name='concept[Breast feeding initiated within 60 minutes? ]' helpText='Breast feeding initiated within 60 minutes? ' pos='3'  condition='__$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"' >
+<select id='1.4.1' name='concept[Breast feeding initiated within 60 minutes? ]' helpText='Breast feeding initiated within 60 minutes? ' condition='__$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"'  pos='3' >
 <option></option>
 <option value='No'>No</option>
  <option value='Yes'>Yes</option>
@@ -70,7 +70,7 @@
 				Tetracycline eye ointment given? 
 			</td>
 			<td>
-<select id='1.5.1' name='concept[Tetracycline eye ointment given? ]' helpText='Tetracycline eye ointment given? ' pos='4'  condition='__$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"' >
+<select id='1.5.1' name='concept[Tetracycline eye ointment given? ]' helpText='Tetracycline eye ointment given? ' condition='__$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"'  pos='4' >
 <option></option>
 <option value='No'>No</option>
  <option value='Yes'>Yes</option>
@@ -82,7 +82,7 @@
 				Are there are any comments on the outcome? 
 			</td>
 			<td>
-<select id='1.6.1' name='concept[Are there are any comments on the outcome? ]' helpText='Are there are any comments on the outcome? ' pos='5'  disabled='disabled' >
+<select id='1.6.1' name='concept[Are there are any comments on the outcome? ]' helpText='Are there are any comments on the outcome? ' disabled='disabled'  pos='5' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -102,31 +102,11 @@
 				Discharge baby 
 			</td>
 			<td>
-<select id='1.7.1' name='concept[Discharge baby ]' helpText='Discharge baby ' pos='7'  condition='__$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"' >
+<select id='1.7.1' name='concept[Discharge baby ]' helpText='Discharge baby ' condition='__$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"'  pos='7' >
 <option></option>
-<option value='Admit to ward'>Admit to ward</option>
- <option value='Home'>Home</option>
+<option value='No'>No</option>
+ <option value='Yes'>Yes</option>
  </select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Admit to ward 
-			</td>
-			<td>
-<select id='1.7.1.2.1' name='concept[Admit to ward ]' helpText='Admit to ward ' condition='__$("1.7.1").value == "Admit to ward"'  pos='8' >
-<option></option>
-<option value='Kangaroo Ward'>Kangaroo Ward</option>
- <option value='Nursery'>Nursery</option>
- </select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Baby identifier 
-			</td>
-			<td>
-<input  id='1.8.1'  name='concept[Baby identifier ]' helpText='Baby identifier '  pos='9'  value='<%= @patient.current_babies[params["baby"].to_i - 1] %>'  type='hidden' />
 			</td>
 		</tr>
 		<tr>
@@ -134,7 +114,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.9.1'   helpText='Next URL '  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  pos='10'  value='/protocol_patients/update_baby_outcome?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>'  type='hidden'  name='next_url' />
+<input  id='1.8.1'   helpText='Next URL '  name='next_url'  pos='10'  value='/protocol_patients/update_baby_outcome?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>'  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  type='hidden' />
 			</td>
 		</tr>
 	</table>

@@ -25,7 +25,7 @@ class PatientsController < ApplicationController
     @task.tasks.each{|task|
 
       next if task.downcase == "update baby outcome" and (@patient.current_babies.length == 0 rescue false)
-
+      next if !@task.current_user_activities.include?(task)
       @links[task.titleize] = "/protocol_patients/#{task.gsub(/\s/, "_")}?patient_id=#{
       @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
           "&baby=1&baby_total=#{(@patient.current_babies.length rescue 0)}" : "")
@@ -101,7 +101,7 @@ class PatientsController < ApplicationController
   def wrist_band
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
 
-    @children = Relationship.find(:all, :conditions => ["person_b = ? AND relationship = ? AND voided = 0", @patient.id, RelationshipType.find_by_b_is_to_a("Parent").id])
+    @children = Relationship.find(:all, :conditions => ["person_a = ? AND relationship = ? AND voided = 0", @patient.id, RelationshipType.find_by_a_is_to_b("Parent").id])
     
     render :layout => false
   end
@@ -124,11 +124,11 @@ class PatientsController < ApplicationController
       
       if !print_string.blank?
 
-      send_data(print_string,
-        :type=>"application/label; charset=utf-8",
-        :stream=> false,
-        :filename=>"#{params[:patient_id]}#{rand(10000)}.bcl",
-        :disposition => "inline") and return
+        send_data(print_string,
+          :type=>"application/label; charset=utf-8",
+          :stream=> false,
+          :filename=>"#{params[:patient_id]}#{rand(10000)}.bcl",
+          :disposition => "inline") and return
     	end
       
     elsif params[:cat] == "baby"
@@ -137,13 +137,13 @@ class PatientsController < ApplicationController
       
       print_string = Baby.baby_wrist_band_barcode_label(baby_id, @patient.id) rescue (raise "Unable to find patient (#{params[:baby_id]}) or generate a baby wrist band label for that baby")
       
-       if !print_string.blank?
+      if !print_string.blank?
 
-      send_data(print_string,
-        :type=>"application/label; charset=utf-8",
-        :stream=> false,
-        :filename=>"#{params[:patient_id]}#{rand(10000)}.bcs",
-        :disposition => "inline") and return
+        send_data(print_string,
+          :type=>"application/label; charset=utf-8",
+          :stream=> false,
+          :filename=>"#{params[:patient_id]}#{rand(10000)}.bcs",
+          :disposition => "inline") and return
     	end
       
     else
