@@ -15,7 +15,7 @@
 				Number of babies delivered 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[Number of babies]' helpText='Number of babies delivered '  tt_pageStyleclass='NumbersOnly'  absoluteMax='10'  max='5'  tt_onUnLoad='__$("1.1.2").value = __$("1.1.2").value + __$("touchscreenInput" + tstCurrentPage).value'  absoluteMin='1'  pos='0'  field_type='number' />
+<input type='text' id='1.1.1'  name='concept[Number of babies]' helpText='Number of babies delivered '  absoluteMin='1'  field_type='number'  absoluteMax='10'  max='5'  pos='0'  tt_onUnLoad='__$("1.1.2").value = __$("1.1.2").value + __$("touchscreenInput" + tstCurrentPage).value'  tt_pageStyleclass='NumbersOnly' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.2'   helpText='Next URL '  name='next_url'  type='hidden'  pos='1'  value='/protocol_patients/baby_delivery?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=1&baby_total=' />
+<input  id='1.1.2'   helpText='Next URL '  value='/protocol_patients/baby_delivery?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=1&baby_total='  type='hidden'  name='next_url'  pos='1' />
 			</td>
 		</tr>
 	</table>

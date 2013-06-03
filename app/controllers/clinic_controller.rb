@@ -6,6 +6,10 @@ class ClinicController < ApplicationController
     :missing_encounter_type, :diagnoses]
 
   def index
+  
+    @fname = UserProperty.find_by_user_id_and_property(params[:user_id], "First Name").property_value rescue ""
+    @lname = UserProperty.find_by_user_id_and_property(params[:user_id], "Last Name").property_value rescue ""
+    @name = !@user["name"].blank?? @user["name"] : @fname.split("")[0] + ". " + @lname
 
 	  User.current = User.find(@user["user_id"]) rescue nil
 
