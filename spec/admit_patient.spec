@@ -1,4 +1,4 @@
-P.1. Admit patient [program: MATERNITY PROGRAM]
+P.1. Admit patient [program: MATERNITY PROGRAM, pos: 4, parent: 1]
 C.1. Given a pregnant mother that has come for delivery, the following details are required at the time of admission.
 Q.1.1. Gravida [pos: 0, field_type: number, tt_pageStyleClass: NumbersOnly, absoluteMin: 1, max: 10, absoluteMax: 20, tt_onUnLoad: setMax("1.2")]
 

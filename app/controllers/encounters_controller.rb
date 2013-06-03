@@ -2,13 +2,78 @@
 class EncountersController < ApplicationController
 
   before_filter :check_user, :except => [:missing_program, :static_locations,
-		  :missing_concept, :no_user, :no_patient, :check_role_activities,
-		  :missing_encounter_type]
+    :missing_concept, :no_user, :no_patient, :check_role_activities,
+    :missing_encounter_type, :diagnoses]
 
   def create
-    
-    patient = Patient.find(params[:patient_id]) rescue nil
+  
+    if (params["concept"]["Baby identifier"])
 
+      my_baby = PatientIdentifier.find_all_by_identifier_and_identifier_type(params["concept"]["Baby identifier"],
+        PatientIdentifierType.find_by_name("National id").patient_identifier_type_id) rescue nil
+
+      if !my_baby.blank? && my_baby.length == 1
+        
+        my_children = Relationship.find(:all, :conditions => ["person_a = ? AND relationship = ? AND voided = 0",
+            params[:patient_id], RelationshipType.find_by_a_is_to_b("Parent").id]).collect{|rel|
+          rel.person_b
+        } rescue []
+        
+      end 
+      
+      if ((my_baby.blank? || !my_children.include?(my_baby.first.patient.patient_id)) rescue true)
+       
+        @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id])
+
+        redirect_to @task.next_task.url + "&no_baby=#{params["concept"]["Baby identifier"]}" and return
+        
+      end unless params[:encounter_type].downcase.strip == "baby delivery"
+      
+      if !my_baby.blank? && my_baby.length == 1
+        params["concept"].delete("Baby identifier")
+        params[:person_id] = my_baby.first.patient.patient_id
+      end
+      
+    end
+    
+    patient = Patient.find(params[:person_id]) rescue nil if params[:person_id]    
+    patient = Patient.find(params[:patient_id]) rescue nil if patient.blank?
+
+    #create baby given condition
+    if (my_baby.first.patient.patient_id.blank? rescue true) and params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].nil?
+      
+      baby = Baby.new(params[:user_id], params[:patient_id], session[:location_id], (session[:datetime] || Date.today))
+
+      mother = Person.find(params[:patient_id]) rescue nil
+
+      link = get_global_property_value("patient.registration.url").to_s rescue nil
+
+      children = Relationship.find(:all, :conditions => ["person_a = ? AND voided = 0 AND relationship = ?", params[:patient_id], RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id])
+
+      first_name = "Baby-" + (children.length + 1).to_s
+
+      #Check for duplicate names
+      child_names = PersonName.find(:all, :conditions => ["person_id IN (?)", children.collect{|child| child.person_a}]).collect{|name|
+        name.given_name rescue nil}.uniq
+
+      if child_names.include?(first_name)
+        first_name = first_name +"_"+ Date.today.year.to_s + "/"
+      end
+      
+      birth_date = params["concept"]["Date of delivery"].to_date rescue Date.today
+
+      baby_id = baby.associate_with_mother("#{link}", first_name,
+        "#{(!mother.nil? ? (mother.names.first.family_name rescue "Unknown") :
+        "Unknown")}", params["concept"]["Gender]"], birth_date).to_s.strip rescue nil
+        
+      my_baby = PatientIdentifier.find_by_sql("SELECT * FROM patient_identifier WHERE identifier = #{baby_id}
+          AND identifier_type = (SELECT patient_identifier_type_id FROM patient_identifier_type WHERE name = 'National id')
+          ORDER BY date_created DESC LIMIT 1") if !baby_id.blank?
+      
+      patient = Patient.find(my_baby.first.patient_id) rescue patient
+     
+    end
+   
     if !patient.nil?
       
       type = EncounterType.find_by_name(params[:encounter_type]).id rescue nil
@@ -260,46 +325,8 @@ class EncountersController < ApplicationController
         redirect_to "/encounters/missing_encounter_type?encounter_type=#{params[:encounter_type]}" and return
 
       end
-
-      if params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].nil?
-
-        baby = Baby.new(params[:user_id], params[:patient_id], session[:location_id], (session[:datetime] || Date.today))
-
-        mother = Person.find(params[:patient_id]) rescue nil
-
-        link = get_global_property_value("patient.registration.url").to_s rescue nil
-
-        children = Relationship.find(:all, :conditions => ["person_a = ? AND relationship = ?", params[:patient_id], RelationshipType.find_by_a_is_to_b("Parent").id])
-
-				first_name = "Baby-" + (children.length + 1).to_s
-
-				#Check for duplicate names
-				child_names = PersonName.find(:all, :conditions => ["person_id IN (?)", children.collect{|child| child.person_a}]).collect{|name|
-					name.given_name rescue nil}.uniq
-
-				if child_names.include?(first_name)
-					first_name = first_name +"_"+ Date.today.year.to_s + "/"
-				end
-
-        baby_id = baby.associate_with_mother("#{link}", first_name,
-          "#{(!mother.nil? ? (mother.names.first.family_name rescue "Unknown") : 
-          "Unknown")}", params["concept"]["Gender]"], params["concept"]["Date of delivery]"]) # rescue nil
-
-        # Baby identifier
-        concept = ConceptName.find_by_name("Baby outcome").concept_id rescue nil
-
-        obs = Observation.create(
-          :person_id => @encounter.patient_id,
-          :concept_id => concept,
-          :location_id => @encounter.location_id,
-          :obs_datetime => @encounter.encounter_datetime,
-          :encounter_id => @encounter.id,
-          :value_text => baby_id
-        ) if !baby_id.nil?
-
-      end
-
-      @task = TaskFlow.new(params[:user_id] || User.first.id, patient.id)
+     
+      @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id])
 
       redirect_to params[:next_url] and return if !params[:next_url].nil?
 
@@ -372,6 +399,18 @@ class EncountersController < ApplicationController
     end
 
     render :text => "<li></li><li " + locations.map{|location| "value=\"#{location.strip}\">#{location.strip}" }.join("</li><li ") + "</li>"
+
+  end
+
+  def diagnoses
+
+    search_string         = (params[:search_string] || '').upcase
+
+    diagnosis_concepts    = Concept.find_by_name("Qech outpatient diagnosis list").concept_members.collect{|c| c.concept.fullname}.sort.uniq rescue ["Unknown"]
+
+    @results = diagnosis_concepts.collect{|e| e}.delete_if{|x| !x.upcase.match("#{search_string}")}
+
+    render :text => "<li>" + @results.join("</li><li>") + "</li>"
 
   end
   

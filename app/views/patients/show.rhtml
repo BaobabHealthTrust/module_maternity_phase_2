@@ -2,6 +2,8 @@
   <!--
   tt_cancel_show = '/clinic?user_id=<%= params[:user_id] %>';
   tt_cancel_destination = '/clinic?user_id=<%= params[:user_id] %>';
+  no_baby_found = "<%=  params[:no_baby]? params[:no_baby] : 'false'%>";
+  alerted = false;
 
 <%
 
@@ -31,10 +33,82 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
     __$("nextTask").innerHTML = "<b>Next Task:</b><br /><i><%= next_task.titleize %></i>";
   }
 
+  function selectChild(ctrl, arr){
+    //expand(ctrl)
+    arr = ["Kenneth Kapundi|123", "Kenneth Madalitso|466"]
+    var o = checkCtrl(ctrl);
+    var shield = document.createElement("div");
+    shield.id = "lyrShield";
+    shield.style.position = "absolute";
+    shield.style.width = "100%";
+    shield.style.height = "100%";
+    shield.style.left = "0px";
+    shield.style.top = "0px";
+    shield.style.backgroundColor = "#333"; // "#0088CC";
+    shield.style.opacity = "0.5";
+    shield.style.zIndex = 90;
+
+    document.body.appendChild(shield);
+
+    var menu = document.createElement("div");
+    menu.id = "menu";
+    menu.style.position = "absolute";
+    menu.style.left = (o[3] + 100) + "px";
+    menu.style.top = (o[2]) + "px";
+    menu.style.width = "300px";
+    menu.style.height = "650px";
+    menu.style.zIndex = 100;
+    menu.style.overflowY = "auto";
+    menu.style.overflowX = "hidden";
+
+    document.body.appendChild(menu);
+    
+    for (var i = 0; i < arr.length; i ++){
+      var button = document.createElement("button");
+      button.className = "menu_button blue";
+      button.style.width = "99%";
+      button.style.textAlign = "left";
+      button.innerHTML = arr[i].split("|")[0];
+      button.setAttribute("baby_id", arr[i].split("|")[1]);
+
+      button.onmousedown = function(){
+       
+        this.setAttribute("link", ctrl.getAttribute("link").replace(/\/[0-9]+/, "/" + this.getAttribute("baby_id")));
+        activate(ctrl.id);
+        
+        node1 = __$("menu");
+        node2 = __$("lyrShield")
+        document.body.removeChild(node1)
+        document.body.removeChild(node2);
+      }
+
+      menu.appendChild(button);
+    }
+  }
+
+  function updateChildrenTab(){
+    try{     
+      __$("tab3").onmousedown = function(){
+        selectChild(this);
+      }
+      alerted = true
+    }catch(ex){
+      
+      alerted = false
+    }
+
+    if (alerted == false){
+      setTimeout("updateChildrenTab()", 500);
+    }
+  }
+
 <% if !next_task.nil? %>
     setTimeout("showNexttask()", 500);
 <% end %>
-  
+
+ 
+  //setTimeout("updateChildrenTab()", 500);
+
 </script>
 
 <style type="text/css">
@@ -101,14 +175,35 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
       <select id="tabs">
         <option value='/patients/current_visit/<%= @patient.id %>?user_id=<%= @user.id %>'>Current Visit</option>
         <option value='/patients/visit_history/<%= @patient.id %>?user_id=<%= @user.id %>'>Visit History</option>
+        <option value='/patients/children/<%= @patient.id %>?user_id=<%= @user.id %>'>Children</option>
       </select>
+
       <select id="links">
 
         <% @links.each do |encounter, link| %>
 
-          <optgroup value='<%= link %>' label="<%= (!@task.labels[encounter.downcase].nil? ?
-                        @task.labels[encounter.downcase] : encounter) %>" >
-          </optgroup>
+          <% unless @links[encounter].class.to_s.upcase == "HASH" %>
+
+            <optgroup value='<%= link %>' label="<%= (!@task.labels[encounter.downcase].nil? ?
+                          @task.labels[encounter.downcase] : encounter) %>" >
+            </optgroup>
+
+          <% else %>
+
+            <optgroup label="<%= (!@task.labels[encounter.downcase].nil? ?
+                          @task.labels[encounter.downcase] : encounter) %>" >
+
+              <% link.each do |label, path| %>
+
+                <option value="<%= path %>">
+                  <%= label %>
+                </option>
+
+              <% end %>
+
+            </optgroup>
+
+          <% end %>
 
         <% end %>
 

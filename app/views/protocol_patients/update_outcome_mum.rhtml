@@ -111,7 +111,7 @@
 				Sutures removed 
 			</td>
 			<td>
-<select id='1.7' name='concept[Sutures removed ]' helpText='Sutures removed ' condition='<%= (@patient.current_procedures rescue []).include?("caesarean section") %>'  pos='8' >
+<select id='1.7' name='concept[Sutures removed ]' helpText='Sutures removed ' pos='8'  condition='<%= (@patient.current_procedures rescue []).include?("caesarean section") %>' >
 <option></option>
 <option value='No'>No</option>
  <option value='Yes'>Yes</option>

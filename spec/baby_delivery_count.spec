@@ -1,4 +1,4 @@
-P.1. Baby delivery [program: MATERNITY PROGRAM, label: Baby Delivery Count, scope: EXISTS, concept: Number of babies]
+P.1. Baby delivery [program: MATERNITY PROGRAM, ignore: true, label: Baby Delivery Count, scope: EXISTS, concept: Number of babies]
 C.1.1. Given a mother that has delivered
 
 C.1.1. Baby

@@ -22,16 +22,37 @@ class PatientsController < ApplicationController
 
     @links = {}
 
-    @task.tasks.each{|task|
+    @hash_check = {}
 
-      next if task.downcase == "update baby outcome" and (@patient.current_babies.length == 0 rescue false)
-      next if !@task.current_user_activities.include?(task)
-      @links[task.titleize] = "/protocol_patients/#{task.gsub(/\s/, "_")}?patient_id=#{
-      @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
-          "&baby=1&baby_total=#{(@patient.current_babies.length rescue 0)}" : "")
-      
+    @task.display_tasks.each{|task|
+
+      unless task.class.to_s.upcase == "ARRAY"
+
+        next if task.downcase == "update baby outcome" and @patient.current_babies.length == 0
+        next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(task.upcase)
+
+        @links[task.titleize] = "/protocol_patients/#{task.gsub(/\s/, "_").downcase}?patient_id=#{
+        @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
+            "&baby=1&baby_total=#{@patient.current_babies.length}" : "")
+
+      else
+
+        @links[task[0].titleize] = {}
+       
+        task[1].each{|t|
+          next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(t.upcase)
+          @links[task[0].titleize][t.titleize] = "/protocol_patients/#{t.gsub(/\s/, "_").downcase}?patient_id=#{
+          @patient.id}&user_id=#{params[:user_id]}"
+        }
+
+      end
+
     }
-
+    
+    @links.delete_if{|key, link|
+      @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
+    }
+      
     @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
     
     @project = get_global_property_value("project.name") rescue "Unknown"
@@ -93,6 +114,51 @@ class PatientsController < ApplicationController
       ]
     } if !@patient.nil?
 
+    # raise @programs.inspect
+
+    render :layout => false
+  end
+
+  def children
+
+    @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
+    @children = Relationship.find_all_by_person_a_and_relationship(@patient.patient_id,
+      RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child")) rescue nil
+
+    @baby_programs = {}
+     
+    @children.each {|chil|
+      name = Patient.find(chil.person_b).name rescue "Unknown Baby Name"
+      @baby_programs["#{name}"] = []
+    }
+  
+    
+    if !@children.blank?
+
+      @children.each{|child|
+        @baby = Patient.find(child.person_b)
+       
+        @programs = @baby.program_encounters.find(:all, :order => ["date_time DESC"]).collect{|p|
+
+          [
+            p.id,
+            p.to_s,
+            p.program_encounter_types.collect{|e|
+              [
+                e.encounter_id, e.encounter.type.name,
+                e.encounter.encounter_datetime.strftime("%H:%M"),
+                e.encounter.creator
+              ]
+            },
+            p.date_time.strftime("%d-%b-%Y")
+          ]
+        }
+        
+        @baby_programs["#{@baby.name}"] = @programs if !@programs.blank?
+       
+      }
+      #raise @baby_programs.to_yaml
+    end
     # raise @programs.inspect
 
     render :layout => false

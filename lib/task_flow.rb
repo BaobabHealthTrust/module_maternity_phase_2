@@ -2,7 +2,7 @@
 class TaskFlow
 
   attr_accessor :patient, :person, :user, :current_date, :tasks, :current_user_activities,
-    :encounter_type, :url, :task_scopes, :task_list, :labels
+    :encounter_type, :url, :task_scopes, :task_list, :labels, :display_tasks
 
   def initialize(user_id, patient_id, session_date = Date.today)
     self.patient = Patient.find(patient_id)
@@ -12,6 +12,9 @@ class TaskFlow
     if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
       settings = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
         }"]["clinical.encounters.sequential.list"] rescue ""
+
+      display_list = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
+        }"]["clinical.encounters.display.list"].split(";") rescue []
 
       scopes = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
         }"]["scope"] rescue ""
@@ -70,6 +73,20 @@ class TaskFlow
           :drug_concept => (drug_concepts[item[0].downcase] rescue nil),
           :special_field => (special_fields[item[0].downcase] rescue nil)
         }
+      }
+
+      self.display_tasks = []
+
+      display_list.each{|item|
+        unless item.match(/\|/).nil?
+          parts = item.split("|")
+
+          fieldlist = parts[1].split(",")
+
+          self.display_tasks << [parts[0], fieldlist]
+        else
+          self.display_tasks << item
+        end
       }
 
     end

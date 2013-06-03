@@ -199,10 +199,36 @@ class Patient < ActiveRecord::Base
     status = self.encounters.collect { |e|
       e.observations.find(:last, :conditions => ["concept_id IN (?)",
           @hiv_concepts]).answer_string rescue nil
-    }.compact.flatten.first.strip
+    }.compact.flatten.first.strip rescue nil
 
     status = "unknown" if status.blank?
     status
+  end
+
+  def current_babies(session_date = Date.today)
+    ProgramEncounterDetail.find(:all, :joins => [:program_encounter],
+      :conditions => ["patient_id = ? AND (DATE(date_time) >= ? AND DATE(date_time) <= ?)",
+        self.id, (session_date.to_date - 1.year).strftime("%Y-%m-%d"),
+        (session_date.to_date).strftime("%Y-%m-%d")]).collect{|e|
+
+      e.encounter.observations.collect{|o|
+        o.name.strip if o.concept.concept_names.first.name.downcase == "baby outcome"
+      } if e.encounter.type.name.downcase == "baby delivery"
+
+    }.flatten.delete_if{|x| x.nil?}
+  end
+
+  def current_procedures(session_date = Date.today)
+    ProgramEncounterDetail.find(:all, :joins => [:program_encounter],
+      :conditions => ["patient_id = ? AND (DATE(date_time) >= ? AND DATE(date_time) <= ?)",
+        self.id, (session_date.to_date - 1.year).strftime("%Y-%m-%d"),
+        (session_date.to_date).strftime("%Y-%m-%d")]).collect{|e|
+
+      e.encounter.observations.collect{|o|
+        o.name.strip.downcase if o.concept.concept_names.first.name.downcase == "delivery mode"
+      } if e.encounter.type.name.downcase == "baby delivery"
+
+    }.flatten.delete_if{|x| x.nil?}
   end
 
 end

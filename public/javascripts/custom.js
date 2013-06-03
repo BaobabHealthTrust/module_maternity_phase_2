@@ -21,3 +21,16 @@ function showAPGAR(){
 function unloadAPGAR(){
     
 }
+
+function checkBarcodeInput(){
+    var input = __$("touchscreenInput" + tstCurrentPage).value;
+
+    if (input.match(/\$/) && input.length > 2){
+        __$("touchscreenInput" + tstCurrentPage).value = input.replace(/\$/, "")
+        gotoNextPage();
+    }else{
+        setTimeout(function(){
+            checkBarcodeInput();
+        }, 100);
+    }
+}
