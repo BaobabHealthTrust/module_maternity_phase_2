@@ -6,7 +6,7 @@ class EncountersController < ApplicationController
     :missing_encounter_type, :diagnoses, :missing_baby]
 
   def create
-  
+ 
     if (params["concept"]["Baby identifier"])
 
       my_baby = PatientIdentifier.find_all_by_identifier_and_identifier_type(params["concept"]["Baby identifier"],

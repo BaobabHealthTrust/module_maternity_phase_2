@@ -1,3 +1,7 @@
+<link href='/touchscreentoolkit/lib/stylesheets/apgar.css' type='text/css' rel='stylesheet' />
+
+<script type='text/javascript' src='/touchscreentoolkit/lib/javascripts/apgar.js' ></script>
+
 <script type='text/javascript' language='javascript'>
 <!--
 	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
@@ -15,7 +19,7 @@
 				Scan baby barcode (Optional) 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode (Optional) '  optional='true'  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput();' />
+<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode (Optional) '  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput();'  optional='true' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +27,7 @@
 				Date of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.2'     field_type='date'  pos='1'  name='concept[Date of delivery]'  helpText='Date of delivery' />
+<input type='text' id='1.1.2'     field_type='date'  pos='1'  helpText='Date of delivery'  name='concept[Date of delivery]' />
 			</td>
 		</tr>
 		<tr>
@@ -31,7 +35,7 @@
 				Time of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.3'     field_type='advancedTime'  pos='2'  name='concept[Time of delivery]'  helpText='Time of delivery' />
+<input type='text' id='1.1.3'     field_type='advancedTime'  pos='2'  helpText='Time of delivery'  name='concept[Time of delivery]' />
 			</td>
 		</tr>
 		<tr>
@@ -39,7 +43,7 @@
 				Gender 
 			</td>
 			<td>
-<select id='1.1.4'   pos='3'  name='concept[Gender]'  helpText='Gender' >
+<select id='1.1.4'   pos='3'  helpText='Gender'  name='concept[Gender]' >
 <option></option>
 <option value='Female'>Female</option>
  <option value='Male'>Male</option>
@@ -51,7 +55,23 @@
 				Birth weight 
 			</td>
 			<td>
-<input type='text' id='1.1.5'     field_type='number'  max='4500'  tt_pageStyleclass='NumbersOnlyWithDecimal'  pos='4'  name='concept[Birth weight]'  absoluteMin='100'  helpText='Birth weight (grams)'  absoluteMax='8000'  min='2500' />
+<input type='text' id='1.1.5'     field_type='number'  min='2500'  pos='4'  helpText='Birth weight (grams)'  tt_pageStyleclass='NumbersOnlyWithDecimal'  max='4500'  name='concept[Birth weight]'  absoluteMax='8000'  absoluteMin='100' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				APGAR 
+			</td>
+			<td>
+<input type='text' id='1.1.8'  name='concept[Apgar minute one]'   pos='5'  field_type='number'  helpText='1<sup>st</sup> Minute APGAR'  tt_pageStyleClass='NoKeyboard'  tt_onLoad='showApgarControl(1); __$("keyboard").style.display = "none"'  absoluteMax='10'  absoluteMin='1' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				APGAR 
+			</td>
+			<td>
+<input type='text' id='1.1.9'  name='concept[Apgar minute five]'   pos='6'  field_type='number'  helpText='5<sup>th</sup> Minute APGAR'  tt_pageStyleClass='NoKeyboard'  tt_onLoad='showApgarControl(5); __$("keyboard").style.display = "none"'  absoluteMax='10'  absoluteMin='1' />
 			</td>
 		</tr>
 		<tr>
@@ -59,7 +79,7 @@
 				Place of delivery 
 			</td>
 			<td>
-<select id='1.1.7'   pos='5'  name='concept[Place of delivery]'  helpText='Place of delivery' >
+<select id='1.1.7'   pos='7'  helpText='Place of delivery'  name='concept[Place of delivery]' >
 <option></option>
 <option value='Home/TBA'>Home/TBA</option>
  <option value='Other facility'>Other facility</option>
@@ -73,7 +93,7 @@
 				Delivery mode 
 			</td>
 			<td>
-<select id='1.1.8'   pos='6'  name='concept[Delivery mode]'  helpText='Delivery mode' >
+<select id='1.1.10'   pos='8'  helpText='Delivery mode'  name='concept[Delivery mode]' >
 <option></option>
 <option value='Caesarean section'>Caesarean section</option>
  <option value='Breech delivery'>Breech delivery</option>
@@ -87,14 +107,14 @@
 				Newborn baby complications 
 			</td>
 			<td>
-<select id='1.1.9'   pos='7'  name='concept[Newborn baby complications]'  helpText='Newborn baby complications' >
+<select id='1.1.11'   pos='9'  helpText='Newborn baby complications'  name='concept[Newborn baby complications]' >
 <option></option>
 <option value='Other'>Other</option>
  <option value='Sepsis'>Sepsis</option>
  <option value='Asphyxia'>Asphyxia</option>
  <option value='Prematurity'>Prematurity</option>
  <option value='Weight less than 2500g'>Weight less than 2500g</option>
- <option value='None'>None</option>
+ <option value='Nonedd'>Nonedd</option>
  </select>
 			</td>
 		</tr>

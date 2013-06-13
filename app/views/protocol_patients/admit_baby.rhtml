@@ -43,7 +43,7 @@
 				Baby weight at admission (grams) 
 			</td>
 			<td>
-<input type='text' id='1.4'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  field_type='number'  tt_pageStyleClass='NumbersOnlyWithDecimal'  max='5000'  pos='3'  condition='id_string.match(__$("1.1").value)'  absoluteMin='100'  absoluteMax='10000'  min='2000' />
+<input type='text' id='1.4'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  min='2000'  field_type='number'  pos='3'  tt_pageStyleClass='NumbersOnlyWithDecimal'  max='5000'  condition='id_string.match(__$("1.1").value)'  absoluteMax='10000'  absoluteMin='100' />
 			</td>
 		</tr>
 		<tr>
@@ -51,7 +51,7 @@
 				Reason for admission 
 			</td>
 			<td>
-<input type='text' id='1.5'  name='concept[Reason for admission ]' helpText='Reason for admission '  pos='4'  condition='id_string.match(__$("1.1").value)'  ajaxUrl='/encounters/diagnoses?&search_string=' />
+<input type='text' id='1.5'  name='concept[Reason for admission ]' helpText='Reason for admission '  pos='4'  ajaxUrl='/encounters/diagnoses?&search_string='  condition='id_string.match(__$("1.1").value)' />
 			</td>
 		</tr>
 	</table>
