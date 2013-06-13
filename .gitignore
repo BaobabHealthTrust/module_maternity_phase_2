@@ -7,3 +7,5 @@ script/analyze_protocol
 script/clean
 config/database.yml
 config/application.yml
+*~
+public/analyze_protocol

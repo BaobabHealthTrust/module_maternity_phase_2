@@ -34,3 +34,14 @@ function checkBarcodeInput(){
         }, 100);
     }
 }
+
+function wardsHash(string){
+    
+    var babies_map = string.split("|");
+    var map = {}
+    for (var i = 0; i < babies_map.length; i ++){
+        map[babies_map[i].split("--")[0]] = babies_map[i].split("--")[1];
+    }
+  
+    return map
+}

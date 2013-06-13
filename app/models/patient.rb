@@ -87,7 +87,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("Allergic to sulphur").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -97,7 +97,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("Was DPT-HepB-Hib 1 vaccine given at 6 weeks or later?").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -107,7 +107,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("Was DPT-HepB-Hib 2 vaccine given at 1 month after first dose?").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -117,7 +117,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("Was DPT-HepB-Hib 3 vaccine given at 1 month after second dose?").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -127,7 +127,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("PCV 1 vaccine given at 6 weeks or later?").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -137,7 +137,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("PCV 2 vaccine given at 1 month after first dose?").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -147,7 +147,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("PCV 3 vaccine given at 1 month after second dose?").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -157,7 +157,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("First polio vaccine at birth").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -167,7 +167,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("Second polio vaccine at 1.5 months").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -177,7 +177,7 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("Third polio vaccine at 2.5 months").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
@@ -187,14 +187,14 @@ class Patient < ActiveRecord::Base
           ConceptName.find_by_name("Fourth polio vaccine at 3.5 months").concept_id]).answer_string rescue nil
     }.compact.flatten.first
 
-    status = "unknown" if status.nil?
+    status = "unknown" if status.blank?
     status
   end
 
   def hiv_status
     
-   @hiv_concepts = ["MOTHER HIV STATUS", "HIV STATUS", "DNA-PCR Testing Result", "Rapid Antibody Testing Result", "Alive On ART"].collect{
-     |concept| ConceptName.find_by_name(concept).concept_id rescue nil}.compact rescue []
+    @hiv_concepts = ["MOTHER HIV STATUS", "HIV STATUS", "DNA-PCR Testing Result", "Rapid Antibody Testing Result", "Alive On ART"].collect{
+      |concept| ConceptName.find_by_name(concept).concept_id rescue nil}.compact rescue []
 
     status = self.encounters.collect { |e|
       e.observations.find(:last, :conditions => ["concept_id IN (?)",
@@ -215,7 +215,7 @@ class Patient < ActiveRecord::Base
         o.name.strip if o.concept.concept_names.first.name.downcase == "baby outcome"
       } if e.encounter.type.name.downcase == "baby delivery"
 
-    }.flatten.delete_if{|x| x.nil?}
+    }.flatten.delete_if{|x| x.blank?}
   end
 
   def current_procedures(session_date = Date.today)
@@ -228,7 +228,45 @@ class Patient < ActiveRecord::Base
         o.name.strip.downcase if o.concept.concept_names.first.name.downcase == "delivery mode"
       } if e.encounter.type.name.downcase == "baby delivery"
 
-    }.flatten.delete_if{|x| x.nil?}
+    }.flatten.delete_if{|x| x.blank?}
+  end
+
+  def wards_hash
+
+    map = ""
+    
+    Relationship.find_all_by_person_a_and_relationship(self.patient_id,
+      
+      RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").relationship_type_id).each{|re|
+      
+      map += Patient.find(re.person_b).national_id + "--" + Patient.find(re.person_b).current_ward.strip + "|" rescue nil
+    
+    }
+    return map
+  end
+
+  def current_ward
+
+    status = self.encounters.find(:all, :order => ["date_created DESC"]).collect{|e|
+      e.observations.find(:first, :conditions => ["concept_id = ?",
+          ConceptName.find_by_name("Ward").concept_id]).answer_string rescue nil
+    }.compact.flatten.first
+
+    status = "unknown" if status.blank?
+    status
+    
+  end
+
+  def babies_national_ids
+    
+    Relationship.find_all_by_person_a_and_relationship(self.patient_id,
+
+      RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").relationship_type_id).collect{|re|
+
+      Patient.find(re.person_b).national_id rescue nil
+
+    }.delete_if{|id| id.blank?}.compact.join("|")
+    
   end
 
 end

@@ -11,7 +11,7 @@ Q.1.1.4. Gender [pos: 3, name: concept[Gender], concept: Gender, helpText: Gende
 O.1.1.4.1. Male
 O.1.1.4.2. Female
 
-Q.1.1.5. Birth weight [pos: 4, name: concept[Birth weight], field_type: number, tt_pageStyleclass: NumbersOnlyWithDecimal, concept: Birth weight, helpText: Birth weight]
+Q.1.1.5. Birth weight [pos: 4, name: concept[Birth weight], min: 2500, max: 4500, absoluteMin: 100, absoluteMax: 8000, field_type: number, tt_pageStyleclass: NumbersOnlyWithDecimal, concept: Birth weight, helpText: Birth weight (grams)]
 
 Q.1.1.7. Place of delivery [pos: 5, name: concept[Place of delivery], concept: Place of delivery, helpText: Place of delivery]
 O.1.1.7.1. This facility

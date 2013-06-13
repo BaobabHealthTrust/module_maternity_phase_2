@@ -64,14 +64,24 @@ class EncountersController < ApplicationController
 
       baby_id = baby.associate_with_mother("#{link}", first_name,
         "#{(!mother.nil? ? (mother.names.first.family_name rescue "Unknown") :
-        "Unknown")}", params["concept"]["Gender]"], birth_date).to_s.strip rescue nil
+        "Unknown")}", params["concept"]["Gender"], birth_date).to_s.strip rescue nil
         
       my_baby = PatientIdentifier.find_by_sql("SELECT * FROM patient_identifier WHERE identifier = #{baby_id}
           AND identifier_type = (SELECT patient_identifier_type_id FROM patient_identifier_type WHERE name = 'National id')
           ORDER BY date_created DESC LIMIT 1") if !baby_id.blank?
-      
-      patient = Patient.find(my_baby.first.patient_id) rescue patient
      
+      patient = Patient.find(my_baby.first.patient_id) rescue patient
+
+      mother_address = PersonAddress.find_by_person_id(params[:patient_id]) rescue nil
+
+      if !mother_address.blank?
+        baby_address = mother_address       
+
+        baby_address.update_attributes(:person_id => patient.patient_id,
+          :date_created =>  (session[:datetime].to_date rescue Date.today)
+        )
+      end
+        
     end
    
     if !patient.nil?
@@ -341,7 +351,7 @@ class EncountersController < ApplicationController
 
     obs = Encounter.find(params[:encounter_id]).observations.collect{|o|
       [o.id, o.to_piped_s] rescue nil
-    }.compact 
+    }.compact
 
     render :text => obs.to_json
   end
@@ -370,7 +380,7 @@ class EncountersController < ApplicationController
     program = ProgramEncounter.find(params[:program_id]) rescue nil
 
     unless program.nil?
-      result = program.program_encounter_types.find(:all, :joins => [:encounter], 
+      result = program.program_encounter_types.find(:all, :joins => [:encounter],
         :order => ["encounter_datetime DESC"]).collect{|e|
         [
           e.encounter_id, e.encounter.type.name.titleize,

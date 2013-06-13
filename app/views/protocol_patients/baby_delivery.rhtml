@@ -15,7 +15,7 @@
 				Scan baby barcode (Optional) 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode (Optional) '  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput();'  optional='true' />
+<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode (Optional) '  optional='true'  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput();' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Date of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.2'     field_type='date'  name='concept[Date of delivery]'  pos='1'  helpText='Date of delivery' />
+<input type='text' id='1.1.2'     field_type='date'  pos='1'  name='concept[Date of delivery]'  helpText='Date of delivery' />
 			</td>
 		</tr>
 		<tr>
@@ -31,7 +31,7 @@
 				Time of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.3'     field_type='advancedTime'  name='concept[Time of delivery]'  pos='2'  helpText='Time of delivery' />
+<input type='text' id='1.1.3'     field_type='advancedTime'  pos='2'  name='concept[Time of delivery]'  helpText='Time of delivery' />
 			</td>
 		</tr>
 		<tr>
@@ -39,7 +39,7 @@
 				Gender 
 			</td>
 			<td>
-<select id='1.1.4'   name='concept[Gender]'  pos='3'  helpText='Gender' >
+<select id='1.1.4'   pos='3'  name='concept[Gender]'  helpText='Gender' >
 <option></option>
 <option value='Female'>Female</option>
  <option value='Male'>Male</option>
@@ -51,7 +51,7 @@
 				Birth weight 
 			</td>
 			<td>
-<input type='text' id='1.1.5'     field_type='number'  name='concept[Birth weight]'  pos='4'  helpText='Birth weight'  tt_pageStyleclass='NumbersOnlyWithDecimal' />
+<input type='text' id='1.1.5'     field_type='number'  max='4500'  tt_pageStyleclass='NumbersOnlyWithDecimal'  pos='4'  name='concept[Birth weight]'  absoluteMin='100'  helpText='Birth weight (grams)'  absoluteMax='8000'  min='2500' />
 			</td>
 		</tr>
 		<tr>
@@ -59,7 +59,7 @@
 				Place of delivery 
 			</td>
 			<td>
-<select id='1.1.7'   name='concept[Place of delivery]'  pos='5'  helpText='Place of delivery' >
+<select id='1.1.7'   pos='5'  name='concept[Place of delivery]'  helpText='Place of delivery' >
 <option></option>
 <option value='Home/TBA'>Home/TBA</option>
  <option value='Other facility'>Other facility</option>
@@ -73,7 +73,7 @@
 				Delivery mode 
 			</td>
 			<td>
-<select id='1.1.8'   name='concept[Delivery mode]'  pos='6'  helpText='Delivery mode' >
+<select id='1.1.8'   pos='6'  name='concept[Delivery mode]'  helpText='Delivery mode' >
 <option></option>
 <option value='Caesarean section'>Caesarean section</option>
  <option value='Breech delivery'>Breech delivery</option>
@@ -87,7 +87,7 @@
 				Newborn baby complications 
 			</td>
 			<td>
-<select id='1.1.9'   name='concept[Newborn baby complications]'  pos='7'  helpText='Newborn baby complications' >
+<select id='1.1.9'   pos='7'  name='concept[Newborn baby complications]'  helpText='Newborn baby complications' >
 <option></option>
 <option value='Other'>Other</option>
  <option value='Sepsis'>Sepsis</option>

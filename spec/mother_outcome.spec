@@ -38,7 +38,7 @@ Q.1.7. Sutures removed [pos: 8, condition: <%= (@patient.current_procedures resc
 O.1.7.1. Yes
 O.1.7.2. No
 
-Q.1.8. Refer out [pos: 9]
+Q.1.8. Refer out [pos: 9, condition: __$("1.6").value.toUpperCase().trim() == "ALIVE" ]
 O.1.8.1. No
 O.1.8.2. Yes
 Q.1.8.2.1. Referred [pos: 10, ajaxUrl: /encounters/static_locations]
