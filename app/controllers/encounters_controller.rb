@@ -3,7 +3,7 @@ class EncountersController < ApplicationController
 
   before_filter :check_user, :except => [:missing_program, :static_locations,
     :missing_concept, :no_user, :no_patient, :check_role_activities,
-    :missing_encounter_type, :diagnoses]
+    :missing_encounter_type, :diagnoses, :missing_baby]
 
   def create
   
@@ -13,7 +13,7 @@ class EncountersController < ApplicationController
         PatientIdentifierType.find_by_name("National id").patient_identifier_type_id) rescue nil
 
       if !my_baby.blank? && my_baby.length == 1
-        
+       
         my_children = Relationship.find(:all, :conditions => ["person_a = ? AND relationship = ? AND voided = 0",
             params[:patient_id], RelationshipType.find_by_a_is_to_b("Parent").id]).collect{|rel|
           rel.person_b
@@ -22,23 +22,34 @@ class EncountersController < ApplicationController
       end 
       
       if ((my_baby.blank? || !my_children.include?(my_baby.first.patient.patient_id)) rescue true)
-       
-        @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id])
-
-        redirect_to @task.next_task.url + "&no_baby=#{params["concept"]["Baby identifier"]}" and return
         
+        redirect_to "/encounters/missing_baby?national_id=#{params['concept']['Baby identifier']}&ward=" and return
+               
       end unless params[:encounter_type].downcase.strip == "baby delivery"
       
       if !my_baby.blank? && my_baby.length == 1
+        fake_identifier =  params['concept']['Baby identifier']
         params["concept"].delete("Baby identifier")
         params[:person_id] = my_baby.first.patient.patient_id
       end
       
     end
+
+   
     
     patient = Patient.find(params[:person_id]) rescue nil if params[:person_id]    
     patient = Patient.find(params[:patient_id]) rescue nil if patient.blank?
+    
+    if params[:encounter_type].downcase.squish == "kangaroo review visit"
 
+      admitted_in_kangaroo = Patient.find(params[:patient_id]).wards_hash.split("|").collect{|p|
+        p.split("--")[0].upcase if p.split("--")[1].match(/kangaroo/i)
+      }.compact.include?(fake_identifier.upcase) rescue false
+
+      redirect_to "/encounters/missing_baby?national_id=#{fake_identifier}&ward=kangaroo" and return if !admitted_in_kangaroo
+      
+    end
+    
     #create baby given condition
     if (my_baby.first.patient.patient_id.blank? rescue true) and params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].nil?
       
