@@ -27,7 +27,7 @@
 				Date of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.2'     field_type='date'  pos='1'  helpText='Date of delivery'  name='concept[Date of delivery]' />
+<input type='text' id='1.1.2'     helpText='Date of delivery'  pos='1'  name='concept[Date of delivery]'  field_type='date' />
 			</td>
 		</tr>
 		<tr>
@@ -35,7 +35,7 @@
 				Time of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.3'     field_type='advancedTime'  pos='2'  helpText='Time of delivery'  name='concept[Time of delivery]' />
+<input type='text' id='1.1.3'     helpText='Time of delivery'  pos='2'  name='concept[Time of delivery]'  field_type='advancedTime' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Gender 
 			</td>
 			<td>
-<select id='1.1.4'   pos='3'  helpText='Gender'  name='concept[Gender]' >
+<select id='1.1.4'   helpText='Gender'  pos='3'  name='concept[Gender]' >
 <option></option>
 <option value='Female'>Female</option>
  <option value='Male'>Male</option>
@@ -55,7 +55,7 @@
 				Birth weight 
 			</td>
 			<td>
-<input type='text' id='1.1.5'     field_type='number'  min='2500'  pos='4'  helpText='Birth weight (grams)'  tt_pageStyleclass='NumbersOnlyWithDecimal'  max='4500'  name='concept[Birth weight]'  absoluteMax='8000'  absoluteMin='100' />
+<input type='text' id='1.1.5'     absoluteMax='8000'  helpText='Birth weight (grams)'  pos='4'  name='concept[Birth weight]'  max='4500'  field_type='number'  min='2500'  absoluteMin='100'  tt_pageStyleclass='NumbersOnlyWithDecimal' />
 			</td>
 		</tr>
 		<tr>
@@ -63,7 +63,7 @@
 				APGAR 
 			</td>
 			<td>
-<input type='text' id='1.1.8'  name='concept[Apgar minute one]'   pos='5'  field_type='number'  helpText='1<sup>st</sup> Minute APGAR'  tt_pageStyleClass='NoKeyboard'  tt_onLoad='showApgarControl(1); __$("keyboard").style.display = "none"'  absoluteMax='10'  absoluteMin='1' />
+<input type='text' id='1.1.8'  name='concept[Apgar minute one]'   absoluteMax='10'  helpText='1<sup>st</sup> Minute APGAR'  pos='5'  tt_onLoad='showApgarControl(1); __$("keyboard").style.display = "none"'  tt_pageStyleClass='NoKeyboard'  field_type='number'  absoluteMin='1' />
 			</td>
 		</tr>
 		<tr>
@@ -71,7 +71,7 @@
 				APGAR 
 			</td>
 			<td>
-<input type='text' id='1.1.9'  name='concept[Apgar minute five]'   pos='6'  field_type='number'  helpText='5<sup>th</sup> Minute APGAR'  tt_pageStyleClass='NoKeyboard'  tt_onLoad='showApgarControl(5); __$("keyboard").style.display = "none"'  absoluteMax='10'  absoluteMin='1' />
+<input type='text' id='1.1.9'  name='concept[Apgar minute five]'   absoluteMax='10'  helpText='5<sup>th</sup> Minute APGAR'  pos='6'  tt_onLoad='showApgarControl(5); __$("keyboard").style.display = "none"'  tt_pageStyleClass='NoKeyboard'  field_type='number'  absoluteMin='1' />
 			</td>
 		</tr>
 		<tr>
@@ -79,7 +79,7 @@
 				Place of delivery 
 			</td>
 			<td>
-<select id='1.1.7'   pos='7'  helpText='Place of delivery'  name='concept[Place of delivery]' >
+<select id='1.1.7'   helpText='Place of delivery'  pos='7'  name='concept[Place of delivery]' >
 <option></option>
 <option value='Home/TBA'>Home/TBA</option>
  <option value='Other facility'>Other facility</option>
@@ -93,7 +93,7 @@
 				Delivery mode 
 			</td>
 			<td>
-<select id='1.1.10'   pos='8'  helpText='Delivery mode'  name='concept[Delivery mode]' >
+<select id='1.1.10'   helpText='Delivery mode'  pos='8'  name='concept[Delivery mode]' >
 <option></option>
 <option value='Caesarean section'>Caesarean section</option>
  <option value='Breech delivery'>Breech delivery</option>
@@ -107,14 +107,14 @@
 				Newborn baby complications 
 			</td>
 			<td>
-<select id='1.1.11'   pos='9'  helpText='Newborn baby complications'  name='concept[Newborn baby complications]' >
+<select id='1.1.11'   helpText='Newborn baby complications'  pos='9'  name='concept[Newborn baby complications]' >
 <option></option>
 <option value='Other'>Other</option>
  <option value='Sepsis'>Sepsis</option>
  <option value='Asphyxia'>Asphyxia</option>
  <option value='Prematurity'>Prematurity</option>
  <option value='Weight less than 2500g'>Weight less than 2500g</option>
- <option value='Nonedd'>Nonedd</option>
+ <option value='None'>None</option>
  </select>
 			</td>
 		</tr>
