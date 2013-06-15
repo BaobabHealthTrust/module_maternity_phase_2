@@ -30,7 +30,7 @@ O.1.1.10.3. Breech delivery
 O.1.1.10.4. Caesarean section
 
 Q.1.1.11. Newborn baby complications [pos: 9, name: concept[Newborn baby complications], concept: Newborn baby complications, helpText: Newborn baby complications]
-O.1.1.11.1. Nonedd
+O.1.1.11.1. None
 O.1.1.11.2. Weight less than 2500g
 O.1.1.11.3. Prematurity
 O.1.1.11.4. Asphyxia

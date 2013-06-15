@@ -85,13 +85,7 @@ class EncountersController < ApplicationController
 
       mother_address = PersonAddress.find_by_person_id(params[:patient_id]) rescue nil
 
-      if !mother_address.blank?
-        baby_address = mother_address       
-
-        baby_address.update_attributes(:person_id => patient.patient_id,
-          :date_created =>  (session[:datetime].to_date rescue Date.today)
-        )
-      end
+      export_mother_addresss(params[:patient_id], patient.patient_id) if params[:patient_id] != patient.patient_id #if baby successfully created
         
     end
    
@@ -433,6 +427,22 @@ class EncountersController < ApplicationController
 
     render :text => "<li>" + @results.join("</li><li>") + "</li>"
 
+  end
+
+  def export_mother_addresss(mother_id, baby_id)
+
+    mother_address = PersonAddress.find_by_person_id(mother_id)
+
+    keys = mother_address.attributes.keys.delete_if{|key| key.blank? || key.match(/person_id|person_address_id|date_created/)}
+    baby_address = PersonAddress.new
+    baby_address.person_id = baby_id
+
+    keys.each do |ky|
+      baby_address["#{ky}"] = mother_address["#{ky}"]
+    end
+
+    baby_address.save
+    
   end
   
 end
