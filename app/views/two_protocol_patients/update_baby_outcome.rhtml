@@ -1,21 +1,21 @@
 <script type='text/javascript' language='javascript'>
 <!--
-	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
-	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= @user.id %>';
+	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
+	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
 	</script>
 
 <form method='post' action='/encounters/create'>
 	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
 	<input type='hidden' name='encounter_type' value='UPDATE BABY OUTCOME ' />
 	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
-	<input type='hidden' name='user_id' value='<%= @user.id %>' />
+	<input type='hidden' name='user_id' value='<%= session[:user_id] %>' />
 	<table>
 		<tr>
 			<td>
 				Scan baby barcode 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"' />
+<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -90,7 +90,7 @@
 				Are there are any comments on the outcome? 
 			</td>
 			<td>
-<select id='1.6.1' name='concept[Are there are any comments on the outcome? ]' helpText='Are there are any comments on the outcome? ' disabled='disabled'  pos='6'  condition='id_string.match(__$("1.1.1").value)' >
+<select id='1.6.1' name='concept[Are there are any comments on the outcome? ]' helpText='Are there are any comments on the outcome? ' pos='6'  disabled='disabled'  condition='id_string.match(__$("1.1.1").value)' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -102,7 +102,7 @@
 				Comments 
 			</td>
 			<td>
-<input type='text' id='1.6.1.2.1'  name='concept[Comments ]' helpText='Comments '  pos='7'  condition='id_string.match(__$("1.1.1").value) && __$("1.6.1").value == "Yes"'  field_type='textarea' />
+<input type='text' id='1.6.1.2.1'  name='concept[Comments ]' helpText='Comments '  field_type='textarea'  pos='7'  condition='id_string.match(__$("1.1.1").value) && __$("1.6.1").value == "Yes"' />
 			</td>
 		</tr>
 		<tr>

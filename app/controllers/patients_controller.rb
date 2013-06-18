@@ -1,7 +1,11 @@
 
 class PatientsController < ApplicationController
 
-	before_filter :check_user
+	unloadable  
+
+  before_filter :sync_user, :except => [:index, :user_login, :user_logout, 
+      :set_datetime, :update_datetime, :reset_datetime]
+
 
   def show
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
@@ -24,24 +28,37 @@ class PatientsController < ApplicationController
 
     @hash_check = {}
 
-    @task.display_tasks.each{|task|
+    @task.display_tasks.each{|task|  
+      
+    	ctrller = "protocol_patients"
 
-      unless task.class.to_s.upcase == "ARRAY"
+      unless task.class.to_s.upcase == "ARRAY"      
+            
+     		if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")        
+       	 ctrller = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{task.downcase.gsub(/\s/, "_")}"] rescue ""          
+     		end
 
         next if task.downcase == "update baby outcome" and @patient.current_babies.length == 0
-        next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(task.upcase)
-
-        @links[task.titleize] = "/protocol_patients/#{task.gsub(/\s/, "_").downcase}?patient_id=#{
-        @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
-            "&baby=1&baby_total=#{@patient.current_babies.length}" : "")
+        next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(task.upcase)       
+        
+   
+      	@links[task.titleize] = "#/{ctrller}/#{task.gsub(/\s/, "_")}?patient_id=#{
+      	@patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
+          "&baby=1&baby_total=#{(@patient.current_babies.length rescue 0)}" : "")       
 
       else
 
         @links[task[0].titleize] = {}
        
         task[1].each{|t|
+        
+        	if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")        
+       			 ctrller = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{t.downcase.gsub(/\s/, "_")}"] rescue ""          
+     			end
+     			
+     			    		
           next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(t.upcase)
-          @links[task[0].titleize][t.titleize] = "/protocol_patients/#{t.gsub(/\s/, "_").downcase}?patient_id=#{
+          @links[task[0].titleize][t.titleize] = "/#{ctrller}/#{t.gsub(/\s/, "_").downcase}?patient_id=#{
           @patient.id}&user_id=#{params[:user_id]}"
         }
 
@@ -52,7 +69,7 @@ class PatientsController < ApplicationController
     @links.delete_if{|key, link|
       @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
     }
-      
+ 
     @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
     
     @project = get_global_property_value("project.name") rescue "Unknown"
@@ -88,7 +105,7 @@ class PatientsController < ApplicationController
         },
         p.date_time.strftime("%d-%b-%Y")
       ]
-    } if !@patient.nil?
+    } if !@patient.blank?
 
     # raise @programs.inspect
 
@@ -251,6 +268,16 @@ class PatientsController < ApplicationController
     count = '0' if count.blank?
 
     render :text => (count.first.to_i > 0 ? {params[:date] => count}.to_json : 0)
+  end
+  
+  protected
+
+  def sync_user
+    if !session[:user].nil?
+      @user = session[:user]
+    else 
+      @user = JSON.parse(RestClient.get("#{@link}/verify/#{(session[:user_id])}")) rescue {}
+    end
   end
   
 end

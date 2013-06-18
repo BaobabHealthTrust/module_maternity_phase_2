@@ -1,9 +1,6 @@
 
 class EncountersController < ApplicationController
-
-  before_filter :check_user, :except => [:missing_program, :static_locations,
-    :missing_concept, :no_user, :no_patient, :check_role_activities,
-    :missing_encounter_type, :diagnoses, :missing_baby]
+ 	unloadable  
 
   def create
  
@@ -75,8 +72,10 @@ class EncountersController < ApplicationController
 
       baby_id = baby.associate_with_mother("#{link}", first_name,
         "#{(!mother.nil? ? (mother.names.first.family_name rescue "Unknown") :
-        "Unknown")}", params["concept"]["Gender"], birth_date).to_s.strip rescue nil
-        
+        "Unknown")}", params["concept"]["Gender"], birth_date).to_s.strip #rescue nil
+
+      redirect_to "/encounters/missing_baby?message=failed_to_create_baby_for_#{patient.name}" and return if baby_id.blank?
+
       my_baby = PatientIdentifier.find_by_sql("SELECT * FROM patient_identifier WHERE identifier = #{baby_id}
           AND identifier_type = (SELECT patient_identifier_type_id FROM patient_identifier_type WHERE name = 'National id')
           ORDER BY date_created DESC LIMIT 1") if !baby_id.blank?
@@ -85,15 +84,15 @@ class EncountersController < ApplicationController
 
       mother_address = PersonAddress.find_by_person_id(params[:patient_id]) rescue nil
 
-      export_mother_addresss(params[:patient_id], patient.patient_id) if params[:patient_id] != patient.patient_id #if baby successfully created
+      export_mother_addresss(params[:patient_id], patient.patient_id) rescue nil if !mother_address.blank? && params[:patient_id] != patient.patient_id #if baby successfully created
         
     end
    
-    if !patient.nil?
+    if !patient.blank?
       
       type = EncounterType.find_by_name(params[:encounter_type]).id rescue nil
 
-      if !type.nil?
+      if !type.blank?
         @encounter = Encounter.create(
           :patient_id => patient.id,
           :provider_id => (params[:user_id]),

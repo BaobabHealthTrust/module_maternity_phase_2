@@ -1,5 +1,11 @@
 <div style="width: 100%; padding-top: 120px; text-align: center;">
-  <h1>Mother Has No Baby With Barcode <i style="color: blue;"><%= params[:national_id].upcase + "</i>" + (params[:ward].blank?? "" : ("  In " + params[:ward].humanize + " Ward"))  %>!</h1>
+  <%if params[:message].blank?%>
+  <h1>Mother Has No Baby With Barcode <i style="color: blue;"><%= (params[:national_id].upcase rescue "......") + "</i>" + (params[:ward].blank?? "" : ("  In " + params[:ward].humanize + " Ward"))  %>!</h1>
+  
+  <%else%>
+<h1><%= params[:message].titleize rescue "Error"  %>!</h1>
+  <%end%>
+
   <br />
   <br />
   <br />

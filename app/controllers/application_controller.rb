@@ -2,7 +2,12 @@
 class ApplicationController < ActionController::Base
   helper :all
 
- def get_global_property_value(global_property)
+  before_filter :start_session
+
+  before_filter :check_user, :except => [:user_login, :user_logout, :missing_program,
+    :missing_concept, :no_user, :no_patient, :project_users_list, :check_role_activities]
+  
+  def get_global_property_value(global_property)
 		property_value = Settings[global_property]
 		if property_value.nil?
 			property_value = GlobalProperty.find(:first, :conditions => {:property => "#{global_property}"}
@@ -26,58 +31,45 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def start_session
+    session[:started] = true
+  end
+
   def check_user
-		
-		internal = ""
-		
+
+    if !params[:token].nil?
+      session[:token] = params[:token]
+    end
+
+    if !params[:user_id].nil?
+      session[:user_id] = params[:user_id]
+    end
+
+    if !params[:location_id].nil?
+      session[:location_id] = params[:location_id]
+    end
+
     link = get_global_property_value("user.management.url").to_s rescue nil
-		
+
     if link.nil?
       flash[:error] = "Missing configuration for <br/>user management connection!"
 
       redirect_to "/no_user" and return
+    end    
+
+    # Track final destination
+    file = "#{File.expand_path("#{Rails.root}/tmp", __FILE__)}/current.path.yml"
+
+    f = File.open(file, "w")
+
+    f.write("#{Rails.env}:\n    current.path: #{request.referrer}")
+
+    f.close
+
+    if session[:token].nil?
+      redirect_to "/user_login?internal=true" and return
     end
-    
-    host = request.raw_host_with_port.gsub("localhost", "0.0.0.0").gsub("127.0.0.1", "0.0.0.0")
-    ref_host = request.referrer.gsub("localhost", "0.0.0.0").gsub("127.0.0.1", "0.0.0.0") 
-    
-    if (ref_host.match("#{host}") || ref_host.length < 4)
-    	internal = "true"		
-		else
-			internal = "false"
-			#systems running as independent applications
-			@user = JSON.parse(RestClient.get("#{link}/verify/#{(params[:user_id])}")) if @user.blank? #rescue {}		
-		end
 
-		if internal == "true" || @user.blank?
-			
-			if params[:user_id].blank? || (params[:user_id] && User.find(params[:user_id]).blank?)
-
-				# Track final destination
-				file = "#{File.expand_path("#{Rails.root}/tmp", __FILE__)}/current.path.yml"
-
-				f = File.open(file, "w")
-
-				f.write("#{Rails.env}:\n    current.path: #{request.referrer}")
-
-				f.close
-		
-				if (@user.empty? rescue true)	    
-				  redirect_to "/user_login?internal=true" and return
-				end 
-
-				if @user["token"].blank?
-				  redirect_to "/user_login?internal=true" and return
-				end
-						
-				@location = CoreLocation.find(params[:location_id]) rescue nil
-				
-			end
-			
-			@user = User.find(params[:user_id]) rescue nil
-		
-    end
-  
   end
 
 end
