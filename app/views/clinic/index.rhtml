@@ -48,7 +48,7 @@
   <div id="date">
     <%= (!session[:datetime].nil? ? session[:datetime].to_date : Date.today).strftime("%Y-%m-%d") %>
   </div>
-  <div id="user"><%= @name %></div>
+  <div id="user"><%= session[:user]["name"] %></div>
 
   <select id="links">
     <option value='' link='/logout?user_id=<%= params[:user_id] %>'>Logout</option>

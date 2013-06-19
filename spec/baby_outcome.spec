@@ -26,18 +26,21 @@ O.1.3.1.4. Neonatal death
 
 C.1.4. For each baby, if baby is still alive
 Q.1.4.1. Breast feeding initiated within 60 minutes? [pos: 4, condition: id_string.match(__$("1.1.1").value) && __$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"]
-O.1.4.1.1. Yes
-O.1.4.1.2. No
+O.1.4.1.1. No
+O.1.4.1.2. Yes
 
 Q.1.5.1. Tetracycline eye ointment given? [pos: 5, condition: id_string.match(__$("1.1.1").value) && __$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"]
-O.1.5.1.1. Yes
-O.1.5.1.2. No
+O.1.5.1.1. No
+O.1.5.1.2. Yes
 
 Q.1.6.1. Are there are any comments on the outcome? [pos: 6, condition: id_string.match(__$("1.1.1").value), disabled: disabled]
 O.1.6.1.1. No
 O.1.6.1.2. Yes
 Q.1.6.1.2.1. Comments [pos: 7, condition: id_string.match(__$("1.1.1").value) && __$("1.6.1").value == "Yes", field_type: textarea]
 
-Q.1.7.1. Discharge baby [pos: 8, condition: id_string.match(__$("1.1.1").value) && __$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"]
-O.1.7.1.1. Yes
-O.1.7.1.2. No
+Q.1.7.2. Discharge baby [helpText: Discharge baby?, pos: 9, condition: id_string.match(__$("1.1.1").value) && __$("1.1.1").value != "Fresh stillbirth" && __$("1.1.1").value != "Macerated stillbirth" && __$("1.1.1").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death" ]
+O.1.7.2.1. No
+O.1.7.2.2. Yes
+
+
+

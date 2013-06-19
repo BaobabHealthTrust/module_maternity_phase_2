@@ -1,0 +1,61 @@
+<script type='text/javascript' language='javascript'>
+<!--
+	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
+	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
+	</script>
+
+<form method='post' action='/encounters/create'>
+	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='encounter_type' value='REFERRAL ' />
+	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
+	<input type='hidden' name='user_id' value='<%= session[:user_id] %>' />
+	<table>
+		<tr>
+			<td>
+				Scan baby barcode 
+			</td>
+			<td>
+<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}'  pos='0' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Ward 
+			</td>
+			<td>
+<select id='1.1.2' name='concept[Ward ]'  condition='id_string.match(__$("1.1.1").value)'  helpText='Ward referred to?'  pos='1' >
+<option></option>
+<option value='Check Up'>Check Up</option>
+ <option value='Immunization'>Immunization</option>
+ <option value='EID'>EID</option>
+ <option value='Kangaroo'>Kangaroo</option>
+ <option value='Nursery'>Nursery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Referral Out Date 
+			</td>
+			<td>
+<input type='text' id='1.1.3'  name='concept[Referral Out Date ]'   condition='id_string.match(__$("1.1.1").value)'  field_type='date'  helpText='Date referred'  pos='2' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Referral Out Time 
+			</td>
+			<td>
+<input type='text' id='1.1.4'  name='concept[Referral Out Time ]'   condition='id_string.match(__$("1.1.1").value)'  field_type='advancedTime'  helpText='Time referred'  pos='3' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Reason for referral 
+			</td>
+			<td>
+<input type='text' id='1.1.5'  name='concept[Reason for referral ]' helpText='Reason for referral '  condition='id_string.match(__$("1.1.1").value)'  pos='4'  ajaxURL='/encounters/diagnoses?search_string=' />
+			</td>
+		</tr>
+	</table>
+</form>

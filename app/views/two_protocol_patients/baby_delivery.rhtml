@@ -19,7 +19,7 @@
 				Scan baby barcode (Optional) 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode (Optional) '  optional='true'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput();'  pos='0' />
+<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode (Optional) '  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput();'  pos='0'  optional='true' />
 			</td>
 		</tr>
 		<tr>
@@ -27,7 +27,7 @@
 				Date of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.2'     field_type='date'  name='concept[Date of delivery]'  pos='1'  helpText='Date of delivery' />
+<input type='text' id='1.1.2'     name='concept[Date of delivery]'  helpText='Date of delivery'  field_type='date'  pos='1' />
 			</td>
 		</tr>
 		<tr>
@@ -35,7 +35,7 @@
 				Time of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.3'     field_type='advancedTime'  name='concept[Time of delivery]'  pos='2'  helpText='Time of delivery' />
+<input type='text' id='1.1.3'     name='concept[Time of delivery]'  helpText='Time of delivery'  field_type='advancedTime'  pos='2' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Gender 
 			</td>
 			<td>
-<select id='1.1.4'   name='concept[Gender]'  pos='3'  helpText='Gender' >
+<select id='1.1.4'   name='concept[Gender]'  helpText='Gender'  pos='3' >
 <option></option>
 <option value='Female'>Female</option>
  <option value='Male'>Male</option>
@@ -55,7 +55,7 @@
 				Birth weight 
 			</td>
 			<td>
-<input type='text' id='1.1.5'     min='2500'  tt_pageStyleclass='NumbersOnlyWithDecimal'  field_type='number'  absoluteMin='100'  max='4500'  absoluteMax='8000'  name='concept[Birth weight]'  pos='4'  helpText='Birth weight (grams)' />
+<input type='text' id='1.1.5'     absoluteMax='8000'  name='concept[Birth weight]'  helpText='Birth weight (grams)'  field_type='number'  absoluteMin='100'  min='2500'  pos='4'  tt_pageStyleclass='NumbersOnlyWithDecimal'  max='4500' />
 			</td>
 		</tr>
 		<tr>
@@ -63,7 +63,7 @@
 				APGAR 
 			</td>
 			<td>
-<input type='text' id='1.1.8'  name='concept[Apgar minute one]'   field_type='number'  absoluteMin='1'  tt_onLoad='showApgarControl(1); __$("keyboard").style.display = "none"'  tt_pageStyleClass='NoKeyboard'  pos='5'  absoluteMax='10'  helpText='1<sup>st</sup> Minute APGAR' />
+<input type='text' id='1.1.8'  name='concept[Apgar minute one]'   tt_onLoad='showApgarControl(1); __$("keyboard").style.display = "none"'  absoluteMax='10'  helpText='1<sup>st</sup> Minute APGAR'  pos='5'  absoluteMin='1'  field_type='number'  tt_pageStyleClass='NoKeyboard' />
 			</td>
 		</tr>
 		<tr>
@@ -71,7 +71,7 @@
 				APGAR 
 			</td>
 			<td>
-<input type='text' id='1.1.9'  name='concept[Apgar minute five]'   field_type='number'  absoluteMin='1'  tt_onLoad='showApgarControl(5); __$("keyboard").style.display = "none"'  tt_pageStyleClass='NoKeyboard'  pos='6'  absoluteMax='10'  helpText='5<sup>th</sup> Minute APGAR' />
+<input type='text' id='1.1.9'  name='concept[Apgar minute five]'   tt_onLoad='showApgarControl(5); __$("keyboard").style.display = "none"'  absoluteMax='10'  helpText='5<sup>th</sup> Minute APGAR'  pos='6'  absoluteMin='1'  field_type='number'  tt_pageStyleClass='NoKeyboard' />
 			</td>
 		</tr>
 		<tr>
@@ -79,7 +79,7 @@
 				Place of delivery 
 			</td>
 			<td>
-<select id='1.1.7'   name='concept[Place of delivery]'  pos='7'  helpText='Place of delivery' >
+<select id='1.1.7'   name='concept[Place of delivery]'  helpText='Place of delivery'  pos='7' >
 <option></option>
 <option value='Home/TBA'>Home/TBA</option>
  <option value='Other facility'>Other facility</option>
@@ -93,7 +93,7 @@
 				Delivery mode 
 			</td>
 			<td>
-<select id='1.1.10'   name='concept[Delivery mode]'  pos='8'  helpText='Delivery mode' >
+<select id='1.1.10'   name='concept[Delivery mode]'  helpText='Delivery mode'  pos='8' >
 <option></option>
 <option value='Caesarean section'>Caesarean section</option>
  <option value='Breech delivery'>Breech delivery</option>
@@ -107,7 +107,7 @@
 				Newborn baby complications 
 			</td>
 			<td>
-<select id='1.1.11'   name='concept[Newborn baby complications]'  pos='9'  helpText='Newborn baby complications' >
+<select id='1.1.11'   name='concept[Newborn baby complications]'  helpText='Newborn baby complications'  pos='9' >
 <option></option>
 <option value='Other'>Other</option>
  <option value='Sepsis'>Sepsis</option>

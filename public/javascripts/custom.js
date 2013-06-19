@@ -31,7 +31,7 @@ function checkBarcodeInput(){
     }else{
         setTimeout(function(){
             checkBarcodeInput();
-        }, 100);
+        }, 10);
     }
 }
 
