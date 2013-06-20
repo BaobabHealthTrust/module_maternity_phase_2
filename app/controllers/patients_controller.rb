@@ -4,7 +4,7 @@ class PatientsController < ApplicationController
 	unloadable  
 
   before_filter :sync_user, :except => [:index, :user_login, :user_logout, 
-      :set_datetime, :update_datetime, :reset_datetime]
+    :set_datetime, :update_datetime, :reset_datetime]
 
 
   def show
@@ -26,6 +26,23 @@ class PatientsController < ApplicationController
 
     @links = {}
 
+    if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
+      map = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
+        }"]["label.encounter.map"].split(",") rescue []
+    end
+
+    @label_encounter_map = {}
+
+    map.each{ |tie|
+      label = tie.split("|")[0]
+      encounter = tie.split("|")[1] rescue nil
+
+      @label_encounter_map[label] = encounter if !label.blank? && !encounter.blank?
+
+    }
+
+    @task_status_map = {}
+
     @hash_check = {}
 
     @task.display_tasks.each{|task|  
@@ -35,29 +52,45 @@ class PatientsController < ApplicationController
       unless task.class.to_s.upcase == "ARRAY"      
             
      		if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")        
-       	 ctrller = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{task.downcase.gsub(/\s/, "_")}"] rescue ""          
+          ctrller = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{task.downcase.gsub(/\s/, "_")}"] rescue ""
      		end
 
         next if task.downcase == "update baby outcome" and @patient.current_babies.length == 0
         next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(task.upcase)       
-        
+
+        #check if task has already been done depending on scopes
+        scope = @task.task_scopes[task][:scope].upcase rescue nil
+        scope = "TODAY" if scope.blank?
+        encounter_name = @label_encounter_map[task.upcase]rescue nil
+        concept = @task.task_scopes[task][:concept].upcase rescue nil
+
+        @task_status_map[task] = done(scope, encounter_name, concept)
    
       	@links[task.titleize] = "#/{ctrller}/#{task.gsub(/\s/, "_")}?patient_id=#{
       	@patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
-          "&baby=1&baby_total=#{(@patient.current_babies.length rescue 0)}" : "")       
+            "&baby=1&baby_total=#{(@patient.current_babies.length rescue 0)}" : "")
 
       else
-
-        @links[task[0].titleize] = {}
-       
+        
+        @links[task[0].titleize] = {}      
+        
         task[1].each{|t|
         
         	if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")        
-       			 ctrller = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{t.downcase.gsub(/\s/, "_")}"] rescue ""          
+            ctrller = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{t.downcase.gsub(/\s/, "_")}"] rescue ""
      			end
      			
      			    		
           next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(t.upcase)
+          
+          #check if task has already been done depending on scopes
+          scope = @task.task_scopes[t][:scope].upcase rescue nil
+          scope = "TODAY" if scope.blank?
+          encounter_name = @label_encounter_map[t.upcase]rescue nil
+          concept = @task.task_scopes[t][:concept].upcase rescue nil
+          
+          @task_status_map[t] = done(scope, encounter_name, concept)
+        
           @links[task[0].titleize][t.titleize] = "/#{ctrller}/#{t.gsub(/\s/, "_").downcase}?patient_id=#{
           @patient.id}&user_id=#{params[:user_id]}"
         }
@@ -69,7 +102,7 @@ class PatientsController < ApplicationController
     @links.delete_if{|key, link|
       @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
     }
- 
+
     @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
     
     @project = get_global_property_value("project.name") rescue "Unknown"
@@ -83,6 +116,45 @@ class PatientsController < ApplicationController
     @task.next_task
 
     @babies = @patient.current_babies rescue []
+
+  end
+
+  def done(scope = "", encounter_name = "", concept = "", type="mother")
+
+    patient_ids = [@task.patient.id]
+    patient_ids += Relationship.find_all_by_person_a_and_relationship(@task.patient.id,
+      RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child")).collect{|rel| rel.person_b}
+
+    
+    scope = "" if concept.blank?
+    available = []
+
+    case scope
+    when "TODAY"
+      available = Encounter.find(:all, :joins => [:observations], :conditions =>
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) = ?",
+          patient_ids, EncounterType.find_by_name(encounter_name).id , ConceptName.find_by_name(concept).concept_id, @task.current_date.to_date]) rescue []
+
+    when "RECENT"
+      available = Encounter.find(:all, :joins => [:observations], :conditions =>
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? " +
+            "AND (DATE(encounter_datetime) >= ? AND DATE(encounter_datetime) <= ?)",
+          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id,
+          (@task.current_date.to_date - 6.month), (@task.current_date.to_date + 6.month)]) rescue []
+
+    when "EXISTS"
+      available = Encounter.find(:all, :joins => [:observations], :conditions =>
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ?",
+          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id]) rescue []
+
+    when ""
+      available = Encounter.find(:all, :conditions =>
+          ["patient_id IN (?) AND encounter_type = ? AND DATE(encounter_datetime) = ?",
+          patient_ids, EncounterType.find_by_name(encounter_name).id , @task.current_date.to_date]) rescue []
+    end
+
+    available = available.blank?? "notdone" : "done"
+    available
 
   end
 
