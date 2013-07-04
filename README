@@ -1,17 +1,53 @@
-Instructions for Running Application 
+#
+#
+#
+#
+#This application depends on running instances of "Patient Registration(PR)" and "User Management(UM)" modules
+#
+#Refer to README in each of these applications for setup instructions 
+#
+#Suppose PR has been set and is running on https://192.168.67.2:3005 and UM on https://192.168.67.2:3004
+#the following instructions must be followed to set up this application
+####################################################################################
 
-1. With external User Management and Patient Registration Modules.
+WARNING: DO NOT rename the cloned application folder name as some features may malfunction
 
- Run the application as is normally done
- 
- 2. With Internal User Management and Patient Registration Modules
- 
- 		a. Merge parent application routes with routes in user management and patient registration modules
- 		b. Merge parent application library files in /lib with library files in user management and patient registration modules
- 		c. Make sure that the line 
- 			 	config.reload_plugins = true
- 			 Is available in file config/environment.rb
- 		The application link can as well be used as link for user management and patient registration by other applications
+A. WHEN DATABASE DOES NOT EXIST
+	1. Database configuration
 
- Ideally, all applications to use one database
- 		
+      a. Edit the file database.yml.example in config folder by specifying the right parameters for database name, password and mysql user
+      b. Edit the sql file create_dde_server_connection.sql putting the right IP where DDE Server is running
+
+  
+     These files will be copied with .yml extension during application initialization
+  
+      c. Navigate to application folder and initialize application database by running the command
+  		   script/initial_database_setup.sh production SITE_NAME
+  		
+     NB: Replace SITE_NAME with your site name
+  
+    2. Application configuration
+    
+ 	  a. Edit the application.yml.example file in config with proper parameters
+       
+        - user.management.url should point to IP where UM is running, https://192.168.67.2:3004 in our case
+ 	 	- patient.registration.url should point to url where PR is running i.e, https://192.168.67.2:3005
+ 	 	- facility.name should point to the name of the facility where the application is to be deployed
+ 	 	etc
+ 	 	
+##################################################################################### 	 
+
+B. WHEN A DATABASE ALREADY EXISTS
+
+   NB: This section assumes that another application has already iniatialized the database to be used i.e databases will be shared.
+   	   Running steps in section A. will delete the database and recreate another one.
+  
+   	a. Edit the file database.yml.example in config folder by specifying the right parameters for database name, password, and mysql user
+  	b. Edit application.yml.example in config with proper parameters as well
+   
+  
+C. Run the application with 
+   
+   
+   
+   
