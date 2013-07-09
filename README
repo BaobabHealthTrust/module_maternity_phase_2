@@ -6,7 +6,7 @@
 #
 #Refer to README in each of these applications for setup instructions 
 #
-#Suppose PR has been set and is running on https://192.168.67.2:3005 and UM on https://192.168.67.2:3004
+#Suppose PR has been set and is running on http://192.168.67.2:3005 and UM on http://192.168.67.2:3004
 #the following instructions must be followed to set up this application
 ####################################################################################
 
@@ -30,8 +30,8 @@ A. WHEN DATABASE DOES NOT EXIST
     
  	  a. Edit the application.yml.example file in config with proper parameters
        
-        - user.management.url should point to IP where UM is running, https://192.168.67.2:3004 in our case
- 	 	- patient.registration.url should point to url where PR is running i.e, https://192.168.67.2:3005
+        - user.management.url should point to IP where UM is running, http://192.168.67.2:3004 in our case
+ 	 	- patient.registration.url should point to url where PR is running i.e, http://192.168.67.2:3005
  	 	- facility.name should point to the name of the facility where the application is to be deployed
  	 	etc
  	 	
@@ -46,7 +46,8 @@ B. WHEN A DATABASE ALREADY EXISTS
   	b. Edit application.yml.example in config with proper parameters as well
    
   
-C. Run the application with 
+C. Run the application with nginx
+ (Check in redmine under "knowledge base" on how to set up nginx)
    
    
    
