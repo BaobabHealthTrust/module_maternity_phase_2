@@ -193,15 +193,17 @@ class Patient < ActiveRecord::Base
 
   def hiv_status
     
-    @hiv_concepts = ["MOTHER HIV STATUS", "HIV STATUS", "DNA-PCR Testing Result", "Rapid Antibody Testing Result", "Alive On ART"].collect{
+    @hiv_concepts = ["MOTHER HIV STATUS", "Previous HIV Test Status From Before Current Facility Visit", "HIV STATUS", "DNA-PCR Testing Result", "Rapid Antibody Testing Result", "Alive On ART"].collect{
       |concept| ConceptName.find_by_name(concept).concept_id rescue nil}.compact rescue []
 
     status = self.encounters.collect { |e|
       e.observations.find(:last, :conditions => ["concept_id IN (?)",
           @hiv_concepts]).answer_string rescue nil
-    }.compact.flatten.first.strip rescue nil
+    }.compact.flatten.last.strip rescue ""
 
     status = "unknown" if status.blank?
+    status = "positive" if ["reactive"].include?(status.downcase)
+    status = "negative" if ["non reactive", "non-reactive less than 3 months"].include?(status.downcase)
     status
   end
 

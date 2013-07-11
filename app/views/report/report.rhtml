@@ -1,0 +1,1249 @@
+<html>
+  <head>
+    <title>Report</title>   
+
+    <link href="/stylesheets/dashboard.css" media="screen" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" language="javascript">
+      <!--
+      tt_cancel_destination = '/report/report_limits';
+      tt_show = '/clinic';
+      //-->  
+    </script>
+    <style media="print">
+      button {
+        display: none;
+      }
+      #main {
+        height: 100%;
+      }
+    </style>
+    <style>
+      #Unknown {display: none;}
+      #num {display: none;}
+      #main {
+        height: 440px;
+      }
+
+      a:link {
+        margin: 40%;
+        color: #000;
+        text-decoration: none;
+      }
+
+
+      a:hover {
+        color: orange !important;
+        text-decoration: underline;
+      }
+
+      a:visited {
+        color: #000;
+        text-decoration: none;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div style="background-color: #fff; height: 95%; width: 99%; padding: 5px;">
+      <table style="width: 100%; border: 1px solid #999; -moz-user-select: none;">
+        <tr>
+          <th style="font-size: 1.8em; color: #eee; background-color: #999; padding: 10px;">
+            M<span style="font-size: 0.8em">ATERNITY</span> C<span style="font-size: 0.8em">LINIC</span> -
+            F<span style="font-size: 0.8em">ACILITY</span> C<span style="font-size: 0.8em">USTOM</span>
+            R<span style="font-size: 0.8em">EPORT</span>
+          </th>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #999;">
+            <table width="100%" cellspacing="0" cellpadding="5">
+              <tr>
+                <td style="width: 25%;">
+                  MATERNITY Site Name
+                </td>
+                <td align="middle" colspan="3" style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; font-style: italic;">
+                    <%= @facility %>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 25%;">
+                  Reporting Year
+                </td>
+                <td style="border-left: 1px solid #999; border-bottom: 1px solid #999;
+                    font-style: italic;">
+                  <%= @year.blank?? Date.today.year : @year %>&nbsp;
+                </td>
+                <td style="width: 25%; border-left: 1px solid #999; border-bottom: 1px solid #999;" align="right">
+                  Reporting Month
+                </td>
+                <td style="border-left: 1px solid #999; border-bottom: 1px solid #999;
+                    font-style: italic;">
+                  &nbsp;&nbsp;<%= @month.blank?? Date.today.strftime("%B") : @month%>&nbsp;&nbsp;(<i style="font-size: 0.8em;">FROM:&nbsp;<%= @startdate%> TO:&nbsp; <%= @enddate %></i>)
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  Was any client served at this site during this month?
+                  <span style="font-size: 0.8em">
+                    If no, still submit this report
+                  </span>
+                </td>
+                <td style="width: 25%; border-left: 1px solid #999; ">
+                  <table width="100%">
+                    <tr>
+                      <td align="center" style="font-style: italic;">
+                        No
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+            </table>
+
+          </td>
+        </tr>
+        <tr>
+          <td style="overflow: auto;  border-bottom: 1px solid #999; vertical-align: top;">
+            <div id="main" style="width: 98%;  overflow: auto; padding: 10px;">
+              <table style="width: 100%;" border="0">
+                <tr>
+                  <td style="width: 33%;" valign="top">
+                    <table cellpadding="8" style="width: 90%; margin-top: 0px;" cellspacing="0">
+
+
+                      <tr>
+                        <td>
+                          &nbsp;
+                        </td>
+                        <td colspan="2" style="font-weight: bold;">
+                          HIV Test Status
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          1
+                          </tdcellpadding="">
+                        <td style="border-top: 1px solid #999; border-left: 1px solid #999;">
+
+                          Previous Negative
+                        </td>
+                        <td style="border: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
+                            <%= @hiv_status_map["P_NEGATIVE"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          2
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+                          Previous Positive
+
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
+                            <%= @hiv_status_map["P_POSITIVE"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          3
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+                          New negative
+
+                        </td>
+                        <td  style="border-left: 1px solid #999;
+                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["N_NEGATIVE"].join(',')%>">
+                            <%= @hiv_status_map["N_NEGATIVE"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          4
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+
+                          New Positive
+
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
+                            <%= @hiv_status_map["N_POSITIVE"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          5
+                        </td>
+                        <td style="border-left: 1px solid #999; border-bottom: 1px solid #999;">
+
+                          Not Done
+
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
+                            <%= @hiv_status_map["N_DONE"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          &nbsp;
+                        </td>
+                        <td style="font-style:italic;">
+                          Total Women
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["TOTAL"].join(',')%>">
+                            <%= @hiv_status_map["TOTAL"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          &nbsp;
+                        </td>
+                        <td style="font-style:italic;">
+                          Total HIV+ (2+4)
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["POSITIVE"].join(',')%>">
+                            <%= @hiv_status_map["POSITIVE"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          &nbsp;
+                        </td>
+                        <td colspan="2" style="font-weight: bold;">
+                          ART Mother &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span style="font-weight: normal"> out of total women</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          6
+                        </td>
+                        <td style="border-top: 1px solid #999; border-left: 1px solid #999;">
+
+                          Not on ART (<i style="font-size: 0.8em;">incl. <span style="font-size: 1em;">HIV-</span></i>)
+
+                        </td>
+                        <td style="border: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  (@art_mother["NO_ART"] + @hiv_status_map["NEGATIVE"]).uniq.join(',')%>">
+                            <%= (@art_mother["NO_ART"] + @hiv_status_map["NEGATIVE"]).uniq.length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+
+                        <td>
+                          7
+                        </td>
+                        <td style="border-left: 1px solid #999; ">
+
+                          Start Before Pregnancy
+
+                        </td>
+                        <td style="border-bottom: 1px solid #999;
+                            border-left: 1px solid #999; border-right: 1px solid #999;;">
+                          <a href="/reports/decompose?patients=<%=  @art_mother["START_B4_PREG"].join(',')%>">
+                            <%= @art_mother["START_B4_PREG"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+
+                        <td>
+                          8
+                        </td>
+                        <td style=" border-left: 1px solid #999;">
+
+                          Start In 1<sup>st</sup> Or 2<sup>nd</sup> Trimester
+
+                        </td>
+                        <td style="border-bottom: 1px solid #999;
+                            border-left: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @art_mother["T1_OR_T2"].join(',')%>">
+                            <%= @art_mother["T1_OR_T2"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+
+                        <td>
+                          9
+                        </td>
+                        <td style=" border-left: 1px solid #999;">
+
+                          Start In 3<sup>rd</sup> Trimester
+
+                        </td>
+                        <td style="border-bottom: 1px solid #999;
+                            border-left: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @art_mother["T3"].join(',')%>">
+                            <%= @art_mother["T3"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+
+                        <td>
+                          10
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999;">
+
+                          Start During Labour
+
+                        </td>
+                        <td style="border-bottom: 1px solid #999;
+                            border-left: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @art_mother["DURING_LABOUR"].join(',')%>">
+                            <%= @art_mother["DURING_LABOUR"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>                      
+
+                      <tr>
+                        <td>
+                          &nbsp;
+                        </td>
+                        <td colspan="2" style="font-weight: bold;">
+                          Obstetric Complications
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          11
+                        </td>
+                        <td style="border-left: 1px solid #999; border-top: 1px solid #999; ">
+
+                          None
+
+                        </td>
+                        <td style="border-left: 1px solid #999; border-top: 1px solid #999;
+                            border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @complications["NONE"].join(',')%>">
+                            <%= @complications["NONE"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          12
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+                          Ante Partum. Haem.
+
+                        </td>
+                        <td style="border-left: 1px solid #999; border-top: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @complications["APH"].join(',')%>">
+                            <%= @complications["APH"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          13
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+                          Post Partum Haem.
+
+                        </td>
+                        <td style="border-left: 1px solid #999; 
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @complications["PPH"].join(',')%>">
+                            <%= @complications["PPH"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          14
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+                          Obstr.Prol. Labour
+
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @complications["PRO_LABOUR"].join(',')%>">
+                            <%= @complications["PRO_LABOUR"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          15
+                        </td>
+                        <td style="border-left: 1px solid #999; ">
+
+                          (Pre) Eclampsia
+
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @complications["PRE_ECLAMPSIA"].join(',')%>">
+                            <%= @complications["PRE_ECLAMPSIA"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          16
+                        </td>
+                        <td style="border-left: 1px solid #999; ">
+
+                          Sepsis
+
+                        </td>
+                        <td style="border-left: 1px solid #999; 
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @complications["SEPSIS"].join(',')%>">
+                            <%= @complications["SEPSIS"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+
+                      <tr>
+                        <td>
+                          17
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+                          Ruptured Uterus
+
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @complications["RUPTURED_UTERUS"].join(',')%>">
+                            <%= @complications["RUPTURED_UTERUS"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          18
+                        </td>
+                        <td style="border-left: 1px solid #999; border-bottom: 1px solid #999; ">
+
+                          Others
+
+                        </td>
+                        <td style="border-left: 1px solid #999;
+                            border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @complications["OTHER"].join(',')%>">
+                            <%= @complications["OTHER"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          &nbsp;
+                        </td>
+                        <td colspan="2" style="font-weight: bold;">
+                          Emergency Obstetric Care
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          19
+                        </td>
+                        <td style=" border-top: 1px solid #999; border-left: 1px solid #999;">
+
+                          Oxytocin
+
+                        </td>
+                        <td style="border: 1px solid #999; width: 30%;">
+
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          20
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+                          Anticonvulsive
+
+                        </td>
+                        <td style="border-bottom: 1px solid #999;
+                            border-left: 1px solid #999; border-right: 1px solid #999;">
+
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          21
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+                          Antibiotics
+
+                        </td>
+                        <td style="border-bottom: 1px solid #999;
+                            border-left: 1px solid #999; border-right: 1px solid #999;">
+
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          22
+                        </td>
+                        <td style="border-left: 1px solid #999;">
+
+                          Blood Transfusion
+
+                        </td>
+                        <td style="border-bottom: 1px solid #999;
+                            border-left: 1px solid #999; border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @obst_complications["BLOOD_TRANSFUSION"].join(',')%>">
+                            <%= @obst_complications["BLOOD_TRANSFUSION"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          23
+                        </td>
+                        <td style="border-bottom: 1px solid #999; solid #999; border-left: 1px solid #999;">
+
+                          Manual Rem. Placenta
+
+                        </td>
+                        <td style="border-bottom: 1px solid #999;
+                            border-left: 1px solid #999; border-right: 1px solid #999; width: 30%;">
+                          <a href="/reports/decompose?patients=<%=  @obst_complications["PLACENTA_REMOVED"].join(',')%>">
+                            <%= @obst_complications["PLACENTA_REMOVED"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          &nbsp;
+                        </td>
+                        <td colspan="2" style="font-weight: bold;">
+                          Vitamin A Given <sup style="font-weight: normal;">1</sup>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+
+                        </td>
+                        <td style="border-top: 1px solid #999; border-left: 1px solid #999;">
+
+                          <span style="color:gray;">Vit A Not Given</span>
+
+                        </td>
+                        <td style="border-top: 1px solid #999; border-left: 1px solid #999;
+                            border-right: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @vitaminA_given["NO"].join(',')%>">
+                            <%= @vitaminA_given["NO"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          24
+                        </td>
+                        <td style="border-left: 1px solid #999;border-bottom: 1px solid #999;">
+
+                          Received Vit A
+
+                        </td>
+                        <td style="border-bottom: 1px solid #999; border-right: 1px solid #999; border-left: 1px solid #999; border-top: 1px solid #999;">
+                          <a href="/reports/decompose?patients=<%=  @vitaminA_given["YES"].join(',')%>">
+                            <%= @vitaminA_given["YES"].length rescue 0%>
+                          </a>
+                        </td>
+                      </tr>                      
+
+                </tr>
+              </table>
+          </td>
+          <td style="width: 36%;" valign="top">
+            <table cellpadding="8" style="width: 90%; float: right; margin-top: 0px;" cellspacing="0">
+              <tr>
+                <td style="width: 10px;">
+                  &nbsp;
+                </td>
+                <td colspan="2" style="font-weight: bold;">
+                  Staff Conducting Delivery
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  25
+                </td>
+                <td style="border-top: 1px solid #999;
+                    border-left: 1px solid #999; width: 60%;">
+
+                  MD/CO/MA/Nurse/MW
+
+                </td>
+                <td class="data" style="border: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @delivery_staff["MD"].join(',')%>">
+                    <%= @delivery_staff["MD"].length %>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  26
+                </td>
+                <td style="border-left: 1px solid #999; width: 60%;">
+
+                  PA/WA/HSA
+
+                </td>
+                <td class="data" style="border-bottom: 1px solid #999;
+                    border-left: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @delivery_staff["PA"].join(',')%>">
+                    <%= @delivery_staff["PA"].length %>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  27
+                </td>
+                <td style="border-bottom: 1px solid #999;
+                    border-left: 1px solid #999; width: 60%;">
+
+                  Other
+
+                </td>
+                <td class="data" style="border-bottom: 1px solid #999;
+                    border-left: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @delivery_staff["MD"].join(',')%>">
+                    <%= @delivery_staff["OTHER"].length %>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="width: 10px;">
+                  &nbsp;
+                </td>
+                <td colspan="2" style="font-weight: bold;">
+                  Referred Out
+                </td>
+              </tr>
+              <tr>
+                <td>
+
+                </td>
+                <td style="border-top: 1px solid #999;
+                    border-left: 1px solid #999; width: 60%;">
+
+                  <span style="color:gray">No</span>
+
+                </td>
+                <td style="border: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @referred["NO"].join(',')%>">
+                    <%=  @referred["NO"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  28
+                </td>
+                <td style="border-bottom: 1px solid #999;
+                    border-left: 1px solid #999; width: 60%;">
+
+                  Referred Out
+
+                </td>
+                <td style="border-bottom: 1px solid #999;
+                    border-left: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @referred["YES"].join(',')%>">
+                    <%=  @referred["YES"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 10px;">
+                  &nbsp;
+                </td>
+                <td colspan="2" style="font-weight: bold;">
+                  Mother Alive / Died
+                </td>
+              </tr>
+              <tr>
+                <td>
+
+                </td>
+                <td style="border-top: 1px solid #999; border-left: 1px solid #999; width: 60%;">
+
+                  <span style="color:gray">Mother Alive</span>
+
+                </td>
+                <td style="border: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @mother_outcome["ALIVE"].join(',')%>">
+                    <%=  @mother_outcome["ALIVE"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  29
+                </td>
+                <td style="border-left: 1px solid #999;border-bottom: 1px solid #999;">
+
+                  Maternal Deaths
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @mother_outcome["DEAD"].join(',')%>">
+                    <%=  @mother_outcome["DEAD"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  &nbsp;
+                </td>
+                <td colspan="2" style="font-weight: bold;">
+                  Twins <i style="font-weight: normal; font-size: 0.9em;">  &nbsp&nbspALL <span style="font-size: 0.8em;">still-and live-born babies</span></i>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  30
+                </td>
+                <td style="border-top: 1px solid #999; border-left: 1px solid #999; width: 60%;">
+
+                  Singletons
+
+                </td>
+                <td style="border: 1px solid #999;">
+
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  31
+                </td>
+                <td style="border-left: 1px solid #999;border-bottom: 1px solid #999;">
+
+                  Twins/Triplets
+
+                </td>
+                <td style="border-left: 1px solid #999; border-bottom: 1px solid #999; border-right: 1px solid #999;">
+
+                </td>
+              </tr>           
+
+              <tr>
+                <td>
+                  &nbsp;
+                </td>
+                <td colspan="2" style="font-weight: bold;">
+                  Delivery Place
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  32
+                </td>
+                <td style=" border-top: 1px solid #999;
+                    border-left: 1px solid #999; width: 60%;">
+
+                  This Facility
+
+                </td>
+                <td  style="border-top: 1px solid #999; border-left: 1px solid #999;border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @delivery_place["HERE"].join(',')%>">
+                    <%=  @delivery_place["HERE"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  33
+                </td>
+                <td style="border-left: 1px solid #999; width: 60%;">
+
+                  In Transit(BBA)
+
+                </td>
+                <td style="border: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @delivery_place["IN_TRANSIT"].join(',')%>">
+                    <%=  @delivery_place["IN_TRANSIT"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  34
+                </td>
+                <td style="border-left: 1px solid #999; width: 60%;">
+
+                  Other Facility
+
+                </td>
+                <td style="border-left: 1px solid #999;border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @delivery_place["OTHER_FACILITY"].join(',')%>">
+                    <%=  @delivery_place["OTHER_FACILITY"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  35
+                </td>
+                <td style="border-bottom: 1px solid #999;
+                    border-left: 1px solid #999; width: 60%;">
+
+                  Home / TBA
+
+                </td>
+                <td style="border: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @delivery_place["HOME/TBA"].join(',')%>">
+                    <%=  @delivery_place["HOME/TBA"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  &nbsp;
+                </td>
+                <td colspan="2" style="font-weight: bold;">
+                  Delivery Mode
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  36
+                </td>
+                <td style="border-top: 1px solid #999;
+                    border-left: 1px solid #999; width: 60%;">
+
+                  Spontaneous Vaginal
+
+                </td>
+                <td style="border: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @delivery_mode["SPONTANEOUS"].join(',')%>">
+                    <%=  @delivery_mode["SPONTANEOUS"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  37
+                </td>
+                <td style="border-left: 1px solid #999; width: 60%;">
+
+                  Vacuum Extraction
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999">
+                  <a href="/reports/decompose?patients=<%=  @delivery_mode["VACUUM"].join(',')%>">
+                    <%=  @delivery_mode["VACUUM"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  38
+                </td>
+                <td style="border-left: 1px solid #999; width: 60%;">
+
+                  Breech
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999">
+                  <a href="/reports/decompose?patients=<%=  @delivery_mode["BREECH"].join(',')%>">
+                    <%=  @delivery_mode["BREECH"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  39
+                </td>
+                <td style="border-bottom: 1px solid #999; border-left: 1px solid #999; width: 60%;">
+
+                  Caesarean Section
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999">
+                  <a href="/reports/decompose?patients=<%=  @delivery_mode["CAESAREAN"].join(',')%>">
+                    <%=  @delivery_mode["CAESAREAN"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  &nbsp;
+                </td>
+                <td colspan="2" style="font-weight: bold; padding-top: 12px;">
+                  Newborn Complications
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  40
+                </td>
+                <td style="border-top: 1px solid #999; border-left: 1px solid #999; width: 60%;">
+
+                  None
+
+                </td>
+                <td style="border: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @newborn_complications["NONE"].join(',')%>">
+                    <%=  @newborn_complications["NONE"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  41
+                </td>
+                <td style="border-left: 1px solid #999;">
+
+                  Weight Less 2500g
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @newborn_complications["W2500"].join(',')%>">
+                    <%=  @newborn_complications["W2500"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  42
+                </td>
+                <td style="border-left: 1px solid #999;">
+
+                  Prematurity
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @newborn_complications["PREMATURITY"].join(',')%>">
+                    <%=  @newborn_complications["PREMATURITY"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  43
+                </td>
+                <td style="border-left: 1px solid #999;">
+
+                  Asphyxia
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @newborn_complications["ASPHYXIA"].join(',')%>">
+                    <%=  @newborn_complications["ASPHYXIA"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  44
+                </td>
+                <td style="border-left: 1px solid #999;">
+
+                  Sepsis
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @newborn_complications["SEPSIS"].join(',')%>">
+                    <%=  @newborn_complications["SEPSIS"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  45
+                </td>
+                <td style="border-left: 1px solid #999; border-bottom: 1px solid #999;">
+                  Other
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @newborn_complications["OTHER"].join(',')%>">
+                    <%=  @newborn_complications["OTHER"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td style="width: 30%;" valign="top">
+            <table cellpadding="8" style="width: 90%; float: right; margin-top: 5px;" cellspacing="0">
+
+              <tr>
+                <td>
+                  &nbsp;
+                </td>
+                <td colspan="2" style="font-weight: bold; padding-top: 12px;">
+                  Newborn Survival/PMTCT
+                </td>
+              </tr>
+              <tr>
+                <td align="right">
+                  46
+                </td>
+                <td style="border-top: 1px solid #999; border-left: 1px solid #999; width: 60%;">
+
+                  Alive, Not HIV Exposed
+
+                </td>
+                <td style="border: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["NO_EXP"].join(',')%>">
+                    <%=  @pmtct_survival["NO_EXP"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td align="right">
+                  47
+                </td>
+                <td style="border-left: 1px solid #999;">
+
+                  Alive, Exposed, No NVP
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["EXP_NONVP"].join(',')%>">
+                    <%=  @pmtct_survival["EXP_NONVP"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td align="right">
+                  48
+                </td>
+                <td style="border-left: 1px solid #999;">
+
+                  Alive, Exp., NVP Started
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["EXP_NVP"].join(',')%>">
+                    <%=  @pmtct_survival["EXP_NVP"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td align="right">
+                  49
+                </td>
+                <td style="border-left: 1px solid #999;">
+
+                  Alive, Unknown Exp
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["UNKNOWN_EXP"].join(',')%>">
+                    <%=  @pmtct_survival["UNKNOWN_EXP"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+
+              <tr>
+                <td align="right">
+                  50
+                </td>
+                <td style="border-left: 1px solid #999;">
+
+                  Stillbirth, Fresh
+
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["FRESH"].join(',')%>">
+                    <%=  @pmtct_survival["FRESH"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td align="right">
+                  51
+                </td>
+                <td style="border-left: 1px solid #999;">
+
+                  Stillbirth, Macerated
+
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["MACERATED"].join(',')%>">
+                    <%=  @pmtct_survival["MACERATED"].length rescue 0%>
+                  </a>
+                </td>
+              <tr>
+                <td align="right">
+                  52
+                </td>
+                <td style="border-left: 1px solid #999; border-bottom: 1px solid #999;">
+                  Neonatal death
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;width: 30%;">
+                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["NEONATAL"].join(',')%>">
+                    <%=  @pmtct_survival["NEONATAL"].length rescue 0%>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" style="font-weight: bold;">
+                  Report filled
+                </td>
+              </tr>
+              <tr>
+                <td style="border-top: 1px solid #999; border-left: 1px solid #999;">
+                  Date
+                </td>
+                <td style="border: 1px solid #999; width: 70%;">
+                  &nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td style="border-left: 1px solid #999;">
+                  Name
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  &nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td style="border-left: 1px solid #999; border-bottom: 1px solid #999;">
+                  Phone
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  &nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" style="font-weight: bold; height: 530px;" valign="top">
+                  Notes
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" style="font-weight: bold;">
+                  Report Received
+                </td>
+              </tr>
+              <tr>
+                <td style="border-top: 1px solid #999; border-left: 1px solid #999;">
+                  Date
+                </td>
+                <td style="border: 1px solid #999;">
+                  &nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td style="border-left: 1px solid #999;">
+                  Name
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  &nbsp;
+                </td>
+              </tr>
+
+              <tr>
+                <td style="border-left: 1px solid #999; border-bottom: 1px solid #999;">
+                  Phone
+                </td>
+                <td style="border-left: 1px solid #999;
+                    border-bottom: 1px solid #999; border-right: 1px solid #999;">
+                  &nbsp;
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </td>
+</tr>
+<tr>
+
+</tr>
+</table>
+</div>
+<div id="footer" style="position: absolute; bottom: 2px; width: 100%;">
+  <div id="nav">
+    <button class="green" style="float: right; margin: 2px;" onclick="window.location = tt_show">
+      <span>
+        Finish
+      </span>
+    </button>
+    <button class="red" style="float: left; margin-top: 10px;" onclick="window.location = tt_cancel_destination">
+      <span>
+        Cancel
+      </span>
+    </button>
+  </div>
+</div>
+</body>
+</html>

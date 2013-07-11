@@ -3,7 +3,7 @@ class EncountersController < ApplicationController
  	unloadable  
 
   def create
- 
+
     if (params["concept"]["Baby identifier"])
 
       my_baby = PatientIdentifier.find_all_by_identifier_and_identifier_type(params["concept"]["Baby identifier"],
