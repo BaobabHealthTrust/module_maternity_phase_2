@@ -42,11 +42,14 @@ class ReportController < ApplicationController
     @pmtct_survival = report.pmtct_survival
 
     @twins = report.twins
-    
+
+    @any_client_served = report.clients_served?
+  
+    render :layout => false
   end
 
   def decompose
-    # raise params.to_yaml
+    
     @facility = get_global_property_value("facility.name")
 
     @patients = []
@@ -55,8 +58,6 @@ class ReportController < ApplicationController
       new_women = params[:patients].split(",")
       @patients = Patient.find(:all, :conditions => ["patient_id IN (?)", new_women])
     end
-
-    # raise @patients.length.to_yaml
 
     render :layout => false
   end

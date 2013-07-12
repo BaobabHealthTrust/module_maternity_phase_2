@@ -254,5 +254,9 @@ class Report
 
     result
   end
+
+  def clients_served?
+    @program_encounters.present?
+  end
   
 end

@@ -2,7 +2,7 @@
   <head>
     <title>Report</title>   
 
-    <link href="/stylesheets/dashboard.css" media="screen" rel="stylesheet" type="text/css" />
+    <script language="javascript" type="text/javascript" src="/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
     <script type="text/javascript" language="javascript">
       <!--
       tt_cancel_destination = '/report/report_limits';
@@ -14,20 +14,23 @@
         display: none;
       }
       #main {
-        height: 100%;
+        height: 100%;        
       }
     </style>
     <style>
       #Unknown {display: none;}
       #num {display: none;}
       #main {
-        height: 440px;
+        height: 500px;
+        overflow: auto;
+
       }
 
       a:link {
-        margin: 40%;
-        color: #000;
         text-decoration: none;
+        padding-left: 40%;
+        padding-right: 40%;
+        color: #000;      
       }
 
 
@@ -45,7 +48,7 @@
   </head>
   <body>
 
-    <div style="background-color: #fff; height: 95%; width: 99%; padding: 5px;">
+    <div style="background-color: #fff; height: 89%; width: 99%; padding: 5px;">
       <table style="width: 100%; border: 1px solid #999; -moz-user-select: none;">
         <tr>
           <th style="font-size: 1.8em; color: #eee; background-color: #999; padding: 10px;">
@@ -93,7 +96,7 @@
                   <table width="100%">
                     <tr>
                       <td align="center" style="font-style: italic;">
-                        No
+                        <%= @any_client_served? "YES" : "NO" %>
                       </td>
                     </tr>
                   </table>
@@ -103,8 +106,8 @@
           </td>
         </tr>
         <tr>
-          <td style="overflow: auto;  border-bottom: 1px solid #999; vertical-align: top;">
-            <div id="main" style="width: 98%;  overflow: auto; padding: 10px;">
+          <td style="border-bottom: 1px solid #999; vertical-align: top; height: 90%;overflow:auto;">
+            <div id="main" style="width: 98%; padding: 10px;">
               <table style="width: 100%;" border="0">
                 <tr>
                   <td style="width: 33%;" valign="top">
@@ -128,7 +131,7 @@
                           Previous Negative
                         </td>
                         <td style="border: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
                             <%= @hiv_status_map["P_NEGATIVE"].length rescue 0%>
                           </a>
                         </td>
@@ -144,7 +147,7 @@
                         </td>
                         <td style="border-left: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
                             <%= @hiv_status_map["P_POSITIVE"].length rescue 0%>
                           </a>
                         </td>
@@ -160,7 +163,7 @@
                         </td>
                         <td  style="border-left: 1px solid #999;
                              border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["N_NEGATIVE"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @hiv_status_map["N_NEGATIVE"].join(',')%>">
                             <%= @hiv_status_map["N_NEGATIVE"].length rescue 0%>
                           </a>
                         </td>
@@ -177,7 +180,7 @@
                         </td>
                         <td style="border-left: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
                             <%= @hiv_status_map["N_POSITIVE"].length rescue 0%>
                           </a>
                         </td>
@@ -193,7 +196,7 @@
                         </td>
                         <td style="border-left: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @hiv_status_map["P_NEGATIVE"].join(',')%>">
                             <%= @hiv_status_map["N_DONE"].length rescue 0%>
                           </a>
                         </td>
@@ -207,7 +210,7 @@
                         </td>
                         <td style="border-left: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["TOTAL"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @hiv_status_map["TOTAL"].join(',')%>">
                             <%= @hiv_status_map["TOTAL"].length rescue 0%>
                           </a>
                         </td>
@@ -221,7 +224,7 @@
                         </td>
                         <td style="border-left: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @hiv_status_map["POSITIVE"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @hiv_status_map["POSITIVE"].join(',')%>">
                             <%= @hiv_status_map["POSITIVE"].length rescue 0%>
                           </a>
                         </td>
@@ -244,7 +247,7 @@
 
                         </td>
                         <td style="border: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  (@art_mother["NO_ART"] + @hiv_status_map["NEGATIVE"]).uniq.join(',')%>">
+                          <a href="/report/decompose?patients=<%=  (@art_mother["NO_ART"] + @hiv_status_map["NEGATIVE"]).uniq.join(',')%>">
                             <%= (@art_mother["NO_ART"] + @hiv_status_map["NEGATIVE"]).uniq.length rescue 0%>
                           </a>
                         </td>
@@ -261,7 +264,7 @@
                         </td>
                         <td style="border-bottom: 1px solid #999;
                             border-left: 1px solid #999; border-right: 1px solid #999;;">
-                          <a href="/reports/decompose?patients=<%=  @art_mother["START_B4_PREG"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @art_mother["START_B4_PREG"].join(',')%>">
                             <%= @art_mother["START_B4_PREG"].length rescue 0%>
                           </a>
                         </td>
@@ -279,7 +282,7 @@
                         </td>
                         <td style="border-bottom: 1px solid #999;
                             border-left: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @art_mother["T1_OR_T2"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @art_mother["T1_OR_T2"].join(',')%>">
                             <%= @art_mother["T1_OR_T2"].length rescue 0%>
                           </a>
                         </td>
@@ -297,7 +300,7 @@
                         </td>
                         <td style="border-bottom: 1px solid #999;
                             border-left: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @art_mother["T3"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @art_mother["T3"].join(',')%>">
                             <%= @art_mother["T3"].length rescue 0%>
                           </a>
                         </td>
@@ -316,7 +319,7 @@
                         </td>
                         <td style="border-bottom: 1px solid #999;
                             border-left: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @art_mother["DURING_LABOUR"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @art_mother["DURING_LABOUR"].join(',')%>">
                             <%= @art_mother["DURING_LABOUR"].length rescue 0%>
                           </a>
                         </td>
@@ -341,7 +344,7 @@
                         </td>
                         <td style="border-left: 1px solid #999; border-top: 1px solid #999;
                             border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @complications["NONE"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @complications["NONE"].join(',')%>">
                             <%= @complications["NONE"].length rescue 0%>
                           </a>
                         </td>
@@ -358,7 +361,7 @@
                         </td>
                         <td style="border-left: 1px solid #999; border-top: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @complications["APH"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @complications["APH"].join(',')%>">
                             <%= @complications["APH"].length rescue 0%>
                           </a>
                         </td>
@@ -375,7 +378,7 @@
                         </td>
                         <td style="border-left: 1px solid #999; 
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @complications["PPH"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @complications["PPH"].join(',')%>">
                             <%= @complications["PPH"].length rescue 0%>
                           </a>
                         </td>
@@ -392,7 +395,7 @@
                         </td>
                         <td style="border-left: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @complications["PRO_LABOUR"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @complications["PRO_LABOUR"].join(',')%>">
                             <%= @complications["PRO_LABOUR"].length rescue 0%>
                           </a>
                         </td>
@@ -409,7 +412,7 @@
                         </td>
                         <td style="border-left: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @complications["PRE_ECLAMPSIA"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @complications["PRE_ECLAMPSIA"].join(',')%>">
                             <%= @complications["PRE_ECLAMPSIA"].length rescue 0%>
                           </a>
                         </td>
@@ -426,7 +429,7 @@
                         </td>
                         <td style="border-left: 1px solid #999; 
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @complications["SEPSIS"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @complications["SEPSIS"].join(',')%>">
                             <%= @complications["SEPSIS"].length rescue 0%>
                           </a>
                         </td>
@@ -444,7 +447,7 @@
                         </td>
                         <td style="border-left: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @complications["RUPTURED_UTERUS"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @complications["RUPTURED_UTERUS"].join(',')%>">
                             <%= @complications["RUPTURED_UTERUS"].length rescue 0%>
                           </a>
                         </td>
@@ -461,7 +464,7 @@
                         </td>
                         <td style="border-left: 1px solid #999;
                             border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @complications["OTHER"].join(',')%>">
+                          <a href="/report/decompose?patients=<%=  @complications["OTHER"].join(',')%>">
                             <%= @complications["OTHER"].length rescue 0%>
                           </a>
                         </td>
@@ -485,7 +488,7 @@
 
                         </td>
                         <td style="border: 1px solid #999; width: 30%;">
-
+                          &nbsp;
                         </td>
                       </tr>
 
@@ -500,7 +503,7 @@
                         </td>
                         <td style="border-bottom: 1px solid #999;
                             border-left: 1px solid #999; border-right: 1px solid #999;">
-
+                          &nbsp;
                         </td>
                       </tr>
 
@@ -515,7 +518,7 @@
                         </td>
                         <td style="border-bottom: 1px solid #999;
                             border-left: 1px solid #999; border-right: 1px solid #999;">
-
+                          &nbsp;
                         </td>
                       </tr>
 
@@ -530,8 +533,8 @@
                         </td>
                         <td style="border-bottom: 1px solid #999;
                             border-left: 1px solid #999; border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @obst_complications["BLOOD_TRANSFUSION"].join(',')%>">
-                            <%= @obst_complications["BLOOD_TRANSFUSION"].length rescue 0%>
+                          <a href="/report/decompose?patients=<%=  @obst_complications["BLOOD_TRANSFUSION"].join(',')%>">
+                            <%= @obst_complications["BLOOD_TRANSFUSION"].length rescue 0%>&nbsp;
                           </a>
                         </td>
                       </tr>
@@ -547,8 +550,8 @@
                         </td>
                         <td style="border-bottom: 1px solid #999;
                             border-left: 1px solid #999; border-right: 1px solid #999; width: 30%;">
-                          <a href="/reports/decompose?patients=<%=  @obst_complications["PLACENTA_REMOVED"].join(',')%>">
-                            <%= @obst_complications["PLACENTA_REMOVED"].length rescue 0%>
+                          <a href="/report/decompose?patients=<%=  @obst_complications["PLACENTA_REMOVED"].join(',')%>">
+                            <%= @obst_complications["PLACENTA_REMOVED"].length rescue 0%>&nbsp;
                           </a>
                         </td>
                       </tr>
@@ -572,8 +575,8 @@
                         </td>
                         <td style="border-top: 1px solid #999; border-left: 1px solid #999;
                             border-right: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @vitaminA_given["NO"].join(',')%>">
-                            <%= @vitaminA_given["NO"].length rescue 0%>
+                          <a href="/report/decompose?patients=<%=  @vitaminA_given["NO"].join(',')%>">
+                            <%= @vitaminA_given["NO"].length rescue 0%>&nbsp;
                           </a>
                         </td>
                       </tr>
@@ -587,11 +590,22 @@
 
                         </td>
                         <td style="border-bottom: 1px solid #999; border-right: 1px solid #999; border-left: 1px solid #999; border-top: 1px solid #999;">
-                          <a href="/reports/decompose?patients=<%=  @vitaminA_given["YES"].join(',')%>">
-                            <%= @vitaminA_given["YES"].length rescue 0%>
+                          <a href="/report/decompose?patients=<%=  @vitaminA_given["YES"].join(',')%>">
+                            <%= @vitaminA_given["YES"].length rescue 0%>&nbsp;
                           </a>
                         </td>
-                      </tr>                      
+                      </tr>
+                      <tr>
+                        <td>
+                          &nbsp;
+                        </td>
+                        <td>
+                          &nbsp;
+                        </td>
+                        <td>
+                          &nbsp;
+                        </td>
+                      </tr>            
 
                 </tr>
               </table>
@@ -617,8 +631,8 @@
 
                 </td>
                 <td class="data" style="border: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @delivery_staff["MD"].join(',')%>">
-                    <%= @delivery_staff["MD"].length %>
+                  <a href="/report/decompose?patients=<%=  @delivery_staff["MD"].join(',')%>">
+                    <%= @delivery_staff["MD"].length %>&nbsp;
                   </a>
                 </td>
               </tr>
@@ -633,8 +647,8 @@
                 </td>
                 <td class="data" style="border-bottom: 1px solid #999;
                     border-left: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @delivery_staff["PA"].join(',')%>">
-                    <%= @delivery_staff["PA"].length %>
+                  <a href="/report/decompose?patients=<%=  @delivery_staff["PA"].join(',')%>">
+                    <%= @delivery_staff["PA"].length %>&nbsp;
                   </a>
                 </td>
               </tr>
@@ -651,8 +665,8 @@
                 </td>
                 <td class="data" style="border-bottom: 1px solid #999;
                     border-left: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @delivery_staff["MD"].join(',')%>">
-                    <%= @delivery_staff["OTHER"].length %>
+                  <a href="/report/decompose?patients=<%=  @delivery_staff["MD"].join(',')%>">
+                    <%= @delivery_staff["OTHER"].length %>&nbsp;
                   </a>
                 </td>
               </tr>
@@ -676,8 +690,8 @@
 
                 </td>
                 <td style="border: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @referred["NO"].join(',')%>">
-                    <%=  @referred["NO"].length rescue 0%>
+                  <a href="/report/decompose?patients=<%=  @referred["NO"].join(',')%>">
+                    <%=  @referred["NO"].length rescue 0%>&nbsp;
                   </a>
                 </td>
               </tr>
@@ -693,8 +707,8 @@
                 </td>
                 <td style="border-bottom: 1px solid #999;
                     border-left: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @referred["YES"].join(',')%>">
-                    <%=  @referred["YES"].length rescue 0%>
+                  <a href="/report/decompose?patients=<%=  @referred["YES"].join(',')%>">
+                    <%=  @referred["YES"].length rescue 0%>&nbsp;
                   </a>
                 </td>
               </tr>
@@ -716,8 +730,8 @@
 
                 </td>
                 <td style="border: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @mother_outcome["ALIVE"].join(',')%>">
-                    <%=  @mother_outcome["ALIVE"].length rescue 0%>
+                  <a href="/report/decompose?patients=<%=  @mother_outcome["ALIVE"].join(',')%>">
+                    <%=  @mother_outcome["ALIVE"].length rescue 0%>&nbsp;
                   </a>
                 </td>
               </tr>
@@ -732,8 +746,8 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @mother_outcome["DEAD"].join(',')%>">
-                    <%=  @mother_outcome["DEAD"].length rescue 0%>
+                  <a href="/report/decompose?patients=<%=  @mother_outcome["DEAD"].join(',')%>">
+                    <%=  @mother_outcome["DEAD"].length rescue 0%>&nbsp;
                   </a>
                 </td>
               </tr>
@@ -756,7 +770,9 @@
 
                 </td>
                 <td style="border: 1px solid #999;">
-
+                  <a href="/report/decompose?patients=<%=  @twins["NO"].join(',')%>">
+                    <%=  @twins["NO"].length rescue 0%>
+                  </a>
                 </td>
               </tr>
               <tr>
@@ -769,7 +785,9 @@
 
                 </td>
                 <td style="border-left: 1px solid #999; border-bottom: 1px solid #999; border-right: 1px solid #999;">
-
+                  <a href="/report/decompose?patients=<%=  @twins["YES"].join(',')%>">
+                    <%=  @twins["YES"].length rescue 0%>
+                  </a>
                 </td>
               </tr>           
 
@@ -792,7 +810,7 @@
 
                 </td>
                 <td  style="border-top: 1px solid #999; border-left: 1px solid #999;border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @delivery_place["HERE"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @delivery_place["HERE"].join(',')%>">
                     <%=  @delivery_place["HERE"].length rescue 0%>
                   </a>
                 </td>
@@ -807,7 +825,7 @@
 
                 </td>
                 <td style="border: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @delivery_place["IN_TRANSIT"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @delivery_place["IN_TRANSIT"].join(',')%>">
                     <%=  @delivery_place["IN_TRANSIT"].length rescue 0%>
                   </a>
                 </td>
@@ -823,7 +841,7 @@
 
                 </td>
                 <td style="border-left: 1px solid #999;border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @delivery_place["OTHER_FACILITY"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @delivery_place["OTHER_FACILITY"].join(',')%>">
                     <%=  @delivery_place["OTHER_FACILITY"].length rescue 0%>
                   </a>
                 </td>
@@ -840,7 +858,7 @@
 
                 </td>
                 <td style="border: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @delivery_place["HOME/TBA"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @delivery_place["HOME/TBA"].join(',')%>">
                     <%=  @delivery_place["HOME/TBA"].length rescue 0%>
                   </a>
                 </td>
@@ -865,7 +883,7 @@
 
                 </td>
                 <td style="border: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @delivery_mode["SPONTANEOUS"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @delivery_mode["SPONTANEOUS"].join(',')%>">
                     <%=  @delivery_mode["SPONTANEOUS"].length rescue 0%>
                   </a>
                 </td>
@@ -882,7 +900,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999">
-                  <a href="/reports/decompose?patients=<%=  @delivery_mode["VACUUM"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @delivery_mode["VACUUM"].join(',')%>">
                     <%=  @delivery_mode["VACUUM"].length rescue 0%>
                   </a>
                 </td>
@@ -899,7 +917,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999">
-                  <a href="/reports/decompose?patients=<%=  @delivery_mode["BREECH"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @delivery_mode["BREECH"].join(',')%>">
                     <%=  @delivery_mode["BREECH"].length rescue 0%>
                   </a>
                 </td>
@@ -916,7 +934,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999">
-                  <a href="/reports/decompose?patients=<%=  @delivery_mode["CAESAREAN"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @delivery_mode["CAESAREAN"].join(',')%>">
                     <%=  @delivery_mode["CAESAREAN"].length rescue 0%>
                   </a>
                 </td>
@@ -940,7 +958,7 @@
 
                 </td>
                 <td style="border: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @newborn_complications["NONE"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @newborn_complications["NONE"].join(',')%>">
                     <%=  @newborn_complications["NONE"].length rescue 0%>
                   </a>
                 </td>
@@ -956,7 +974,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @newborn_complications["W2500"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @newborn_complications["W2500"].join(',')%>">
                     <%=  @newborn_complications["W2500"].length rescue 0%>
                   </a>
                 </td>
@@ -972,7 +990,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @newborn_complications["PREMATURITY"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @newborn_complications["PREMATURITY"].join(',')%>">
                     <%=  @newborn_complications["PREMATURITY"].length rescue 0%>
                   </a>
                 </td>
@@ -989,7 +1007,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @newborn_complications["ASPHYXIA"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @newborn_complications["ASPHYXIA"].join(',')%>">
                     <%=  @newborn_complications["ASPHYXIA"].length rescue 0%>
                   </a>
                 </td>
@@ -1006,7 +1024,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @newborn_complications["SEPSIS"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @newborn_complications["SEPSIS"].join(',')%>">
                     <%=  @newborn_complications["SEPSIS"].length rescue 0%>
                   </a>
                 </td>
@@ -1021,7 +1039,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @newborn_complications["OTHER"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @newborn_complications["OTHER"].join(',')%>">
                     <%=  @newborn_complications["OTHER"].length rescue 0%>
                   </a>
                 </td>
@@ -1049,7 +1067,7 @@
 
                 </td>
                 <td style="border: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["NO_EXP"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @pmtct_survival["NO_EXP"].join(',')%>">
                     <%=  @pmtct_survival["NO_EXP"].length rescue 0%>
                   </a>
                 </td>
@@ -1065,7 +1083,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["EXP_NONVP"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @pmtct_survival["EXP_NONVP"].join(',')%>">
                     <%=  @pmtct_survival["EXP_NONVP"].length rescue 0%>
                   </a>
                 </td>
@@ -1081,7 +1099,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["EXP_NVP"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @pmtct_survival["EXP_NVP"].join(',')%>">
                     <%=  @pmtct_survival["EXP_NVP"].length rescue 0%>
                   </a>
                 </td>
@@ -1098,7 +1116,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["UNKNOWN_EXP"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @pmtct_survival["UNKNOWN_EXP"].join(',')%>">
                     <%=  @pmtct_survival["UNKNOWN_EXP"].length rescue 0%>
                   </a>
                 </td>
@@ -1116,7 +1134,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["FRESH"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @pmtct_survival["FRESH"].join(',')%>">
                     <%=  @pmtct_survival["FRESH"].length rescue 0%>
                   </a>
                 </td>
@@ -1132,7 +1150,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;">
-                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["MACERATED"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @pmtct_survival["MACERATED"].join(',')%>">
                     <%=  @pmtct_survival["MACERATED"].length rescue 0%>
                   </a>
                 </td>
@@ -1145,7 +1163,7 @@
                 </td>
                 <td style="border-left: 1px solid #999;
                     border-bottom: 1px solid #999; border-right: 1px solid #999;width: 30%;">
-                  <a href="/reports/decompose?patients=<%=  @pmtct_survival["NEONATAL"].join(',')%>">
+                  <a href="/report/decompose?patients=<%=  @pmtct_survival["NEONATAL"].join(',')%>">
                     <%=  @pmtct_survival["NEONATAL"].length rescue 0%>
                   </a>
                 </td>
@@ -1230,20 +1248,17 @@
 
 </tr>
 </table>
+
+<%@user_id = session[:user]["user_id"]%>
+
 </div>
-<div id="footer" style="position: absolute; bottom: 2px; width: 100%;">
-  <div id="nav">
-    <button class="green" style="float: right; margin: 2px;" onclick="window.location = tt_show">
-      <span>
-        Finish
-      </span>
-    </button>
-    <button class="red" style="float: left; margin-top: 10px;" onclick="window.location = tt_cancel_destination">
-      <span>
-        Cancel
-      </span>
-    </button>
-  </div>
+<div id="nav" style="position: absolute;bottom: 0%; width:100%; height: 11%; background: #333333;">
+  <button class="green" style="float: right; margin-right: 20px; margin-top: 9px; width: 150px;" onclick="window.location='/clinic?user_id=<%= @user_id %>'">
+    <span>
+      Finish
+    </span>
+  </button>
+
 </div>
 </body>
 </html>
