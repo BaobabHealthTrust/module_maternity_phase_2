@@ -163,7 +163,7 @@
                   <table>
 
                     <% i = 0
-                       unknown_babies = 0
+                    unknown_babies = 0
                     @children.each do |baby|
                       i += 1
                     %>
@@ -174,12 +174,12 @@
                         </td>
                         <td>
                           <% name = Patient.find(baby.person_b).name  rescue nil
-                          
+
                           unknown_babies += 1 if name.blank?
-                          
+
                           name = "unknown baby_#{unknown_babies}" if name.blank?
-                          
-                       
+
+
                           @demographics_url = get_global_property_value("patient.registration.url") rescue nil
 
                           if !@demographics_url.nil?
@@ -187,11 +187,12 @@
                           end
 
                         %>
-                          <button style="min-width: 300px;" onclick="window.parent.location='<%= @demographics_url%>'">
+                          <div style="min-width: 300px; text-align: left; width: 40%; font-size: 1.8em; margin-left: 20%;
+                               color: #527197; padding: 10px; vertical-align: middle;">
                             <span>
                               <%= name%>
                             </span>
-                          </button>
+                          </div>
                         </td>
                         <td>
                           &nbsp;

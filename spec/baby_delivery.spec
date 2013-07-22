@@ -1,4 +1,4 @@
-P.1. Baby delivery [program: MATERNITY PROGRAM,  includejs: apgar, includecss: apgar, label: Baby Delivery, pos: 6, parent: 2]
+P.1. Baby delivery [program: MATERNITY PROGRAM,  includejs: apgar, includecss: apgar, scope: RECENT, concept: Time of Delivery, label: Baby Delivery, pos: 6, parent: 2]
 C.1.1. Given a mother that has delivered, for each selected baby
 
 Q.1.1.1. Scan baby barcode (Optional) [pos: 0, optional: true, concept: Baby identifier, tt_onLoad: __$("keyboard").style.display = "none"; checkBarcodeInput();]
@@ -36,5 +36,9 @@ O.1.1.11.3. Prematurity
 O.1.1.11.4. Asphyxia
 O.1.1.11.5. Sepsis
 O.1.1.11.6. Other
+
+Q.1.1.12. Status of Baby [pos: 10, name: concept[Status of Baby], field_type: text, concept: Status of Baby]
+O.1.1.12.1. No Cry
+O.1.1.12.2. Cried
 
 

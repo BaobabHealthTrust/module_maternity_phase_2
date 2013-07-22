@@ -1,0 +1,208 @@
+<script type='text/javascript' src='/touchscreentoolkit/lib/javascripts/vitals.js' ></script>
+
+<script type='text/javascript' language='javascript'>
+<!--
+	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
+	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
+	</script>
+
+<form method='post' action='/encounters/create'>
+	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='encounter_type' value='Observations ' />
+	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
+	<input type='hidden' name='user_id' value='<%= session[:user_id] %>' />
+	<table>
+		<tr>
+			<td>
+				Gravida 
+			</td>
+			<td>
+<input type='text' id='1.1.1'  name='concept[GRAVIDA]' helpText='Gravida '  tt_onUnLoad='count = 1'  Max='15'  absoluteMin='1'  tt_pageStyleClass='NumbersOnly'  pos='0'  field_type='number' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Multiple Gestation 
+			</td>
+			<td>
+<select id='1.1.2' name='concept[MULTIPLE GESTATION]' helpText='Multiple Gestation ' pos='1'  condition='__$("1.1.1").value.trim().toUpperCase() > 1'  field_type='text' >
+<option></option>
+<option value='Yes'>Yes</option>
+ <option value='No'>No</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Number of Deliveries 
+			</td>
+			<td>
+<input type='text' id='1.1.3'  name='concept[PARITY]' helpText='Number of Deliveries '  tt_onLoad='if (__$("1.1.2").value.trim().toLowerCase()=="no"){__$("touchscreenInput" + tstCurrentPage).attribute("1.1.1*AbsoluteMax*" +  (__$("1.1.1").value - 1))}'  tt_onUnLoad='if (__$("1.1.2").value.trim().toLowerCase()=="no"){__$("1.1.3").attribute("1.1.4*validationRule*[" + (parseInt(__$("1.1.1").value) - parseInt(__$("1.1.3").value) -1) ); __$("1.1.3").attribute("1.1.4*validationMessage*Expected value is " + (parseInt(__$("1.1.1").value) - parseInt(__$("1.1.3").value) -1))}'  Max='15'  absoluteMin='0'  tt_pageStyleClass='NumbersOnly'  pos='2'  condition='__$("1.1.1").value > 1'  field_type='number' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Number of Abortions 
+			</td>
+			<td>
+<input type='text' id='1.1.4'  name='concept[NUMBER OF ABORTIONS]' helpText='Number of Abortions '  Max='5;  num_babies = __$("1.1.3").value;'  absoluteMin='0'  tt_pageStyleClass='NumbersOnly'  pos='3'  condition='__$("1.1.1").value > 1'  field_type='number' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 1<sup>st</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.5'  helpText='Delivery Mode 1<sup>st</sup> Pregnancy ' tt_onLoad='count = count + 1;'  pos='4'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 2<sup>nd</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.6'  helpText='Delivery Mode 2<sup>nd</sup> Pregnancy ' tt_onLoad='count = count + 1'  pos='5'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 3<sup>rd</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.8'  helpText='Delivery Mode 3<sup>rd</sup> Pregnancy ' tt_onLoad='count = count + 1'  pos='6'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 4<sup>th</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.9'  helpText='Delivery Mode 4<sup>th</sup> Pregnancy ' tt_onLoad='count = count + 1'  pos='7'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 5<sup>th</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.10'  helpText='Delivery Mode 5<sup>th</sup> Pregnancy ' tt_onLoad='count = count + 1'  pos='8'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 6<sup>th</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.11'  helpText='Delivery Mode 6<sup>th</sup> Pregnancy ' tt_onLoad='count = count + 1'  pos='9'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 7<sup>th</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.12'  helpText='Delivery Mode 7<sup>th</sup> Pregnancy ' tt_onLoad='count = count + 1'  pos='10'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 8<sup>th</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.13'  helpText='Delivery Mode 8<sup>th</sup> Pregnancy ' tt_onLoad='count = count + 1'  pos='11'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 9<sup>th</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.14'  helpText='Delivery Mode 9<sup>th</sup> Pregnancy ' tt_onLoad='count = count + 1'  pos='12'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Delivery Mode 10<sup>th</sup> Pregnancy 
+			</td>
+			<td>
+<select id='1.1.15'  helpText='Delivery Mode 10<sup>th</sup> Pregnancy ' tt_onLoad='count = count + 1'  pos='13'  condition='__$("1.1.3").value >= count'  field_type='text'  name='concept[Delivery Mode]' >
+<option></option>
+<option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
+ <option value='Caesarean Section'>Caesarean Section</option>
+ <option value='Vacuum extraction delivery'>Vacuum extraction delivery</option>
+ <option value='Breech delivery'>Breech delivery</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				TT Status 
+			</td>
+			<td>
+<input type='text' id='1.1.16'  name='concept[TT STATUS]' helpText='TT Status '  absoluteMin='0'  tt_pageStyleClass='NumbersOnly'  max='5'  pos='14'  field_type='number' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Last Menstrual Period 
+			</td>
+			<td>
+<input type='text' id='1.1.17'  name='concept[LAST MENSTRUAL PERIOD]' helpText='Last Menstrual Period '  tt_onLoad='calculateEDOD("1.1.17")'  tt_onUnLoad='window.clearInterval(timedEvent)'  pos='15'  field_type='date' />
+			</td>
+		</tr>
+	</table>
+</form>

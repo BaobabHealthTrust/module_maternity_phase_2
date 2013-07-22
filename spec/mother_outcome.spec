@@ -1,4 +1,4 @@
-P.1. Update outcome [program: MATERNITY PROGRAM, label: Update Outcome Mum, parent: 1, pos: 7]
+P.1. Update outcome [program: MATERNITY PROGRAM, label: Update Outcome Mum, parent: 5, pos: 7]
 C.1. After the mother has delivered, update the outcome of the delivery
 Q.1.1. Complications [pos: 0]
 O.1.1.1. None

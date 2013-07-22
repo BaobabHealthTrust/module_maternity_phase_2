@@ -255,7 +255,7 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
     <form id = 'dashboard' action='home.html'>
       <div>Patient Dashboard</div>
       <div id='project_name'>
-        <div style="margin-top: 30px; color: #6281A7; font-size: 0.5em;">
+        <div style="margin-top: 15px; color: #6281A7; font-size: 0.8em;">
           <%= @project.split(" ").join(" ") %>
         </div>
       </div>
@@ -304,9 +304,9 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
       </select>
 
       <select id="navigation_links">
-
+        <% id = params[:patient_id].blank?? params[:id] : params[:patient_id] %>
         <% if !@demographics_url.nil? %>
-          <option link="<%= @demographics_url %>" ttSize = "160px">
+          <option link="/patients/general_demographics/<%= id %>?patient_id=<%= id %>user_id=<%=params[:user_id]%>" ttSize = "160px">
             Demographics
           </option>
         <% end %>

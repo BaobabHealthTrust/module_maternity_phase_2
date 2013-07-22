@@ -1,4 +1,4 @@
-P.1. Admit patient [program: MATERNITY PROGRAM, parent: 1]
+P.1. Admit patient [program: MATERNITY PROGRAM, parent: 5, scope: TODAY, concept: Previous HIV Test Status From Before Current Facility Visit]
 C.1. Given a pregnant mother that has come for delivery, the following details are required at the time of admission.
 Q.1.1. Gravida [pos: 0, field_type: number, tt_pageStyleClass: NumbersOnly, absoluteMin: 1, max: 10, absoluteMax: 20]
 

@@ -29,4 +29,8 @@ class Person < ActiveRecord::Base
     # We are going to rely on patient => encounter => obs to void those
   end
 
+  def name
+    "#{self.names.first.given_name} #{self.names.first.family_name}"
+  end
+
 end
