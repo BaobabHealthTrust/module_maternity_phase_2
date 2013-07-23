@@ -227,10 +227,11 @@ class Patient < ActiveRecord::Base
         (session_date.to_date).strftime("%Y-%m-%d")]).collect{|e|
 
       e.encounter.observations.collect{|o|
-        o.name.strip.downcase if o.concept.concept_names.first.name.downcase == "delivery mode"
-      } if e.encounter.type.name.downcase == "baby delivery"
+        o.name.strip.downcase if o.concept.concept_names.first.name.downcase == "procedure done"
+      } if e.encounter.type.name.downcase == "update outcome"
 
     }.flatten.delete_if{|x| x.blank?}
+    
   end
 
   def wards_hash
@@ -269,6 +270,17 @@ class Patient < ActiveRecord::Base
 
     }.delete_if{|id| id.blank?}.compact.join("|")
     
+  end
+
+  def recent_babies(session_date = Date.today)
+    Relationship.find(:all, :conditions => ["voided = 0 AND date_created > ? AND person_a = ? AND relationship = ?",
+        (session_date - 1.months), self.patient_id, RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id]).length
+  end
+
+  def recent_delivery_count(session_date = Date.today)
+    ob = Observation.find(:first, :order => ["date_created DESC"], :conditions => ["voided = 0 AND concept_id = ? AND obs_datetime > ?",
+        ConceptName.find_by_name("NUMBER OF BABIES").concept_id, (session_date - 1.month)]).answer_string.strip.to_i
+    ob 
   end
 
 end

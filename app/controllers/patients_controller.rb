@@ -56,7 +56,7 @@ class PatientsController < ApplicationController
      		end
 
         next if task.downcase == "update baby outcome" and @patient.current_babies.length == 0
-        #next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(task.upcase)
+        next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(task.upcase)
 
         #check if task has already been done depending on scopes
         scope = @task.task_scopes[task][:scope].upcase rescue nil
@@ -81,7 +81,7 @@ class PatientsController < ApplicationController
      			end
      			
      			    		
-          # next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(t.upcase)
+          next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(t.upcase)
           
           #check if task has already been done depending on scopes
           
@@ -99,7 +99,7 @@ class PatientsController < ApplicationController
       end
 
     }
-    
+    #@links = {} if (Location.find(session[:location_id]).name.match(/Registration/i) rescue false)
     @links.delete_if{|key, link|
       @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
     }
@@ -149,8 +149,8 @@ class PatientsController < ApplicationController
 
     when ""
       #available = Encounter.find(:all, :conditions =>
-        #  ["patient_id IN (?) AND encounter_type = ? AND DATE(encounter_datetime) = ?",
-        #  patient_ids, EncounterType.find_by_name(encounter_name).id , @task.current_date.to_date]) rescue []
+      #  ["patient_id IN (?) AND encounter_type = ? AND DATE(encounter_datetime) = ?",
+      #  patient_ids, EncounterType.find_by_name(encounter_name).id , @task.current_date.to_date]) rescue []
     end
 
     available = available.blank?? "notdone" : "done"
@@ -257,6 +257,7 @@ class PatientsController < ApplicationController
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
 
     @children = Relationship.find(:all, :conditions => ["person_a = ? AND relationship = ? AND voided = 0", @patient.id, RelationshipType.find_by_a_is_to_b("Parent").id])
+    @children.delete_if{|p| Person.find(p.person_b).dead == 1 }
     
     render :layout => false
   end

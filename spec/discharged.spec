@@ -13,4 +13,4 @@ Q.1.1.5. Select Next Discharge Diagnosis [name: concept[Diagnosis][], concept: D
 
 Q.1.1.6. Number of babies [pos: 4, concept: NUMBER OF BABIES, tt_pageStyleClass: NumbersOnly, field_type: number, absoluteMin: 1, max: 5, absoluteMax: 10,  tt_onUnLoad: __$("1.1.7").value = __$("1.1.7").value + __$("touchscreenInput" + tstCurrentPage).value]
 
-Q.1.1.7. Next URL [pos: 5, name: next_url, type: hidden, value: /protocol_patients/delivery_mode?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=1&baby_total=]
+Q.1.1.7. Next URL [pos: 5, name: next_url, type: hidden, value: /two_protocol_patients/delivery_mode?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=1&baby_total=]

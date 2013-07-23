@@ -1,4 +1,4 @@
-P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, label: Physical Exam, pos: 8, parent: 4]
+P.1. Observations [program: MATERNITY PROGRAM, label: Physical Exam, pos: 8, parent: 4]
 C.1.1. Given a registered patient, capture their Physical Examination
 
 Q.1.1.1. Fundus(weeks) [concept: FUNDUS, field_type: number, pos: 0, tt_pageStyleClass: NumbersOnly na]

@@ -480,23 +480,6 @@ if params[:user_id].nil?
 
 	end
 
-	def current_delivery_baby
-
-	@patient = Patient.find(params[:patient_id]) rescue nil
-
-	redirect_to '/encounters/no_patient' and return if @patient.nil?
-
-if params[:user_id].nil?
-	redirect_to '/encounters/no_user' and return
-	end
-
-	@user = User.find(params[:user_id]) rescue nil?
-
-	redirect_to '/encounters/no_patient' and return if @user.nil?
-	
-
-	end
-
 	def ante_natal_exams
 
 	@patient = Patient.find(params[:patient_id]) rescue nil

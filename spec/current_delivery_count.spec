@@ -1,4 +1,4 @@
-P.1. Current bba delivery [program: MATERNITY PROGRAM, scope: TODAY, label: Current Delivery, parent: 3]
+P.1. Current bba delivery [program: MATERNITY PROGRAM, label: Current Delivery, parent: 3]
 C.1.1. Given a registered patient, capture baby delivery details
 
 Q.1.1.1. Place of Delivery  [pos: 0, concept: Place of Delivery, field_type: text]

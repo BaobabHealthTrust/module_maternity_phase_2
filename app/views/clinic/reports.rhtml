@@ -28,7 +28,6 @@
     border-width: 1px;
     overflow: hidden;
   }
-
   .btn {
     min-height: 50px;
     min-width: 280px;
@@ -61,23 +60,49 @@
 </style>
 
 <div style="width: 100%; text-align: center;">
-  <table id="stats" style="margin-bottom: 8px;" cellpadding="5">
+  <table id="stats" style="margin-bottom: 8px;" cellpadding="0">
     <tr style="color: #fff; background-color: #6281a7;">
-      <th colspan="3" style="padding: 10px;">
+      <th colspan="3" style="padding: 13px;">
         View Reports
       </th>
     </tr>
 
     <tr>
-   
-      <td style="height: 100px;">
-        <button class="btn" onclick="window.parent.location='/report/report_limits?user_id=<%= session[:user]["user_id"] rescue params["user_id"]%>&location_id=<%= session[:location_id] || params[:location_id] %>&type=monthly_report'">
+
+      <td style="height: 70px;">
+        <button class="btn" onclick="window.parent.location='/report/report_limits?reportType=0&user_id=<%= session[:user]["user_id"] rescue params["user_id"]%>&location_id=<%= session[:location_id] || params[:location_id] %>&type=monthly_report'">
           <span>
             Maternity Monthly Report
           </span>
         </button>
       </td>
-    </tr>    
+    </tr>
+    <tr>
+      <td style="height: 70px;">
+        <button class="btn" onclick="window.parent.location='/cohort_report/report_limits?reportType=1&user_id=<%=  session[:user]["user_id"] rescue params["user_id"]%>&location=<%params[:location]%>'">
+          <span>
+            End Of Shift Report
+          </span>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td style="height: 70px;">
+        <button class="btn" onclick="window.parent.location='/cohort_report/report_limits?reportType=2&user_id=<%=  session[:user]["user_id"] rescue params["user_id"]%>&location=<%params[:location]%>'">
+          <span>
+            Diagnoses Report
+          </span>
+        </button>
+      </td
+    </tr>
+    <tr>
+      <td style="height: 70px;">
+        <button class="btn" onclick="window.parent.location='/report/report_limits?reportType=3user_id=<%= session[:user]["user_id"] rescue params["user_id"]%>&location_id=<%= session[:location_id] || params[:location_id] %>&type=monthly_report'">
+          <span>
+            Babies Matrix
+          </span>
+        </button>
+    </tr>
 
   </table>
 </div>

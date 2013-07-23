@@ -4,6 +4,11 @@ class EncountersController < ApplicationController
 
   def create
 
+    #watch for terminal conditions
+    if params["proc_check"] && (params["concept"]["Procedure Done"].blank? || params["concept"]["Procedure Done"].downcase == "none")
+      redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}" and return
+    end
+    
     if (params["concept"]["Baby identifier"])
 
       my_baby = PatientIdentifier.find_all_by_identifier_and_identifier_type(params["concept"]["Baby identifier"],
@@ -30,13 +35,11 @@ class EncountersController < ApplicationController
         params[:person_id] = my_baby.first.patient.patient_id
       end
       
-    end
-
-   
+    end   
     
     patient = Patient.find(params[:person_id]) rescue nil if params[:person_id]    
     patient = Patient.find(params[:patient_id]) rescue nil if patient.blank?
-    
+        
     if params[:encounter_type].downcase.squish == "kangaroo review visit"
 
       admitted_in_kangaroo = Patient.find(params[:patient_id]).wards_hash.split("|").collect{|p|
@@ -85,7 +88,11 @@ class EncountersController < ApplicationController
       mother_address = PersonAddress.find_by_person_id(params[:patient_id]) rescue nil
 
       export_mother_addresss(params[:patient_id], patient.patient_id) rescue nil if !mother_address.blank? && params[:patient_id] != patient.patient_id #if baby successfully created
-        
+      
+      if !params["concept"]["BABY OUTCOME"].match(/Alive/i)
+        patient.person.update_attributes(:dead => true) if (!my_baby.first.blank? rescue false)
+      end
+      
     end
    
     if !patient.blank?
@@ -106,7 +113,7 @@ class EncountersController < ApplicationController
 
           @program = Program.find_by_concept_id(ConceptName.find_by_name(params[:program]).concept_id) rescue nil
 
-          if !@program.nil?
+          if !@program.blank?
 
             @program_encounter = ProgramEncounter.find_by_program_id(@program.id,
               :conditions => ["patient_id = ? AND DATE(date_time) = ?",
@@ -339,15 +346,26 @@ class EncountersController < ApplicationController
         redirect_to "/encounters/missing_encounter_type?encounter_type=#{params[:encounter_type]}" and return
 
       end
-     
+
+      @user_id = session[:user]["user_id"] rescue params[:users_id]
+
+      #hack routes, next baby if count allows or mother details (next task)
+      redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{params[:patient_id]}&user_id=#{@user_id}" and return if
+      ((params[:patient_id] && all_recent_babies_entered?(Patient.find(params[:patient_id])) == true) rescue false)
+      
       @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id])
 
-      redirect_to params[:next_url] and return if !params[:next_url].nil?
-
+      redirect_to params[:next_url] and return if !params[:next_url].blank?
+      redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}" and return unless params[:auto_flow]
       redirect_to @task.next_task.url and return
 
     end
     
+  end
+
+  def all_recent_babies_entered?(patient)
+    
+    (patient.recent_babies < patient.recent_delivery_count) rescue false
   end
 
   def list_observations
@@ -416,16 +434,124 @@ class EncountersController < ApplicationController
 
   end
 
-  def diagnoses
+  def relation_type
+    search_string = params[:search_string]
+    relation = ["Mother",
+      "Husband",
+      "Sister",
+      "Friend",
+      "Aunt",
+      "Neighbour",
+      "Mother-in-law",
+      "Landlord/Landlady",
+      "Other"]
 
+    @relation = Observation.find(:all, :joins => [:concept, :encounter],
+      :conditions => ["obs.concept_id = ? AND NOT value_text IN (?) AND " +
+          "encounter_type = ?",
+        ConceptName.find_by_name("OTHER RELATIVE").concept_id, relation,
+        EncounterType.find_by_name("SOCIAL HISTORY").id]).collect{|o| o.value_text}
+
+    @relation = relation + @relation
+    @relation = @relation.collect{|rel| rel.gsub('-', ' ').gsub('_', ' ').squish.titleize}.uniq
+    @relation = @relation.collect{|rel| rel if rel.downcase.include?(search_string.downcase)}
+
+    render :text => "<li></li><li>" + @relation.join("</li><li>") + "</li>"
+
+  end
+  def religion
+    search_string = params[:search_string]
+    religions = ["Jehovahs Witness",
+      "Roman Catholic",
+      "Presbyterian (C.C.A.P.)",
+      "Seventh Day Adventist",
+      "Baptist",
+      "Moslem",
+      "Other"]
+
+    @religions = Observation.find(:all, :joins => [:concept, :encounter],
+      :conditions => ["obs.concept_id = ? AND NOT value_text IN (?) AND " +
+          "encounter_type = ?",
+        ConceptName.find_by_name("Other").concept_id, religions,
+        EncounterType.find_by_name("SOCIAL HISTORY").id]).collect{|o| o.value_text}
+
+    @religions = religions + @religions
+    @religions = @religions.collect{|rel| rel.gsub('-', ' ').gsub('_', ' ').squish.titleize}.uniq
+    @religions = @religions.collect{|rel| rel if rel.downcase.include?(search_string.downcase)}
+    render :text => "<li></li><li>" + @religions.join("</li><li>") + "</li>"
+  end
+  def diagnoses
+		search_string = (params[:search_string] || '').upcase
+		filter_list = params[:filter_list].split(/, */) rescue []
+		outpatient_diagnosis = ConceptName.find_by_name("DIAGNOSIS").concept
+
+		diagnosis_concept_set = ConceptName.find_by_name("MATERNITY DIAGNOSIS LIST").concept
+		diagnosis_concepts = Concept.find(:all, :joins => :concept_sets,
+      :conditions => ['concept_set = ?', diagnosis_concept_set.id])
+
+		valid_answers = diagnosis_concepts.map{|concept|
+			name = concept.fullname rescue nil
+			name.upcase.include?(search_string) ? name : nil rescue nil
+		}.compact
+		previous_answers = []
+		# TODO Need to check global property to find out if we want previous answers or not (right now we)
+		previous_answers = Observation.find_most_common(outpatient_diagnosis, search_string)
+		@suggested_answers = (previous_answers + valid_answers.sort!).reject{|answer| filter_list.include?(answer) }.uniq[0..10]
+		@suggested_answers = @suggested_answers - params[:search_filter].split(',') rescue @suggested_answers
+
+		render :text => "<li></li>" + "<li>" + @suggested_answers.join("</li><li>") + "</li>"
+	end
+
+	def current_baby_exam
+
+		children = Encounter.find(:all, :joins =>[:observations],
+      :conditions => ["person_id = ? AND encounter_type = ? AND encounter_datetime > ? AND concept_id = ? AND value_text = ?",
+        params[:patient_id], EncounterType.find_by_name("OUTCOME"), 9.months.ago.strftime("%Y-%m-%d"),
+        Concept.find_by_name("BABY OUTCOME"),
+        "ALIVE"
+      ]).length rescue 0
+		redirect to "/two_protocol_patients/current_baby_exam_baby?baby=#{params[:baby]}&patient_id=#{params[:patient_id]}&baby_total=#{children}"
+	end
+
+	def baby_delivery_mode
+    search_string = params[:search_string]
+    @options = Concept.find_by_name("BABY OUTCOME").concept_answers.collect{|c| c.name}
+    @options = @options.collect{|rel| rel if rel.downcase.include?(search_string.downcase)}
+    render :text => "<li></li><li>" + @options.join("</li><li>") + "</li>"
+ 	end
+	def presentation
+    search_string = params[:search_string]
+    @options = Concept.find_by_name("PRESENTATION").concept_answers.collect{|c| c.name}
+    @options = @options.collect{|rel| rel if rel.downcase.include?(search_string.downcase)}
+    render :text => "<li></li><li>" + @options.join("</li><li>") + "</li>"
+ 	end
+	def concept_set_options
+		search_string = params[:search_string]
+		set = params[:set].gsub("_", " ").strip.upcase
+    @options = Concept.find_by_name(set).concept_answers.collect{|c| c.name}
+    @options = @options.collect{|rel| rel if rel.downcase.include?(search_string.downcase)}
+   
+    @options.delete_if{|opt| !opt.blank? and opt.match(/Intrauterine death/i) and set.downcase == "baby outcome"}
+    render :text => "<li></li><li>" + @options.join("</li><li>") + "</li>"
+	end
+	def procedure_diagnoses
+
+    procedure = params[:procedure].upcase.gsub("_", " ")
+    procedure ="Exploratory laparatomy +/- adnexectomy".upcase  if params[:procedure] == "laparatomy"
+    procedure ="Evacuation/Manual Vacuum Aspiration".upcase  if params[:procedure] == "evacuation"
     search_string         = (params[:search_string] || '').upcase
 
-    diagnosis_concepts    = Concept.find_by_name("Qech outpatient diagnosis list").concept_members.collect{|c| c.concept.fullname}.sort.uniq rescue ["Unknown"]
+    diagnosis_concept_set = ConceptName.find_by_name(procedure).concept
+		diagnosis_concepts = Concept.find(:all, :joins => :concept_sets,
+      :conditions => ['concept_set = ?', diagnosis_concept_set.id])
+		valid_answers = diagnosis_concepts.map{|concept|
+			name = concept.fullname rescue nil
+			name.upcase.include?(search_string) ? name : nil rescue nil
+		}.compact
 
-    @results = diagnosis_concepts.collect{|e| e}.delete_if{|x| !x.upcase.match("#{search_string}")}
+    @results = valid_answers.collect{|e| e if e.downcase.include?(search_string.downcase)}
 
-    render :text => "<li>" + @results.join("</li><li>") + "</li>"
-
+    render :text => "<li></li>" + "<li>" + @results.join("</li><li>") + "</li>"
   end
 
   def export_mother_addresss(mother_id, baby_id)

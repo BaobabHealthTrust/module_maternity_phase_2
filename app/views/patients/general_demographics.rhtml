@@ -198,9 +198,10 @@
                   10=>"th"
                 }
 
-              %>
-                <% (1..(@maternity_patient.kids.length)).each do |baby| %>
-                  <% if baby == 1 %>
+               (1..(@maternity_patient.kids.length)).each do |baby|
+                  next if Person.find(@maternity_patient.kids[baby - 1].person_b).dead == 1
+
+                  if baby == 1 %>
                     <table style=" width: 97%;">
                       <tr>
                         <td>
