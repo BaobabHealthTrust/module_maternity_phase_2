@@ -225,7 +225,7 @@ if params[:user_id].nil?
 
 	end
 
-	def outcome
+	def update_outcome
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
