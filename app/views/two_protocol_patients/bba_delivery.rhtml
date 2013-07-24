@@ -19,7 +19,7 @@
 				Time of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.1'     pos='0'  helpText='Time of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Time of delivery]'  field_type='advancedTime' />
+<input type='text' id='1.1.1'     name='concept[Time of delivery]'  pos='0'  helpText='Time of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  field_type='advancedTime' />
 			</td>
 		</tr>
 		<tr>
@@ -27,7 +27,7 @@
 				Date of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.2'     pos='1'  helpText='Date of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Date of delivery]'  field_type='date'  tt_onLoad='__$("Unknown").style.display = "none"' />
+<input type='text' id='1.1.2'     name='concept[Date of delivery]'  pos='1'  helpText='Date of delivery <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  tt_onLoad='__$("Unknown").style.display = "none"'  field_type='date' />
 			</td>
 		</tr>
 		<tr>
@@ -35,7 +35,7 @@
 				Presentation 
 			</td>
 			<td>
-<input type='text' id='1.1.3'     pos='2'  helpText='Presentation <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  ajaxURL='/encounters/presentation?search_string='  name='concept[Presentation]'  field_type='text' />
+<input type='text' id='1.1.3'     name='concept[Presentation]'  pos='2'  helpText='Presentation <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  ajaxURL='/encounters/presentation?search_string='  field_type='text' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Delivery Outcome 
 			</td>
 			<td>
-<input type='text' id='1.1.4'     pos='3'  helpText='Delivery Outcome <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  ajaxURL='/encounters/concept_set_options?set=baby_outcome&search_string='  name='concept[BABY OUTCOME]'  field_type='text' />
+<input type='text' id='1.1.4'     name='concept[BABY OUTCOME]'  pos='3'  helpText='Delivery Outcome <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  ajaxURL='/encounters/concept_set_options?set=baby_outcome&search_string='  field_type='text' />
 			</td>
 		</tr>
 		<tr>
@@ -51,7 +51,7 @@
 				Gender 
 			</td>
 			<td>
-<select id='1.1.5'   pos='4'  helpText='Gender <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  name='concept[Gender of contact]' >
+<select id='1.1.5'   name='concept[Gender of contact]'  pos='4'  helpText='Gender <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby' >
 <option></option>
 <option value='Female'>Female</option>
  <option value='Male'>Male</option>
@@ -63,7 +63,7 @@
 				Weight (KG) 
 			</td>
 			<td>
-<input type='text' id='1.1.6'  name='concept[Birth weight]'   pos='5'  helpText='Weight <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  tt_onUnLoad='window.clearInterval(timedEvent)'  min='2500'  absoluteMin='0'  absoluteMax='10000'  max='4500'  field_type='number'  tt_onLoad='weightAlert("1.1.6*1.1.5"); attribute("1.1.6*validationRule*([0-9]+\\.[0-9])|Unknown$")' />
+<input type='text' id='1.1.6'  name='concept[Birth weight]'   tt_onUnLoad='window.clearInterval(timedEvent)'  absoluteMin='0'  pos='5'  helpText='Weight <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  absoluteMax='10000'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  min='2500'  tt_onLoad='weightAlert("1.1.6*1.1.5"); attribute("1.1.6*validationRule*([0-9]+\\.[0-9])|Unknown$")'  max='4500'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -71,7 +71,7 @@
 				Height (CM) 
 			</td>
 			<td>
-<input type='text' id='1.1.7'  name='concept[HEIGHT (CM)]'   pos='6'  helpText='Height <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  tt_pageStyleClass='Numeric NumbersOnlyWithUnknown'  min='15.0'  absoluteMin='0'  absoluteMax='100'  max='60.0'  field_type='number' />
+<input type='text' id='1.1.7'  name='concept[HEIGHT (CM)]'   absoluteMin='0'  pos='6'  helpText='Height <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  absoluteMax='100'  tt_pageStyleClass='Numeric NumbersOnlyWithUnknown'  min='15.0'  max='60.0'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -79,7 +79,7 @@
 				APGAR 
 			</td>
 			<td>
-<input type='text' id='1.1.8'  name='concept[Apgar]'   pos='7'  helpText='1<sup>st</sup> Minute APGAR <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  tt_pageStyleClass='NoKeyboard'  min='0'  absoluteMin='0'  absoluteMax='10'  max='10'  field_type='number'  tt_onLoad='showApgarControl(1); __$("keyboard").style.display = "none"' />
+<input type='text' id='1.1.8'  name='concept[Apgar]'   absoluteMin='0'  pos='7'  helpText='1<sup>st</sup> Minute APGAR <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  absoluteMax='10'  tt_pageStyleClass='NoKeyboard'  min='0'  tt_onLoad='showApgarControl(1); __$("keyboard").style.display = "none"'  max='10'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -87,7 +87,7 @@
 				APGAR 
 			</td>
 			<td>
-<input type='text' id='1.1.9'  name='concept[Apgar]'   pos='8'  helpText='5<sup>th</sup> Minute APGAR <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  tt_pageStyleClass='NoKeyboard'  min='0'  absoluteMin='0'  absoluteMax='10'  max='11'  field_type='number'  tt_onLoad='showApgarControl(5); __$("keyboard").style.display = "none"' />
+<input type='text' id='1.1.9'  name='concept[Apgar]'   absoluteMin='0'  pos='8'  helpText='5<sup>th</sup> Minute APGAR <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  absoluteMax='10'  tt_pageStyleClass='NoKeyboard'  min='0'  tt_onLoad='showApgarControl(5); __$("keyboard").style.display = "none"'  max='11'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -95,7 +95,7 @@
 				Delivery Mode 
 			</td>
 			<td>
-<input type='text' id='1.1.10'     pos='9'  helpText='Delivery Mode <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  ajaxURL='/encounters/concept_set_options?set=delivery_mode&search_string='  name='concept[Delivery Mode]'  field_type='text' />
+<input type='text' id='1.1.10'     name='concept[Delivery Mode]'  pos='9'  helpText='Delivery Mode <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  ajaxURL='/encounters/concept_set_options?set=delivery_mode&search_string='  field_type='text' />
 			</td>
 		</tr>
 		<tr>
@@ -103,7 +103,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.11'   helpText='Next URL '  type='hidden'  pos='10'  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  name='next_url'  value='/protocol_patients/bba_delivery?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>' />
+<input  id='1.1.11'   helpText='Next URL '  name='next_url'  pos='10'  type='hidden'  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  value='/protocol_patients/bba_delivery?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>' />
 			</td>
 		</tr>
 		<tr>
@@ -111,7 +111,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.12'   helpText='Next URL '  type='hidden'  pos='11'  <%= (params["baby"].to_i < params["baby_total"].to_i ? "disabled" : "") %>  name='next_url'  value='/protocol_patients/mother_delivery_details?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>' />
+<input  id='1.1.12'   helpText='Next URL '  name='next_url'  pos='11'  type='hidden'  <%= (params["baby"].to_i < params["baby_total"].to_i ? "disabled" : "") %>  value='/protocol_patients/mother_delivery_details?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>' />
 			</td>
 		</tr>
 		<tr>
@@ -119,7 +119,7 @@
 				Baby Check 
 			</td>
 			<td>
-<input  id='1.1.13'   helpText='Baby Check '  type='hidden'  pos='12'  name='baby_check'  value='true' />
+<input  id='1.1.13'   helpText='Baby Check '  name='baby_check'  pos='12'  type='hidden'  value='true' />
 			</td>
 		</tr>
 	</table>

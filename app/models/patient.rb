@@ -278,8 +278,8 @@ class Patient < ActiveRecord::Base
   end
 
   def recent_delivery_count(session_date = Date.today)
-    ob = Observation.find(:first, :order => ["date_created DESC"], :conditions => ["voided = 0 AND concept_id = ? AND obs_datetime > ?",
-        ConceptName.find_by_name("NUMBER OF BABIES").concept_id, (session_date - 1.month)]).answer_string.strip.to_i
+    ob = Observation.find(:first, :order => ["date_created DESC"], :conditions => ["person_id = ? AND voided = 0 AND concept_id = ? AND obs_datetime > ?",
+        self.patient_id, ConceptName.find_by_name("NUMBER OF BABIES").concept_id, (session_date - 1.month)]).answer_string.strip.to_i
     ob 
   end
 

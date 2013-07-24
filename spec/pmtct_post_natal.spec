@@ -8,13 +8,15 @@ O.1.1.1.3. Unknown
 
 Q.1.1.2. PMTCT Test Date [concept: HIV TEST DATE, field_type: date, pos: 1, condition: __$("1.1.1").value.trim().toUpperCase() != "UNKNOWN", tt_onUnLoad: checkHIVTestDate("1.1.2"); ]
 
-Q.1.1.3. On ARVs [concept: ON ARVS, field_type: text, pos: 2, condition: __$("1.1.1").value.trim().toUpperCase() == "REACTIVE"]
+Q.1.1.3. On ARVs [helpText: On ART?, concept: ON ARVS, field_type: text, pos: 2, condition: __$("1.1.1").value.trim().toUpperCase() == "REACTIVE"]
 O.1.1.3.1. No
 O.1.1.3.2. Yes
 
 Q.1.1.4. ARV Start Date [concept: ART Start Date, field_type: date, pos: 3, condition: __$("1.1.3").value.trim().toUpperCase() == "YES", tt_onUnLoad: window.clearInterval(timedEvent), tt_onLoad: showPeriodOnARVs();]
 
-Q.1.1.5. Feeding Option [concept: FEEDING OPTION, field_type: text, pos: 5], condition: __$("1.1.1").value.trim().toUpperCase() == "REACTIVE"
-O.1.1.5.1. Exclusive Formula Feeding
-O.1.1.5.2. No Breast Feeding
-O.1.1.5.3. Exclusive Breast Feeding
+Q.1.1.5. Mother ART registration number [pos: 4, condition: __$("1.1.3").value.trim().toUpperCase() == "YES"]
+
+Q.1.1.6. Feeding Option [concept: FEEDING OPTION, field_type: text, pos: 5], condition: __$("1.1.1").value.trim().toUpperCase() == "REACTIVE"
+O.1.1.6.1. Exclusive Formula Feeding
+O.1.1.6.2. No Breast Feeding
+O.1.1.6.3. Exclusive Breast Feeding

@@ -104,6 +104,7 @@ class PatientsController < ApplicationController
       @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
     }
 
+    @links["Give Drugs"] = "/encounters/give_drugs?patient_id=#{@patient.id}&user_id=#{@user.id}"
     @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
     
     @project = get_global_property_value("project.name") rescue "Unknown"
@@ -115,7 +116,12 @@ class PatientsController < ApplicationController
     end
 
     @task.next_task
-
+    @links.keys.each{|key|
+      if key.match(/Natal Exams/i)
+        ret = key.downcase.gsub(/\s/, "-").gsub(/-exams/, "")
+        @links[key]["Admission Note"] = "/patients/admissions_note?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=#{ret}"
+      end
+    }
     @babies = @patient.current_babies rescue []
 
   end
@@ -169,12 +175,13 @@ class PatientsController < ApplicationController
         p.id,
         p.to_s,
         p.program_encounter_types.collect{|e|
+          next if e.encounter.blank?
           [
             e.encounter_id, e.encounter.type.name,
             e.encounter.encounter_datetime.strftime("%H:%M"),
             e.encounter.creator
           ]
-        },
+        }.uniq,
         p.date_time.strftime("%d-%b-%Y")
       ]
     } if !@patient.blank?
@@ -197,8 +204,8 @@ class PatientsController < ApplicationController
             e.encounter_id, e.encounter.type.name,
             e.encounter.encounter_datetime.strftime("%H:%M"),
             e.encounter.creator
-          ]
-        },
+          ] rescue []
+        }.uniq,
         p.date_time.strftime("%d-%b-%Y")
       ]
     } if !@patient.nil?
@@ -529,6 +536,10 @@ class PatientsController < ApplicationController
     end
    
     redirect_to "/patients/birth_report/#{params[:person_id]}?person_id=#{params[:person_id]}&patient_id=#{params[:patient_id]}&user_id=#{params[:user_id]}"
+  end
+
+  def admissions_note
+    raise params.to_yaml
   end
  
   protected

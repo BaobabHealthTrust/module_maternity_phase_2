@@ -3,7 +3,7 @@ class EncountersController < ApplicationController
  	unloadable  
 
   def create
-
+ 
     #watch for terminal conditions
     if params["proc_check"] && (params["concept"]["Procedure Done"].blank? || params["concept"]["Procedure Done"].downcase == "none")
       redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}" and return
@@ -346,12 +346,28 @@ class EncountersController < ApplicationController
         redirect_to "/encounters/missing_encounter_type?encounter_type=#{params[:encounter_type]}" and return
 
       end
+      
+      if ((params[:patient_id] && all_recent_babies_entered?(Patient.find(params[:patient_id])) == true) rescue false)
+        prefix = (Patient.find(params[:patient_id]).recent_babies.to_i + 1) rescue 0
 
-      @user_id = session[:user]["user_id"] rescue params[:users_id]
+        @prefix = "Baby"
 
-      #hack routes, next baby if count allows or mother details (next task)
-      redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{params[:patient_id]}&user_id=#{@user_id}" and return if
-      ((params[:patient_id] && all_recent_babies_entered?(Patient.find(params[:patient_id])) == true) rescue false)
+        case prefix
+        when 1
+          @prefix = "1<sup>st</sup> " + @prefix
+        when 2
+          @prefix = "2<sup>nd</sup> " + @prefix
+        when 3
+          @prefix = "3<sup>rd</sup> " + @prefix
+        else
+          @prefix = "#{prefix}<sup>th</sup> " + @prefix
+        end
+
+        @user_id = session[:user]["user_id"] rescue params[:users_id]
+
+        redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{params[:patient_id]}&user_id=#{@user_id}&prefix=#{@prefix}" and return
+
+      end
       
       @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id])
 
@@ -370,11 +386,18 @@ class EncountersController < ApplicationController
 
   def list_observations
     obs = []
+    encounter = Encounter.find(params[:encounter_id])
 
-    obs = Encounter.find(params[:encounter_id]).observations.collect{|o|
-      [o.id, o.to_piped_s] rescue nil
-    }.compact
-
+    if encounter.type.name.upcase == "TREATMENT"
+      obs = encounter.orders.collect{|o|
+        ["drg", o.to_s]
+      }
+    else
+      obs = encounter.observations.collect{|o|
+        [o.id, o.to_piped_s] rescue nil
+      }.compact
+    end
+    
     render :text => obs.to_json
   end
 
@@ -392,6 +415,7 @@ class EncountersController < ApplicationController
 
     end
 
+    
 
     render :text => [].to_json
   end
@@ -404,13 +428,14 @@ class EncountersController < ApplicationController
     unless program.nil?
       result = program.program_encounter_types.find(:all, :joins => [:encounter],
         :order => ["encounter_datetime DESC"]).collect{|e|
+        next if e.encounter.blank?
         [
           e.encounter_id, e.encounter.type.name.titleize,
           e.encounter.encounter_datetime.strftime("%H:%M"),
           e.encounter.creator,
           e.encounter.encounter_datetime.strftime("%d-%b-%Y")
         ]
-      }
+      }.uniq
     end
 
     render :text => result.to_json
@@ -568,6 +593,284 @@ class EncountersController < ApplicationController
 
     baby_address.save
     
+  end
+
+  def generics
+    search_string = (params[:search_string] || '').upcase
+    filter_list = params[:filter_list].split(/, */) rescue []
+    @drug_concepts = ConceptName.find(:all,
+      :select => "concept_name.name",
+      :joins => "INNER JOIN drug ON drug.concept_id = concept_name.concept_id AND drug.retired = 0",
+      :conditions => ["concept_name.name LIKE ?", '%' + search_string + '%'],:group => 'drug.concept_id')
+    render :text => "<li>" + @drug_concepts.map{|drug_concept| drug_concept.name }.uniq.join("</li><li>") + "</li>"
+  end
+
+  def generic
+    generics = []
+    # preferred = ConceptName.find_by_name("Maternity Prescriptions").concept.concept_members.collect{|c| c.id} rescue []
+
+    Drug.all.each{|drug|
+      #Concept.find(drug.concept_id, :conditions => ["retired = 0 AND concept_id IN (?)", preferred]).concept_names.each{|conceptname|
+      Concept.find(drug.concept_id, :conditions => ["retired = 0"]).concept_names.each{|conceptname|
+        generics << [(conceptname.name.titleize == "Tetanus Toxoid Vaccine" ? "TTV" : conceptname.name), drug.concept_id] rescue nil
+      }.compact.uniq rescue []
+    }
+
+    generics.uniq
+  end
+
+  def give_drugs
+
+    # if CoreService.get_global_property_value("use.column.interface").to_s == "true"
+    #  redirect_to "/encounters/generic_advanced_prescription?patient_id=#{params[:patient_id]}" and return
+    # end
+
+    @patient = Patient.find(params[:patient_id]) rescue nil
+   
+    @generics = generic
+
+    #bubble ANC frequently used drugs ontop
+    values = []
+    @generics.each { | gen |
+      if gen[0].downcase == "nvp" or gen[0].downcase == "nevirapine" or gen[0].match(/albendazole/i) or
+          gen[0].match(/fefol/i) or gen[0].downcase == "fansidar"  or gen[0].downcase == "sp"
+        @generics.delete(gen)
+        values << gen
+      end
+    }
+    values.each { |val|
+      @generics.insert(0, val)
+    }
+
+    @frequencies = drug_frequency
+    @diagnosis = @patient.current_diagnoses["DIAGNOSIS"] rescue []
+  end
+
+  def load_frequencies_and_dosages
+    # @drugs = Drug.drugs(params[:concept_id]).to_json
+    @drugs = drugs(params[:concept_id]).to_json
+    render :text => @drugs
+  end
+
+  def dosages(generic_drug_concept_id)
+
+    Drug.find(:all, :conditions => ["concept_id = ?", generic_drug_concept_id]).collect {|d|
+      ["#{d.dose_strength.to_i rescue 1}#{d.units.upcase rescue ""}", "#{d.dose_strength.to_i rescue 1}", "#{d.units.upcase rescue ""}"]
+    }.uniq.compact rescue []
+
+  end
+
+  def drug_frequency
+    # ConceptName.drug_frequency
+
+    # This method gets the collection of all short forms of frequencies as used in
+    # the Diabetes Module and returns only no-empty values or an empty array if none
+    # exist
+    ConceptName.find_by_sql("SELECT name FROM concept_name WHERE concept_id IN \
+                        (SELECT answer_concept FROM concept_answer c WHERE \
+                        concept_id = (SELECT concept_id FROM concept_name \
+                        WHERE name = 'DRUG FREQUENCY CODED')) AND concept_name_id \
+                        IN (SELECT concept_name_id FROM concept_name_tag_map \
+                        WHERE concept_name_tag_id = (SELECT concept_name_tag_id \
+                        FROM concept_name_tag WHERE tag = 'preferred_dmht'))").collect {|freq|
+      freq.name rescue nil
+    }.compact rescue []
+
+  end
+
+  def drugs(generic_drug_concept_id)
+    frequencies = drug_frequency
+    collection = []
+
+    Drug.find(:all, :conditions => ["concept_id = ? AND retired = 0", generic_drug_concept_id]).each {|d|
+      frequencies.each {|freq|
+        dr = d.dose_strength.to_s.match(/(\d+)\.(\d+)/)
+        collection << ["#{(dr ? (dr[2].to_i > 0 ? d.dose_strength : dr[1]) : d.dose_strength.to_i) rescue 1}#{d.units.upcase rescue ""}", "#{freq}"]
+      }
+    }.uniq.compact rescue []
+
+    collection.uniq
+  end
+
+  def create_prescription
+    User.current = User.find(session[:user]["user_id"])
+    if params[:prescription]
+
+      params[:prescription].each do |prescription|
+
+        @suggestions = prescription[:suggestion] || ['New Prescription']
+        @patient = Patient.find(params[:patient_id]) rescue nil
+
+        type = EncounterType.find_by_name(params[:encounter][:encounter_type_name]).id rescue nil
+        encounter = @patient.encounters.find(:first, :order => ["encounter_datetime DESC"],
+          :conditions => ["voided = 0 AND encounter_type = ? AND DATE(encounter_datetime) = ?", type, (session[:datetime].to_date rescue Date.today)]) rescue nil
+
+        if !type.blank? && encounter.blank?
+          encounter = Encounter.create(
+            :patient_id => @patient.id,
+            :provider_id => (User.current.user_id),
+            :encounter_type => type,
+            :location_id => (session[:location_id] || params[:location_id])
+          )
+        end
+        
+        if !encounter.blank?
+          @current = nil
+
+          if !params[:program].blank?
+
+            @program = Program.find_by_concept_id(ConceptName.find_by_name(params[:program]).concept_id) rescue nil
+
+            if !@program.blank?
+
+              @program_encounter = ProgramEncounter.find_by_program_id(@program.id,
+                :conditions => ["patient_id = ? AND DATE(date_time) = ?",
+                  @patient.id, Date.today.strftime("%Y-%m-%d")])
+
+              if @program_encounter.blank?
+
+                @program_encounter = ProgramEncounter.create(
+                  :patient_id => @patient.id,
+                  :date_time => Time.now,
+                  :program_id => @program.id
+                )
+
+              end
+
+              @encounter_detail = ProgramEncounterDetail.create(
+                :encounter_id => encounter.id.to_i,
+                :program_encounter_id => @program_encounter.id,
+                :program_id => @program.id
+              )
+
+              @current = PatientProgram.find_by_program_id(@program.id,
+                :conditions => ["patient_id = ? AND COALESCE(date_completed, '') = ''", @patient.id])
+
+              if @current.blank?
+
+                @current = PatientProgram.create(
+                  :patient_id => @patient.id,
+                  :program_id => @program.id,
+                  :date_enrolled => Time.now
+                )
+
+              end
+
+            end
+
+          end
+
+        end
+    
+        if !prescription[:formulation]
+          # redirect_to "/patients/print_exam_label/?patient_id=#{@patient.id}" and return if (encounter.type.name.upcase rescue "") ==
+          #  "TREATMENT"
+          next
+          #redirect_to next_task(@patient) and return
+        end
+
+        unless params[:location]
+          session_date = session[:datetime] || params[:encounter_datetime] || Time.now()
+        else
+          session_date = params[:encounter_datetime] #Use encounter_datetime passed during import
+        end
+      
+        Location.current_location = Location.find(params[:location]) if params[:location]
+
+        @encounter = encounter
+        @diagnosis = Observation.find(prescription[:diagnosis]) rescue nil
+        @suggestions.each do |suggestion|
+          unless (suggestion.blank? || suggestion == '0' || suggestion == 'New Prescription')
+            @order = DrugOrder.find(suggestion)
+            DrugOrder.clone_order(@encounter, @patient, @diagnosis, @order)
+          else
+
+            @formulation = (prescription[:formulation] || '').upcase
+            @drug = Drug.find_by_name(@formulation) rescue nil
+            unless @drug
+              flash[:notice] = "No matching drugs found for formulation #{prescription[:formulation]}"
+              render :give_drugs, :patient_id => params[:patient_id], :user_id => User.current.user_id
+              return
+            end
+            start_date = session_date
+            auto_expire_date = session_date.to_date + prescription[:duration].to_i.days
+            prn = prescription[:prn].to_i
+            if prescription[:type_of_prescription] == "variable"
+
+              DrugOrder.write_order(@encounter, @patient, @diagnosis, @drug,
+                start_date, auto_expire_date, [prescription[:morning_dose],
+                  prescription[:afternoon_dose], prescription[:evening_dose],
+                  prescription[:night_dose]], prescription[:type_of_prescription], prn)
+
+            else
+              DrugOrder.write_order(@encounter, @patient, @diagnosis, @drug,
+                start_date, auto_expire_date, prescription[:dose_strength], prescription[:frequency], prn)
+            end
+          end
+        end
+
+      end
+
+    else
+
+      @suggestions = params[:suggestion] || ['New Prescription']
+      @patient = Patient.find(params[:patient_id]) rescue nil
+
+      encounter = Encounter.new(params[:encounter])
+      encounter.encounter_datetime ||= session[:datetime]
+      encounter.save
+
+      if !params[:formulation]
+        #redirect_to "/patients/print_exam_label/?patient_id=#{@patient.id}" and return if (encounter.type.name.upcase rescue "") ==
+        #  "TREATMENT"
+        next
+        #redirect_to next_task(@patient) and return
+      end
+
+      unless params[:location]
+        session_date = session[:datetime] || params[:encounter_datetime] || Time.now()
+      else
+        session_date = params[:encounter_datetime] #Use encounter_datetime passed during import
+      end
+      # set current location via params if given
+      Location.current_location = Location.find(params[:location]) if params[:location]
+
+      @encounter = encounter
+      @diagnosis = Observation.find(params[:diagnosis]) rescue nil
+      @suggestions.each do |suggestion|
+        unless (suggestion.blank? || suggestion == '0' || suggestion == 'New Prescription')
+          @order = DrugOrder.find(suggestion)
+          DrugOrder.clone_order(@encounter, @patient, @diagnosis, @order)
+        else
+
+          @formulation = (params[:formulation] || '').upcase
+          @drug = Drug.find_by_name(@formulation) rescue nil
+          unless @drug
+            flash[:notice] = "No matching drugs found for formulation #{params[:formulation]}"
+            render :give_drugs, :patient_id => params[:patient_id]
+            return
+          end
+          start_date = session_date
+          auto_expire_date = session_date.to_date + params[:duration].to_i.days
+          prn = params[:prn].to_i
+          if params[:type_of_prescription] == "variable"
+            DrugOrder.write_order(@encounter, @patient, @diagnosis, @drug,
+              start_date, auto_expire_date, [params[:morning_dose],
+                params[:afternoon_dose], params[:evening_dose], params[:night_dose]], 'VARIABLE', prn)
+          else
+            DrugOrder.write_order(@encounter, @patient, @diagnosis, @drug,
+              start_date, auto_expire_date, params[:dose_strength], params[:frequency], prn)
+          end
+        end
+      end
+
+    end
+
+    #  redirect_to "/patients/print_exam_label/?patient_id=#{@patient.id}" and return if (@encounter.type.name.upcase rescue "") ==
+    #   "TREATMENT"
+   
+    redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}"
+
   end
   
 end
