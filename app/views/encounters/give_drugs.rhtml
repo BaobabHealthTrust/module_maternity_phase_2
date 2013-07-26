@@ -3,7 +3,8 @@
 
 <script type="text/javascript" language="javascript">
   <!--
-  var generics = <%= @generics.sort.to_json rescue {} %>;
+  tt_cancel_destination = "<%= @return_url %>"
+  var generics = <%= @generics.to_json rescue {} %>;
   var frequencies = <%= @frequencies.to_json rescue {} %>;
   var diagnosisList = <%= @diagnosis.to_json rescue {} %>;
   var patient_id = <%= params[:patient_id] rescue "" %>;

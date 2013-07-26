@@ -117,9 +117,9 @@ function calculateEDOD(){
     }
 
     $("expected_date_of_delivery").innerHTML = "Expected Date Of Delivery: <i style='font-size: 1.2em; float: right;'>" +
-    edod + "</i><br /><br />Gestation Weeks: " + (gestation < 37 &&
+        edod + "</i><br /><br />Gestation Weeks: " + (gestation < 37 &&
         gestation.trim().length > 0 ? "<i style='color: red'>(Premature)</i>" : (gestation > 41 && gestation.trim().length > 0 ? "<i style='color: red'>(Abnormal)</i>" : "")) +
-    "<i style='font-size: 1.2em; float: right; width: 100px;'>" + gestation + "</i>";
+        "<i style='font-size: 1.2em; float: right; width: 100px;'>" + gestation + "</i>";
 
     timedEvent = setTimeout('calculateEDOD()', 500);
 }
@@ -209,7 +209,7 @@ function showPeriodOnARVs(){
     }
 
     $('arv_period').innerHTML = "<i style='font-size: 1.2em;float: left;'> Period On ARVs    </i> "
-    +  "<i style='font-size: 1.2em;float: right;'>" + calculatePeriodOnARVs() + ((calculatePeriodOnARVs() == 1)? " Month</i>" : " Months</i>")
+        +  "<i style='font-size: 1.2em;float: right;'>" + calculatePeriodOnARVs() + ((calculatePeriodOnARVs() == 1)? " Month</i>" : " Months</i>")
     if (temp != "eventSet"){
         timedEvent = self.setInterval(function(){
             showPeriodOnARVs()
@@ -298,10 +298,10 @@ function calculateBP(str){
     if(pos == 1){
         bp = ($("touchscreenInput" + tstCurrentPage).value.trim().length > 0 ? $("touchscreenInput" +
             tstCurrentPage).value.trim() : "?") +
-        "/" + ($(id2).value.trim().length > 0 ? $(id2).value.trim() : "?");
+            "/" + ($(id2).value.trim().length > 0 ? $(id2).value.trim() : "?");
     } else if(pos == 2){
         bp = ($(id1).value.trim().length > 0 ? $(id1).value.trim() : "?") +
-        "/" + ($("touchscreenInput" + tstCurrentPage).value.trim().length > 0 ? $("touchscreenInput" +
+            "/" + ($("touchscreenInput" + tstCurrentPage).value.trim().length > 0 ? $("touchscreenInput" +
             tstCurrentPage).value.trim() : "?");
     }
 
@@ -318,8 +318,28 @@ function calculateBP(str){
 function updateCancel(){
     try{
         tt_cancel_destination = tt_cancel_destination + "&autoflow=false";
-        var params = document.location.toString().split("&")
+        var params = document.location.toString().split("&");
+        var paramz = document.location.toString().replace("//", "").split(/\//);
+
         for (var k = 0; k < params.length; k ++){
+
+            try{
+
+                if (params[k].match(/ret\=/i) || paramz[1].match(/protocol\_patient/i)){
+                    var ret = params[k].split("=")[1].replace("-", " ");
+                    var encounter = paramz[2].split("?")[0].replace(/\_/g, " ").replace(/\-/g, " ")
+
+                    encounter = encounter.split("")
+                    encounter[0] = encounter[0].toUpperCase();
+                    encounter = encounter.join("")
+
+                    showCategory(encounter);
+                }
+
+            }catch(e){
+                
+            }
+            
             if (params[k].match(/autoflow/i)){
                 for (var i = 0; i < document.forms.length; i ++){
 
@@ -327,17 +347,19 @@ function updateCancel(){
                        
                 }
             }
+            
+
         }
     }catch(ex){
         
     }
+   
 }
 
 
 function checkANCLMP(){
     lmp = lmp.replace("/", "-")
-    
-    alert(name)
+   
     if (lmp.length > 1){
         var checked = dispatchMessage("Accept Date " + lmp + name_clause + "<br> From ANC LMP?", tstMessageBoxType.YesNo);
         if (checked == true){

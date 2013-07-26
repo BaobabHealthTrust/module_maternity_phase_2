@@ -63,34 +63,10 @@
 		</tr>
 		<tr>
 			<td>
-				Breast feeding initiated within 60 minutes? 
-			</td>
-			<td>
-<select id='1.4.1' name='concept[Breast feeding initiated within 60 minutes? ]' helpText='Breast feeding initiated within 60 minutes? ' condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value != "Fresh stillbirth" && __$("1.1.2").value != "Macerated stillbirth" && __$("1.1.2").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"'  pos='4' >
-<option></option>
-<option value='Yes'>Yes</option>
- <option value='No'>No</option>
- </select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Tetracycline eye ointment given? 
-			</td>
-			<td>
-<select id='1.5.1' name='concept[Tetracycline eye ointment given? ]' helpText='Tetracycline eye ointment given? ' condition='id_string.match(__$("1.1.1").value) &&__$("1.1.2").value != "Fresh stillbirth" && __$("1.1.2").value != "Macerated stillbirth" && __$("1.1.2").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"'  pos='5' >
-<option></option>
-<option value='Yes'>Yes</option>
- <option value='No'>No</option>
- </select>
-			</td>
-		</tr>
-		<tr>
-			<td>
 				Are there are any comments on the outcome? 
 			</td>
 			<td>
-<select id='1.6.1' name='concept[Are there are any comments on the outcome? ]' helpText='Are there are any comments on the outcome? ' disabled='disabled'  condition='id_string.match(__$("1.1.1").value)'  pos='6' >
+<select id='1.6.1' name='concept[Are there are any comments on the outcome? ]' helpText='Are there are any comments on the outcome? ' condition='id_string.match(__$("1.1.1").value)'  disabled='disabled'  pos='6' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -102,19 +78,7 @@
 				Comments 
 			</td>
 			<td>
-<input type='text' id='1.6.1.2.1'  name='concept[Comments ]' helpText='Comments '  field_type='textarea'  condition='id_string.match(__$("1.1.1").value) && __$("1.6.1").value == "Yes"'  pos='7' />
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Refer Baby to Another Ward 
-			</td>
-			<td>
-<select id='1.7.2' name='concept[Refer Baby to Another Ward ]' helpText='Refer Baby to Another Ward ' disabled='disabled'  condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value != "Fresh stillbirth" && __$("1.1.2").value != "Macerated stillbirth" && __$("1.1.2").value != "Neonatal death" && __$("1.2.1").value != "Fresh stillbirth" && __$("1.2.1").value != "Macerated stillbirth" && __$("1.2.1").value != "Neonatal death" && __$("1.3.1").value != "Fresh stillbirth" && __$("1.3.1").value != "Macerated stillbirth" && __$("1.3.1").value != "Neonatal death"'  tt_onUnLoad='if(__$("1.7.2").value.toLowerCase() == "yes"){__$("1.7.1").name = "unknown"; __$("1.7.1").type = "not_showable";}else{}'  pos='9' >
-<option></option>
-<option value='Yes'>Yes</option>
- <option value='No'>No</option>
- </select>
+<input type='text' id='1.6.1.2.1'  name='concept[Comments ]' helpText='Comments '  condition='id_string.match(__$("1.1.1").value) && __$("1.6.1").value == "Yes"'  pos='7'  field_type='textarea' />
 			</td>
 		</tr>
 	</table>

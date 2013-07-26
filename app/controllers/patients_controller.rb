@@ -8,8 +8,10 @@ class PatientsController < ApplicationController
 
 
   def show
+    
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
-
+    @next_user_task = []
+    
     if params[:autoflow].present? && params[:autoflow].to_s == "true"
       session[:autoflow] = "true"
     elsif params[:autoflow].present? && params[:autoflow].to_s == "false"
@@ -30,7 +32,15 @@ class PatientsController < ApplicationController
 
     @task = TaskFlow.new(params[:user_id], @patient.id)
 
-    redirect_to "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}" and return if (session[:autoflow] == "true") && done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
+    if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
+
+      @next_user_task = ["Social History",
+        "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}"
+      ]
+
+      redirect_to "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}" and return if (session[:autoflow] == "true")
+
+    end
 
     @links = {}
 
@@ -54,15 +64,15 @@ class PatientsController < ApplicationController
 
     @hash_check = {}
 
-    @task.display_tasks.each{|task|  
+    @task.display_tasks.each{|task|
       
-    	ctrller = "protocol_patients"
+      ctrller = "protocol_patients"
 
-      unless task.class.to_s.upcase == "ARRAY"      
+      unless task.class.to_s.upcase == "ARRAY"
             
-     		if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")        
+        if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
           ctrller = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{task.downcase.gsub(/\s/, "_")}"] rescue ""
-     		end
+        end
 
         next if task.downcase == "update baby outcome" and @patient.current_babies.length == 0
         next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(task.upcase)
@@ -75,19 +85,19 @@ class PatientsController < ApplicationController
        
         @task_status_map[task] = done(scope, encounter_name, concept)
    
-      	@links[task.titleize] = "/#{ctrller}/#{task.downcase.gsub(/\s/, "_")}?patient_id=#{
-      	@patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
+        @links[task.titleize] = "/#{ctrller}/#{task.downcase.gsub(/\s/, "_")}?patient_id=#{
+        @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
             "&baby=1&baby_total=#{(@patient.current_babies.length rescue 0)}" : "")
 
       else
         
-        @links[task[0].titleize] = {}      
+        @links[task[0].titleize] = {}
         
         task[1].each{|t|
         
-        	if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")        
+          if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
             ctrller = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{t.downcase.gsub(/\s/, "_")}"] rescue ""
-     			end
+          end
      			     			    		
           next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(t.upcase)
           
@@ -136,10 +146,9 @@ class PatientsController < ApplicationController
     @groupings = {}
     @groupings["Ante Natal Exams"] = ["ante_natal_admission_details", "ante_natal_vitals", "ante_natal_patient_history", "ante natal pmtct", "physical_exam", "ante_natal_vaginal_examination", "general_body_exam", "admission_diagnosis", "ante natal notes", "admissions_note"]
     @groupings["Post Natal Exams"] = ["current_delivery", "post_natal_admission_details", "abdominal examination", "post natal pmtct", "post_natal_patient_history", "post_natal_vitals", "post_natal_vaginal_examination", "post natal notes", "admissions_note"]
-    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "update_baby_outcome", "kangaroo_review_visit"]
+    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "update_baby_outcome", "kangaroo_review_visit"]
     @groupings["Update Outcome"] = ["delivered", "discharged", "referred_out", "absconded", "patient_died"]
 
-    @next_user_task = []
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
     if ((all_recent_babies_entered?(@patient) == true) rescue false)
       prefix = (@patient.recent_babies.to_i + 1) rescue 0
@@ -163,6 +172,7 @@ class PatientsController < ApplicationController
       redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}&prefix=#{@prefix}#{@ret}" and return  if (session[:autoflow].to_s == "true" rescue false)
 
     end
+    
     @groupings["Ante Natal Exams"].each do |encounter|
 
       next if !@next_user_task.blank? || ((@patient.recent_babies.to_i > 0) rescue true)

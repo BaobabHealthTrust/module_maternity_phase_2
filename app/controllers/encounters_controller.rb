@@ -663,15 +663,12 @@ class EncountersController < ApplicationController
 
   def give_drugs
 
-    # if CoreService.get_global_property_value("use.column.interface").to_s == "true"
-    #  redirect_to "/encounters/generic_advanced_prescription?patient_id=#{params[:patient_id]}" and return
-    # end
-
+   
+    @return_url = request.referrer
     @patient = Patient.find(params[:patient_id]) rescue nil
    
     @generics = generic
-
-    #bubble ANC frequently used drugs ontop
+  
     values = []
     @generics.each { | gen |
       if gen[0].downcase == "nvp" or gen[0].downcase == "nevirapine" or gen[0].match(/albendazole/i) or
