@@ -1,4 +1,4 @@
-P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, includejs: vitals, label: Patient History, pos: 7, parent: 3]
+P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: gravida, includejs: vitals, label: Post Natal Patient History, pos: 7, parent: 3]
 C.1.1. Given a registered patient, capture their Patient History
 
 Q.1.1.1. Gravida [concept: GRAVIDA, field_type: number, absoluteMin: 1, Max: 15, pos: 0, tt_pageStyleClass: NumbersOnly, tt_onUnLoad: count = 1]
@@ -7,7 +7,7 @@ Q.1.1.2. Multiple Gestation [concept: MULTIPLE GESTATION, field_type: text, pos:
 O.1.1.2.1. No
 O.1.1.2.2. Yes
 
-Q.1.1.3. Number of Deliveries [concept: PARITY, field_type: number, pos: 2, condition: __$("1.1.1").value > 1, tt_pageStyleClass: NumbersOnly, absoluteMin: 0, Max: 15, tt_onLoad: if (__$("1.1.2").value.trim().toLowerCase()=="no"){attribute("1.1.3*AbsoluteMax*" +  (__$("1.1.1").value - 1))}, tt_onUnLoad: if (__$("1.1.2").value.trim().toLowerCase()=="no"){attribute("1.1.3*validationRule*[" + (parseInt(__$("1.1.1").value) - parseInt(__$("1.1.3").value) -1) ); attribute("1.1.4*validationMessage*Expected value is " + (parseInt(__$("1.1.1").value) - parseInt(__$("1.1.3").value) -1))}]
+Q.1.1.3. Number of Deliveries [concept: PARITY, field_type: number, pos: 2, condition: __$("1.1.1").value > 1, tt_pageStyleClass: NumbersOnly, absoluteMin: 0, Max: 15]
 
 Q.1.1.4. Number of Abortions [concept: NUMBER OF ABORTIONS, field_type: number, pos: 3, condition: __$("1.1.1").value > 1, tt_pageStyleClass: NumbersOnly, absoluteMin: 0, Max: 5;  num_babies = __$("1.1.3").value;]
 
@@ -73,6 +73,4 @@ O.1.1.15.4. Spontaneous vaginal delivery
 
 Q.1.1.16. TT Status [concept: TT STATUS, field_type: number, pos: 14, absoluteMin: 0, max: 5, tt_pageStyleClass: NumbersOnly]
 
-Q.1.1.17. Last Menstrual Period [concept: LAST MENSTRUAL PERIOD, field_type: date, pos: 15, tt_onLoad: calculateEDOD("1.1.17"), tt_onUnLoad: window.clearInterval(timedEvent)]
-
-
+Q.1.1.18. Next URL [pos: 16, name: ret, value: post-natal, type: hidden]

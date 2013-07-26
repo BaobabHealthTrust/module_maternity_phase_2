@@ -1,4 +1,4 @@
-P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, label: Admission Details, pos: 6, parent: 3]
+P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: Admission Date, label: Post Natal Admission Details, pos: 6, parent: 3]
 C.1.1. Given a registered patient, capture their admission diagnoses
 
 Q.1.1.1. Admission Date [concept: Admission date, field_type: date, pos: 0]
@@ -22,3 +22,5 @@ Q.1.1.9. Select Next Admission Diagnosis [name: concept[Diagnosis][], allowFreeT
 Q.1.1.10. Select Next Admission Diagnosis [name: concept[Diagnosis][], allowFreeText: true,   optional: true, condition: __$("1.1.9").value.trim() != "", field_type: text, pos: 9, ajaxURL: /encounters/diagnoses?search_string=]
 
 Q.1.1.11. Select Next Admission Diagnosis [name: concept[Diagnosis][], allowFreeText: true,  optional: true, condition: __$("1.1.10").value.trim() != "", field_type: text, pos: 10, ajaxURL: /encounters/diagnoses?search_string=]
+
+Q.1.1.12. Next URL [pos: 11, name: ret, value: post-natal, type: hidden]

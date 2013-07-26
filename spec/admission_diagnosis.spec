@@ -1,4 +1,4 @@
-P.1. DIAGNOSIS [program: MATERNITY PROGRAM, scope: TODAY, label: Admission Diagnosis, pos: 9, parent: 4]
+P.1. DIAGNOSIS [program: MATERNITY PROGRAM, scope: TODAY, concept: Diagnosis, label: Admission Diagnosis, pos: 9, parent: 4]
 C.1.1. Given a registered patient, capture their Physical Examination
 
 Q.1.1.1. Select Admission Diagnosis [name: concept[Diagnosis][], allowFreeText: true, pos: 0, ajaxURL: /encounters/diagnoses?search_string=]
@@ -20,3 +20,5 @@ Q.1.1.8. Select Next Admission Diagnosis [name: concept[Diagnosis][], allowFreeT
 Q.1.1.9. Select Next Admission Diagnosis [name: concept[Diagnosis][], allowFreeText: true, condition: __$("1.1.8").value.trim() != "", pos: 8, optional: true, ajaxURL: /encounters/diagnoses?search_string=]
 
 Q.1.1.10. Select Next Admission Diagnosis [name: concept[Diagnosis][], condition: __$("1.1.9").value.trim() != "", allowFreeText: true, pos: 9, optional: true, ajaxURL: /encounters/diagnoses?search_string=]
+
+Q.1.1.11. Next URL [pos: 10, name: ret, value: ante-natal, type: hidden]

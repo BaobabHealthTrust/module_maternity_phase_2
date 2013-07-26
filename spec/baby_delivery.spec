@@ -21,13 +21,13 @@ Q.1.1.6. Presentation [pos: 5, name: concept[Presentation], ajaxURL: /encounters
 
 Q.1.1.7. Delivery Outcome [pos: 6, name: concept[BABY OUTCOME], ajaxURL: /encounters/concept_set_options?set=baby_outcome&search_string=, field_type: text, concept: BABY OUTCOME, helpText: <%= params["prefix"] %> Delivery Outcome]
 
-Q.1.1.8. Baby on NVP? [pos: 7, name: concept[Baby on NVP?], condition: __$("1.1.7").value.toLowerCase().trim() == "alive" && <%= (@patient.hiv_status.downcase.strip == "positive" rescue false)%>, helpText: Is <%= params["prefix"] %> Baby on NVP?]
+Q.1.1.8. Baby on NVP? [pos: 7, name: concept[Baby on NVP?], condition: __$("1.1.7").value.toLowerCase().trim() == "alive" && <%= (@patient.hiv_status.downcase.strip == "positive" rescue false)%>, helpText: Is <%= params["prefix"] %> on NVP?]
 O.1.1.8.1. No
 O.1.1.8.2. Yes
 
 Q.1.1.9. Birth weight [pos: 8, name: concept[Birth weight], min: 2500, max: 4500, absoluteMin: 100, absoluteMax: 8000, field_type: number, tt_pageStyleclass: NumbersOnlyWithDecimal, concept: Birth weight, helpText: <%= params["prefix"] %> Birth Weight (grams)]
 
-Q.1.1.10. Height (CM) [concept: HEIGHT (CM), field_type: number, condition: __$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive", min: 15.0, max: 60.0, tt_pageStyleClass: Numeric NumbersOnlyWithUnknown, pos: 9, absoluteMin: 0, absoluteMax: 100, helpText: <%= params["prefix"] %> Birth Length (cm)]
+Q.1.1.10. Height (CM) [concept: Birth Length, field_type: number, condition: __$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive", min: 15.0, max: 60.0, tt_pageStyleClass: Numeric NumbersOnlyWithUnknown, pos: 9, absoluteMin: 0, absoluteMax: 100, helpText: <%= params["prefix"] %> Birth Length (cm)]
 
 Q.1.1.11. APGAR [concept: Apgar minute one, field_type: number, condition: __$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive", tt_onLoad: showApgarControl(1); __$("keyboard").style.display = "none",absoluteMax: 10, absoluteMin: 1, pos: 10, tt_pageStyleClass: NoKeyboard,  helpText: <%= params["prefix"] %> 1<sup>st</sup> Minute APGAR]
 
@@ -45,18 +45,18 @@ O.1.1.14.2. Asphyxia
 O.1.1.14.3. Sepsis
 O.1.1.14.4. Other
 
-Q.1.1.14. Breast feeding initiated within 60 minutes? [pos: 14, helpText: <%= params["prefix"] %> Breast Feeding Initiated Within 60 Minutes?, condition: __$("1.1.7").value.toLowerCase().trim() == "alive"]
-O.1.1.14.1. No
-O.1.4.14.2. Yes
+Q.1.1.15. Breast feeding initiated within 60 minutes? [pos: 14, helpText: <%= params["prefix"] %> Breast Feeding Initiated Within 60 Minutes?, condition: __$("1.1.7").value.toLowerCase().trim() == "alive"]
+O.1.1.15.1. No
+O.1.1.15.2. Yes
 
-Q.1.15.1. Tetracycline eye ointment given? [pos: 15, helpText: <%= params["prefix"] %> Tetracycline Eye Ointment Given?, condition: __$("1.1.7").value.toLowerCase().trim() == "alive"]
-O.1.15.1.1. No
-O.1.15.1.2. Yes
-
-Q.1.16.1. Are there are any comments on baby the outcome? [pos: 16, condition: __$("1.1.7").value.toLowerCase().trim() == "alive", disabled: disabled]
+Q.1.16.1. Tetracycline eye ointment given? [pos: 15, helpText: <%= params["prefix"] %> Tetracycline Eye Ointment Given?, condition: __$("1.1.7").value.toLowerCase().trim() == "alive"]
 O.1.16.1.1. No
 O.1.16.1.2. Yes
-Q.1.16.1.2.1. Comments [pos: 17, field_type: textarea]
+
+Q.1.17.1. Are there are any comments on baby outcome? [pos: 16, condition: __$("1.1.7").value.toLowerCase().trim() == "alive", disabled: disabled]
+O.1.17.1.1. No
+O.1.17.1.2. Yes
+Q.1.17.1.2.1. Comments [pos: 17, concept: clinician notes, field_type: textarea]
 
 Q.1.17.15. Next URL [pos: 18, name: next_url, value: /two_protocol_patients/mother_delivery_details?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>, type: hidden]
 

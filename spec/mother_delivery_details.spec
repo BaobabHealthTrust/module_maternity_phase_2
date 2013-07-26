@@ -32,4 +32,4 @@ Q.1.5. Placenta removed manually? [pos: 5]
 O.1.5.1. Yes
 O.1.5.2. No
 
-Q.1.8.3. Next URL [pos: 11, name: next_url, value: /two_protocol_patients/delivery_procedures?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>, type: hidden]
+Q.1.6. Next URL [pos: 6, name: next_url, value: /two_protocol_patients/delivery_procedures?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>, type: hidden]

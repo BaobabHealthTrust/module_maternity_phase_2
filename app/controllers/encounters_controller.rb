@@ -3,7 +3,15 @@ class EncountersController < ApplicationController
  	unloadable  
 
   def create
- 
+
+    @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
+
+    if params[:autoflow].present? && params[:autoflow].to_s == "true"
+      session[:autoflow] = "true"
+    elsif params[:autoflow].present? && params[:autoflow].to_s == "false"
+      session[:autoflow] = "false"
+    end
+    
     #watch for terminal conditions
     if params["proc_check"] && (params["concept"]["Procedure Done"].blank? || params["concept"]["Procedure Done"].downcase == "none")
       redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}" and return
@@ -87,8 +95,9 @@ class EncountersController < ApplicationController
 
       mother_address = PersonAddress.find_by_person_id(params[:patient_id]) rescue nil
 
-      export_mother_addresss(params[:patient_id], patient.patient_id) rescue nil if !mother_address.blank? && params[:patient_id] != patient.patient_id #if baby successfully created
-      
+      export_mother_addresss(params[:patient_id],
+        patient.patient_id) rescue nil if !mother_address.blank? && params[:patient_id] != patient.patient_id
+          
       if !params["concept"]["BABY OUTCOME"].match(/Alive/i)
         patient.person.update_attributes(:dead => true) if (!my_baby.first.blank? rescue false)
       end
@@ -242,6 +251,12 @@ class EncountersController < ApplicationController
                 
               end
 
+              if params[:ret] && !params[:ret].blank?
+
+                obs.update_attributes(:comments => params[:ret])
+
+              end
+
             else
 
               redirect_to "/encounters/missing_concept?concept=#{key}" and return if !value.blank?
@@ -329,6 +344,12 @@ class EncountersController < ApplicationController
 
                 end
 
+                if params[:ret] && !params[:ret].blank?
+
+                  obs.update_attributes(:comments => params[:ret])
+
+                end
+
               else
 
                 redirect_to "/encounters/missing_concept?concept=#{item}" and return if !item.blank?
@@ -365,16 +386,37 @@ class EncountersController < ApplicationController
 
         @user_id = session[:user]["user_id"] rescue params[:users_id]
 
-        redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{params[:patient_id]}&user_id=#{@user_id}&prefix=#{@prefix}" and return
+        if ((params[:patient_id] != patient.patient_id && params["encounter_type"].to_s.downcase.strip == "baby delivery") rescue false)
 
+          print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
+            "/two_protocol_patients/baby_delivery?patient_id=#{params[:patient_id]}&user_id=#{@user_id}&prefix=#{@prefix}#{@ret}") and return
+
+        else
+
+          redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{params[:patient_id]}&user_id=#{@user_id}&prefix=#{@prefix}#{@ret}" and return
+ 
+
+        end
+        
       end
       
       @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id])
+      
+      unless ((params[:patient_id] != patient.patient_id && params["encounter_type"].to_s.downcase.strip == "baby delivery") rescue false)
+        redirect_to params[:next_url] + "#{@ret}" and return if !params[:next_url].blank?
+        redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}" and return
+        redirect_to @task.next_task.url + "#{@ret}" and return
+      else
+        
+        print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
+          params[:next_url] + "#{@ret}")  and return if !params[:next_url].blank?
 
-      redirect_to params[:next_url] and return if !params[:next_url].blank?
-      redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}" and return unless params[:auto_flow]
-      redirect_to @task.next_task.url and return
+        print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
+          "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}") and return
 
+        print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
+          @task.next_task.url + "#{@ret}") and return
+      end
     end
     
   end

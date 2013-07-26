@@ -10,6 +10,12 @@ class PatientsController < ApplicationController
   def show
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
 
+    if params[:autoflow].present? && params[:autoflow].to_s == "true"
+      session[:autoflow] = "true"
+    elsif params[:autoflow].present? && params[:autoflow].to_s == "false"
+      session[:autoflow] = "false"
+    end
+  
     if @patient.nil?
       redirect_to "/encounters/no_patient" and return
     end
@@ -23,6 +29,8 @@ class PatientsController < ApplicationController
     redirect_to "/encounters/no_user" and return if @user.nil?
 
     @task = TaskFlow.new(params[:user_id], @patient.id)
+
+    redirect_to "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}" and return if (session[:autoflow] == "true") && done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
 
     @links = {}
 
@@ -41,6 +49,7 @@ class PatientsController < ApplicationController
 
     }
 
+    
     @task_status_map = {}
 
     @hash_check = {}
@@ -63,7 +72,7 @@ class PatientsController < ApplicationController
         scope = "TODAY" if scope.blank?
         encounter_name = @label_encounter_map[task.upcase]rescue nil
         concept = @task.task_scopes[task][:concept].upcase rescue nil
-
+       
         @task_status_map[task] = done(scope, encounter_name, concept)
    
       	@links[task.titleize] = "/#{ctrller}/#{task.downcase.gsub(/\s/, "_")}?patient_id=#{
@@ -79,18 +88,18 @@ class PatientsController < ApplicationController
         	if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")        
             ctrller = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{t.downcase.gsub(/\s/, "_")}"] rescue ""
      			end
-     			
-     			    		
+     			     			    		
           next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(t.upcase)
           
           #check if task has already been done depending on scopes
           
           scope = @task.task_scopes[t.downcase][:scope].upcase rescue nil
           scope = "TODAY" if scope.blank?
-          encounter_name = @label_encounter_map[t.downcase.upcase]rescue nil
+          encounter_name = @label_encounter_map[t.upcase]rescue nil
           concept = @task.task_scopes[t.downcase][:concept].upcase rescue nil
+          ret = task[0].titleize.match(/ante natal|post natal/i)[0].gsub(/\s/, "-") rescue ""
           
-          @task_status_map[t] = done(scope, encounter_name, concept)
+          @task_status_map[t] = done(scope, encounter_name, concept, ret)
         
           @links[task[0].titleize][t.titleize] = "/#{ctrller}/#{t.downcase.gsub(/\s/, "_").downcase}?patient_id=#{
           @patient.id}&user_id=#{params[:user_id]}"
@@ -99,11 +108,12 @@ class PatientsController < ApplicationController
       end
 
     }
-    #@links = {} if (Location.find(session[:location_id]).name.match(/Registration/i) rescue false)
+   
     @links.delete_if{|key, link|
       @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
     }
-
+    #raise @links.to_yaml
+    
     @links["Give Drugs"] = "/encounters/give_drugs?patient_id=#{@patient.id}&user_id=#{@user.id}"
     @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
     
@@ -119,39 +129,116 @@ class PatientsController < ApplicationController
     @links.keys.each{|key|
       if key.match(/Natal Exams/i)
         ret = key.downcase.gsub(/\s/, "-").gsub(/-exams/, "")
-        @links[key]["Admission Note"] = "/patients/admissions_note?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=#{ret}"
+        @links[key]["Admissions Note"] = "/patients/admissions_note?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=#{ret}"
       end
     }
-    @babies = @patient.current_babies rescue []
+    
+    @groupings = {}
+    @groupings["Ante Natal Exams"] = ["ante_natal_admission_details", "ante_natal_vitals", "ante_natal_patient_history", "ante natal pmtct", "physical_exam", "ante_natal_vaginal_examination", "general_body_exam", "admission_diagnosis", "ante natal notes", "admissions_note"]
+    @groupings["Post Natal Exams"] = ["current_delivery", "post_natal_admission_details", "abdominal examination", "post natal pmtct", "post_natal_patient_history", "post_natal_vitals", "post_natal_vaginal_examination", "post natal notes", "admissions_note"]
+    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "update_baby_outcome", "kangaroo_review_visit"]
+    @groupings["Update Outcome"] = ["delivered", "discharged", "referred_out", "absconded", "patient_died"]
 
+    @next_user_task = []
+    @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
+    if ((all_recent_babies_entered?(@patient) == true) rescue false)
+      prefix = (@patient.recent_babies.to_i + 1) rescue 0
+
+      @prefix = "Baby"
+
+      case prefix
+      when 1
+        @prefix = "1<sup>st</sup> " + @prefix
+      when 2
+        @prefix = "2<sup>nd</sup> " + @prefix
+      when 3
+        @prefix = "3<sup>rd</sup> " + @prefix
+      else
+        @prefix = "#{prefix}<sup>th</sup> " + @prefix
+      end
+      
+      @next_user_task = ["#{@prefix} Delivery",
+        "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}&prefix=#{@prefix}#{@ret}"
+      ]
+      redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}&prefix=#{@prefix}#{@ret}" and return  if (session[:autoflow].to_s == "true" rescue false)
+
+    end
+    @groupings["Ante Natal Exams"].each do |encounter|
+
+      next if !@next_user_task.blank? || ((@patient.recent_babies.to_i > 0) rescue true)
+      next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(encounter.titleize.upcase)
+     
+      scope = @task.task_scopes[encounter.downcase][:scope].upcase rescue nil
+      scope = "TODAY" if scope.blank?
+      encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
+      concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
+
+      next if encounter.match(/note/i)
+      
+      if done_ret(scope, encounter_name, "ante-natal", concept) == "notdone"
+        display_task_name = encounter.match(/natal/i)? encounter : ("ante natal " + encounter).humanize
+        @next_user_task = [display_task_name.gsub(/examinations|examination/i, "Exam"),
+          "/two_protocol_patients/#{encounter.downcase.gsub(/\s/, "_")}?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=ante-natal"]
+
+        redirect_to @next_user_task[1]  and return  if (session[:autoflow].to_s == "true" rescue false)
+          
+      end
+    end
+    
+    if @next_user_task.blank?
+      @groupings["Post Natal Exams"].each do |encounter|
+        next if !@next_user_task.blank? && ((@patient.recent_babies.to_i > 0 rescue false) ? encounter.match(/current\_delivery/i) : false)
+        next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(encounter.titleize.upcase)
+          
+        scope = @task.task_scopes[encounter.downcase][:scope].upcase rescue nil
+        scope = "TODAY" if scope.blank?
+        encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
+        concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
+        next if encounter.match(/note/i)
+        
+        if done_ret(scope, encounter_name, "post-natal", concept) == "notdone"
+
+          display_task_name = encounter.match(/natal/i)? encounter : ("post natal " + encounter).humanize
+          @next_user_task = [display_task_name.gsub(/examinations|examination/i, "Exam"),
+            "/two_protocol_patients/#{encounter.downcase.gsub(/\s/, "_")}?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=post-natal"]
+
+          redirect_to @next_user_task[1]  and return  if (session[:autoflow].to_s == "true" rescue false)
+
+        end
+     
+      end
+    end
+       
+    @babies = @patient.current_babies rescue []
+    
   end
 
-  def done(scope = "", encounter_name = "", concept = "", type="mother")
+  def done(scope = "", encounter_name = "", concept = "", type="mother", ret="")
 
     patient_ids = [@task.patient.id]
     patient_ids += Relationship.find_all_by_person_a_and_relationship(@task.patient.id,
       RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child")).collect{|rel| rel.person_b}
-
+    ret = "" if ret.blank?
     scope = "" if concept.blank?
     available = []
 
     case scope
     when "TODAY"
       available = Encounter.find(:all, :joins => [:observations], :conditions =>
-          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) = ?",
-          patient_ids, EncounterType.find_by_name(encounter_name).id , ConceptName.find_by_name(concept).concept_id, @task.current_date.to_date]) rescue []
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND COALESCE(obs.comments, '') = ? AND DATE(encounter_datetime) = ?",
+          patient_ids, EncounterType.find_by_name(encounter_name).id , ConceptName.find_by_name(concept).concept_id, ret, @task.current_date.to_date]) rescue []
 
     when "RECENT"
       available = Encounter.find(:all, :joins => [:observations], :conditions =>
-          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? " +
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND obs.comments = ?" +
             "AND (DATE(encounter_datetime) >= ? AND DATE(encounter_datetime) <= ?)",
-          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id,
+          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id, ret,
           (@task.current_date.to_date - 6.month), (@task.current_date.to_date + 6.month)]) rescue []
 
     when "EXISTS"
       available = Encounter.find(:all, :joins => [:observations], :conditions =>
-          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ?",
-          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id]) rescue []
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND obs.comments = ?",
+          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id, ret]) rescue []
 
     when ""
       #available = Encounter.find(:all, :conditions =>
@@ -164,6 +251,35 @@ class PatientsController < ApplicationController
 
   end
 
+  def done_ret(scope = "", encounter_name = "", ret = "", concept="")
+
+    session_date = session[:datetime].to_date rescue Date.today
+    patient_ids = [@task.patient.id]
+    available = []
+    ret = " if ret.blank?"
+    case scope
+    when "TODAY"
+      available = Encounter.find(:all, :joins => [:observations], :conditions =>
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) = ?",
+          patient_ids, EncounterType.find_by_name(encounter_name).id ,
+          ConceptName.find_by_name(concept).concept_id, session_date.to_date]) rescue []
+
+    when "RECENT"
+      available = Encounter.find(:all, :joins => [:observations], :conditions =>
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? " +
+            "AND (DATE(encounter_datetime) >= ? AND DATE(encounter_datetime) <= ?)",
+          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id,
+          (session_date - 6.month), (session_date + 6.month)]) rescue []
+
+    when ""
+
+    end
+
+    available = available.blank?? "notdone" : "done"
+    available
+
+  end
+  
   def current_visit
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
 
@@ -219,7 +335,7 @@ class PatientsController < ApplicationController
 
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
     @children = Relationship.find_all_by_person_a_and_relationship(@patient.patient_id,
-      RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child")) rescue nil
+      RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id) rescue nil
 
     @baby_programs = {}
      
@@ -253,10 +369,9 @@ class PatientsController < ApplicationController
         @baby_programs["#{@baby.name}"] = @programs if !@programs.blank?
        
       }
-      #raise @baby_programs.to_yaml
+       
     end
-    # raise @programs.inspect
-
+  
     render :layout => false
   end
 
@@ -292,7 +407,7 @@ class PatientsController < ApplicationController
           :stream=> false,
           :filename=>"#{params[:patient_id]}#{rand(10000)}.bcl",
           :disposition => "inline") and return
-    	end
+      end
       
     elsif params[:cat] == "baby"
       
@@ -307,11 +422,11 @@ class PatientsController < ApplicationController
           :stream=> false,
           :filename=>"#{params[:patient_id]}#{rand(10000)}.bcs",
           :disposition => "inline") and return
-    	end
+      end
       
     else
       print_string = (raise "Unable to resolve relations")
-    end   
+    end
 
     redirect_to "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
 
@@ -541,13 +656,36 @@ class PatientsController < ApplicationController
   def admissions_note
     raise params.to_yaml
   end
+
+  def all_recent_babies_entered?(patient)
+
+    (patient.recent_babies < patient.recent_delivery_count) rescue false
+    
+  end
+  
+  def delivery_print
+
+    patient = Patient.find(params[:patient_id])
+
+    if [false, 0, "0", "false"].include?(patient.person.dead)
+      print_string = (patient.national_id_label rescue "") + (patient.baby_details("summary") rescue "") + (patient.baby_details("apgar") rescue "") + (patient.baby_details("complications") rescue "")
+    else
+      print_string = (patient.national_id_label rescue "") + (patient.baby_details("summary") rescue "") + (patient.baby_details("complications") rescue "")
+    end
+
+    send_data(print_string,
+      :type=>"application/label; charset=utf-8",
+      :stream=> false,
+      :filename=>"#{params[:patient_id]}#{rand(10000)}.lbl",
+      :disposition => "inline")
+  end
  
   protected
 
   def sync_user
     if !session[:user].nil?
       @user = session[:user]
-    else 
+    else
       @user = JSON.parse(RestClient.get("#{@link}/verify/#{(session[:user_id])}")) rescue {}
     end
   end

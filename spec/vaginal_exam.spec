@@ -1,4 +1,4 @@
-P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, label: Vaginal Examination, pos: 12, parent: 4]
+P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: station, label: Ante Natal Vaginal Examination, pos: 12, parent: 4]
 C.1.1. Given a registered patient, capture their relevenat Vaginal Examinations
 
 Q.1.1.1. Genetalia Inspection [concept: GENETALIA INSPECTION, field_type: text, pos: 0, tt_pageStyleClass: LongSelectList]
@@ -69,3 +69,4 @@ O.1.1.10.6. Sacrum
 O.1.1.10.7. Vertex
 O.1.1.10.8. Not Done
 
+Q.1.1.11. Next URL [pos: 10, name: ret, value: ante-natal, type: hidden]

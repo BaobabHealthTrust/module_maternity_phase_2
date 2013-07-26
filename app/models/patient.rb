@@ -283,4 +283,206 @@ class Patient < ActiveRecord::Base
     ob 
   end
 
+  def fundus
+    self.encounters.collect{|e|
+      e.observations.collect{|o|
+        o.answer_string.to_i if o.concept.concept_names.map(& :name).include?("Fundus")
+      }.compact
+    }.uniq.delete_if{|x| x == []}.flatten.max
+  end
+
+  def fundus_by_lmp(today = Date.today)
+    self.encounters.collect{|e|
+      e.observations.collect{|o|
+        (((today.to_date - o.answer_string.to_date).to_i/7) rescue nil) if o.concept.concept_names.map(& :name).include?("Date of last menstrual period")
+      }.compact
+    }.uniq.delete_if{|x| x == []}.flatten.max
+  end
+
+  def lmp(today = Date.today)
+    self.encounters.collect{|e|
+      e.observations.collect{|o|
+        (o.answer_string.to_date rescue nil) if o.concept.concept_names.map(& :name).include?("Date of last menstrual period") && o.answer_string.to_date <= today.to_date
+      }.compact
+    }.uniq.delete_if{|x| x == []}.flatten.max
+  end
+
+  def national_id_label
+    return unless self.national_id
+    sex =  self.person.gender.match(/F/i) ? "(F)" : "(M)"
+    address = self.address.strip[0..24].humanize.delete("'") rescue ""
+    label = ZebraPrinter::StandardLabel.new
+    label.font_size = 2
+    label.font_horizontal_multiplier = 2
+    label.font_vertical_multiplier = 2
+    label.left_margin = 50
+    label.draw_barcode(50,180,0,1,5,15,120,false,"#{self.national_id}")
+    label.draw_multi_text("#{self.name.titleize.delete("'")}") #'
+    label.draw_multi_text("#{self.national_id_with_dashes} #{self.person.birthdate_formatted}#{sex}")
+    label.draw_multi_text("#{address}")
+    label.print(1)
+  end 
+
+  def baby_details(type)
+
+    values = {}
+    self.encounters.collect{|enc| enc if enc.name.upcase == "BABY DELIVERY"}.each do |enc|
+
+      user = User.find(enc.creator).name rescue nil
+      values["TIME"]  = enc.encounter_datetime.strftime("%d/%b/%Y")
+      values["USER"] = (user.split(" ")[0].strip[0 .. 0] + ". " + user.split(" ")[1]) rescue "?"
+      date = ""
+      time = ""
+
+      enc.observations.each do |obs|
+        name = ConceptName.find_by_concept_id(obs.concept.concept_id).name.upcase rescue ""
+        if name.match(/Gender/i)
+          values["GENDER"] = obs.answer_string
+        elsif name.match(/Date of/i)
+          date = obs.answer_string
+        elsif name.match(/Time of/i)
+          time = obs.answer_string
+        elsif name.match(/length/i)
+          values["#{name.upcase.strip}"] = ((obs.answer_string.blank? || obs.answer_string.to_i == 0) rescue true) ? "Unknown" : obs.answer_string
+        else
+          values["#{name.upcase.strip}"] = (name.match(/Minute/i) && !name.match(/\?/)) ? ((obs.value_numeric.to_i.blank? rescue true) ? "?" : obs.answer_string.to_i) : obs.answer_string
+        end
+
+      end
+
+      values["TIME"] = date + "   " + time
+
+    end
+
+    if (values["PLACE OF DELIVERY"].downcase.strip == "this facility" rescue false)
+      values["PLACE OF DELIVERY"] = get_global_property_value("facility.name")
+    end
+
+    label = ZebraPrinter::StandardLabel.new
+
+    case type
+
+    when "apgar"
+      label.draw_text("FIRST MINUTE APGAR",28,29,0,1,1,2,false)
+      label.draw_text("FIFTH MINUTE APGAR",400,29,0,1,1,2,false)
+      label.draw_line(28,60,162,1,0)
+      label.draw_line(400,60,162,1,0)
+
+      label.draw_text("Entered By:",40,283,0,1,1,1,false)
+      label.draw_text(values["USER"],190,283,0,1,1,1,false)
+
+      label.draw_text("Date Entered:",470,283,0,1,1,1,false)
+      label.draw_text(values["TIME"],620,283,0,1,1,1,false)
+
+      label.draw_text("Appearance",28,80,0,2,1,1,false)
+      label.draw_text("Pulse",28,110,0,2,1,1,false)
+      label.draw_text("Grimace",28,140,0,2,1,1,false)
+      label.draw_text("Activity",28,170,0,2,1,1,false)
+      label.draw_text("Respiration",28,200,0,2,1,1,false)
+      label.draw_text("APGAR SCORE", 28,230,0,1,1,2,false)
+
+      label.draw_text("Appearance",400,80,0,2,1,1,false)
+      label.draw_text("Pulse",400,110,0,2,1,1,false)
+      label.draw_text("Grimace",400,140,0,2,1,1,false)
+      label.draw_text("Activity",400,170,0,2,1,1,false)
+      label.draw_text("Respiration",400,200,0,2,1,1,false)
+      label.draw_text("APGAR SCORE", 400,230,0,1,1,2,false)
+
+      label.draw_line(250,70,130,1,0)
+      label.draw_line(250,70,1,183,0)
+      label.draw_line(380,70,1,183,0)
+      label.draw_line(250,100,130,1,0)
+      label.draw_line(250,130,130,1,0)
+      label.draw_line(250,160,130,1,0)
+      label.draw_line(250,190,130,1,0)
+      label.draw_line(250,220,130,1,0)
+      label.draw_line(250,250,130,1,0)
+      label.draw_line(659,70,130,1,0)
+      label.draw_line(659,70,1,183,0)
+      label.draw_line(790,70,1,183,0)
+      label.draw_line(659,100,130,1,0)
+      label.draw_line(659,130,130,1,0)
+      label.draw_line(659,160,130,1,0)
+      label.draw_line(659,190,130,1,0)
+      label.draw_line(659,220,130,1,0)
+      label.draw_line(659,250,130,1,0)
+
+      label.draw_text("#{values['APPEARANCE MINUTE ONE']}/2",280,80,0,2,1,1,false)
+      label.draw_text("#{values['PULSE MINUTE ONE']}/2",280,110,0,2,1,1,false)
+      label.draw_text("#{values['GRIMANCE MINUTE ONE']}/2",280,140,0,2,1,1,false)
+      label.draw_text("#{values['ACTIVITY MINUTE ONE']}/2",280,170,0,2,1,1,false)
+      label.draw_text("#{values['RESPIRATION MINUTE ONE']}/2",280,200,0,2,1,1,false)
+      label.draw_text("#{values['APGAR MINUTE ONE']}/10",280,230,0,2,1,1,false)
+
+      label.draw_text("#{values['APPEARANCE MINUTE FIVE']}/2",690,80,0,2,1,1,false)
+      label.draw_text("#{values['PULSE MINUTE FIVE']}/2",690,110,0,2,1,1,false)
+      label.draw_text("#{values['GRIMANCE MINUTE FIVE']}/2",690,140,0,2,1,1,false)
+      label.draw_text("#{values['ACTIVITY MINUTE FIVE']}/2",690,170,0,2,1,1,false)
+      label.draw_text("#{values['RESPIRATION MINUTE FIVE']}/2",690,200,0,2,1,1,false)
+      label.draw_text("#{values['APGAR MINUTE FIVE']}/10",690,230,0,2,1,1,false)
+
+    when "summary"
+
+      label.draw_text("DELIVERY SUMMARY",300,29,0,1,1,2,false)
+      label.draw_line(300,60,153,1,0)
+
+      label.draw_text("Entered By:",40,290,0,1,1,1,false)
+      label.draw_text(values["USER"],190,290,0,1,1,1,false)
+
+      label.draw_text("Date Entered:",470,290,0,1,1,1,false)
+      label.draw_text(values["TIME"],620,290,0,1,1,1,false)
+
+      label.draw_text(" Birth Weight    : ",28,80,0,2,1,1,false)
+      label.draw_text(" Birth Length    : ",28,110,0,2,1,1,false)
+      label.draw_text(" Baby outcome    : ",28,140,0,2,1,1,false)
+      label.draw_text(" Sex             : ",28,170,0,2,1,1,false)
+      label.draw_text(" Presentation    : ",28,200,0,2,1,1,false)
+      label.draw_text(" Delivery Time   : ", 28,230,0,2,1,1,false)
+
+      label.draw_text("#{values['BIRTH WEIGHT']}",248,80,0,2,1,1,false)
+      label.draw_text("#{values['BIRTH LENGTH']}",248,110,0,2,1,1,false)
+      label.draw_text("#{values['BABY OUTCOME']}",248,140,0,2,1,1,false)
+      label.draw_text("#{values['GENDER']}",248,170,0,2,1,1,false)
+      label.draw_text("#{values['PRESENTATION']}",248,200,0,2,1,1,false)
+      label.draw_text("#{values['TIME']}", 248,230,0,2,1,1,false)
+
+    when "complications"
+      label.draw_text("DELIVERY SUMMARY CONT..",300,29,0,1,1,2,false)
+      label.draw_line(300,60,153,1,0)
+
+      label.draw_text("Entered By:",40,290,0,1,1,1,false)
+      label.draw_text(values["USER"],190,290,0,1,1,1,false)
+
+      label.draw_text("Date Entered:",470,290,0,1,1,1,false)
+      label.draw_text(values["TIME"],620,290,0,1,1,1,false)
+
+      label.draw_text(" Place Of Delivery    : ",28,80,0,2,1,1,false)
+      label.draw_text(" Tet.Ointment Given?  : ",28,110,0,2,1,1,false)
+      label.draw_text(" Complications        : ",28,140,0,2,1,1,false)
+      label.draw_text(" Breast Fed In 60 min?: ",28,170,0,2,1,1,false)
+      label.draw_text(" On NVP?              : ",28,200,0,2,1,1,false)
+      label.draw_text(" Comments             : ", 28,230,0,2,1,1,false)
+
+      label.draw_text("#{values['PLACE OF DELIVERY']}",248,80,0,2,1,1,false)
+      label.draw_text("#{values['TETRACYCLINE EYE OINTMENT GIVEN?']}",248,110,0,2,1,1,false)
+      label.draw_text("#{values['NEWBORN BABY COMPLICATIONS']}",248,140,0,2,1,1,false)
+      label.draw_text("#{values['BREAST FEEDING INITIATED WITHIN 60 MINUTES?']}",248,170,0,2,1,1,false)
+      label.draw_text("#{values['BABY ON NVP?']}",248,200,0,2,1,1,false)
+      label.draw_text("#{values['CLINICIAN NOTES']}", 248,230,0,2,1,1,false)
+      
+    end
+
+    label.print(1)
+
+  end
+
+  def get_global_property_value(global_property)
+		property_value = Settings[global_property]
+		if property_value.nil?
+			property_value = GlobalProperty.find(:first, :conditions => {:property => "#{global_property}"}
+      ).property_value rescue nil
+		end
+		return property_value
+	end
+
 end

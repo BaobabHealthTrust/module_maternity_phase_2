@@ -72,7 +72,7 @@ if params[:user_id].nil?
 
 	end
 
-	def patient_history
+	def post_natal_patient_history
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
@@ -89,7 +89,7 @@ if params[:user_id].nil?
 
 	end
 
-	def vaginal_examination
+	def ante_natal_vaginal_examination
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
@@ -106,7 +106,7 @@ if params[:user_id].nil?
 
 	end
 
-	def vitals
+	def ante_natal_vitals
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
@@ -157,7 +157,24 @@ if params[:user_id].nil?
 
 	end
 
-	def notes
+	def ante_natal_notes
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def post_natal_vaginal_examination
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
@@ -293,7 +310,41 @@ if params[:user_id].nil?
 
 	end
 
-	def pmtct
+	def ante_natal_pmtct
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def ante_natal_patient_history
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def post_natal_vitals
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
@@ -395,24 +446,7 @@ if params[:user_id].nil?
 
 	end
 
-	def physical_exam_baby
-
-	@patient = Patient.find(params[:patient_id]) rescue nil
-
-	redirect_to '/encounters/no_patient' and return if @patient.nil?
-
-if params[:user_id].nil?
-	redirect_to '/encounters/no_user' and return
-	end
-
-	@user = User.find(params[:user_id]) rescue nil?
-
-	redirect_to '/encounters/no_patient' and return if @user.nil?
-	
-
-	end
-
-	def admission_details
+	def post_natal_admission_details
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
@@ -446,7 +480,24 @@ if params[:user_id].nil?
 
 	end
 
-	def baby
+	def post_natal_notes
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def baby_outcomes
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
@@ -497,6 +548,23 @@ if params[:user_id].nil?
 
 	end
 
+	def post_natal_pmtct
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
 	def ante_natal_exams
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
@@ -514,7 +582,24 @@ if params[:user_id].nil?
 
 	end
 
-	def baby_exam
+	def ante_natal_admission_details
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def baby_examination
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 

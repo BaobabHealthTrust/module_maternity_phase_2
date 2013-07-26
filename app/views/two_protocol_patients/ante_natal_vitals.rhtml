@@ -1,0 +1,72 @@
+<script type='text/javascript' src='/touchscreentoolkit/lib/javascripts/vitals.js' ></script>
+
+<script type='text/javascript' language='javascript'>
+<!--
+	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
+	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
+	</script>
+
+<form method='post' action='/encounters/create'>
+	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='encounter_type' value='Vitals ' />
+	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
+	<input type='hidden' name='user_id' value='<%= session[:user_id] %>' />
+	<table>
+		<tr>
+			<td>
+				Systolic Blood Pressure 
+			</td>
+			<td>
+<input type='text' id='1.1.1'  name='concept[SYSTOLIC BLOOD PRESSURE]' helpText='Systolic Blood Pressure '  absoluteMin='20'  tt_onLoad='calculateBP("1.1.1*1.1.2*1"); attribute("1.1.1*validationRule*([0-9]+\\.[0-9])|Unknown$"); attribute("1.1.1*validationMessage*You must enter a decimal between 0 and 9 (for example 36<b>.6</b>)")'  min='90'  units='mm Hg'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='250'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""'  allowFreeText='true'  max='140'  pos='0' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Diastolic Blood Pressure 
+			</td>
+			<td>
+<input type='text' id='1.1.2'  name='concept[DIASTOLIC BLOOD PRESSURE]' helpText='Diastolic Blood Pressure '  absoluteMin='35'  tt_onLoad='calculateBP("1.1.1*1.1.2*2"); attribute("1.1.2*validationRule*^([0-9]+)|Unknown$")'  min='60'  units='mm Hg'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='135'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""'  allowFreeText='true'  max='90'  pos='1' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Pulse (Beats Per Minute)
+			</td>
+			<td>
+<input type='text' id='1.1.3'  name='concept[PULSE]' helpText='Pulse (Beats Per Minute)'  absoluteMin='0'  tt_onLoad='attribute("1.1.3*validationRule*([0-9]+)|Unknown$")'  min='50'  units='bpm'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='160'  max='120'  pos='3' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Respiration (Breaths Per Minute) 
+			</td>
+			<td>
+<input type='text' id='1.1.4'  name='concept[RESPIRATION]' helpText='Respiration (Breaths Per Minute) '  absoluteMin='0'  tt_onLoad='attribute("1.1.4*validationRule*([0-9]+)|Unknown$")'  min='12'  units='bpm'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='200'  max='20'  pos='4' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Temperature 
+			</td>
+			<td>
+<input type='text' id='1.1.5'  name='concept[TEMPERATURE]' helpText='Temperature '  absoluteMin='0'  tt_onLoad='attribute("1.1.5*validationRule*([0-9]+)|Unknown$")'  min='36.5'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='100'  max='37.5'  pos='5' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Fetal Heart Rate 
+			</td>
+			<td>
+<input type='text' id='1.1.6'  name='concept[FETAL HEART RATE]' helpText='Fetal Heart Rate '  absoluteMin='0'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='200'  pos='6' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Next URL 
+			</td>
+			<td>
+<input  id='1.1.7'   helpText='Next URL '  name='ret'  type='hidden'  value='ante-natal'  pos='7' />
+			</td>
+		</tr>
+	</table>
+</form>

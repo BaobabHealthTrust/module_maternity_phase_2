@@ -86,20 +86,22 @@
     <script src="/javascripts/touchscreenYesNo.js" type="text/javascript"></script>
 
     <script type="text/javascript">
-      function voiding(node) {
-        confirmYesNo("Void this person?", function() {
-          hideConfirmation();
 
-          $.post('/patients/void/?id=' + node.attr('relationship')+ '&type=' + node.attr('type'), {}, function(data, status) {
-            if (status == 'success') node.remove();
-            window.parent.location = "/patients/general_demographics/<%= @patient.id %>?patient_id=<%= @patient.id%>&user_id=<%= @user_id%>";
-          })
-        }, function() { hideConfirmation(); });
-      }
+  function voiding(node) {
 
-      jQuery(document).ready(function($) {
-        $('div.void').click(function() { voiding($(this)); return false; });
+    confirmYesNo("Void this person?", function() {
+      hideConfirmation();
+
+      $.post('/patients/void/?id=' + node.attr('relationship')+ '&type=' + node.attr('type'), {}, function(data, status) {
+        if (status == 'success') node.remove();
+        window.parent.location = "/patients/general_demographics/<%= @patient.id %>?patient_id=<%= @patient.id%>&user_id=<%= @user_id%>";
       })
+    }, function() { hideConfirmation(); });
+  }
+
+  jQuery(document).ready(function($) {
+    $('div.void').click(function() { voiding($(this)); return false; });
+  })
     </script>
   </head>
   <body id="mateme">
@@ -198,8 +200,8 @@
                   10=>"th"
                 }
 
-               (1..(@maternity_patient.kids.length)).each do |baby|
-                  next if Person.find(@maternity_patient.kids[baby - 1].person_b).dead == 1
+                (1..(@maternity_patient.kids.length)).each do |baby|
+                  @class = (Person.find(@maternity_patient.kids[baby - 1].person_b).dead == 1) ? "gray" : ""
 
                   if baby == 1 %>
                     <table style=" width: 97%;">
@@ -230,9 +232,9 @@
                         </td>
                         <td>
 
-                          <button style="min-width: 300px;" onclick="window.location='/patients/birth_report?person_id=<%=
+                          <button class="<%=  @class%>" style="min-width: 300px;" onclick=" if (<%= @class.blank? %>){window.location='/patients/birth_report?person_id=<%=
                           (@maternity_patient.kids.length >= baby ?
-                                      @maternity_patient.kids[baby - 1].person_b : "") %>&patient_id=<%= @patient.id %>&user_id=<%=@user_id%>'">
+                                      @maternity_patient.kids[baby - 1].person_b : "") %>&patient_id=<%= @patient.id %>&user_id=<%=@user_id%>'}">
                             <span>
                               <%= "#{baby}#{prefixes[baby]}" %> Baby
                             </span>
@@ -250,7 +252,7 @@
                           end
 
                         %>
-                          <button style="min-width: 300px;" onclick="window.parent.location='<%= @demographics_url%>'">
+                          <button class="<%=  @class%>" style="min-width: 300px;" onclick="window.parent.location='<%= @demographics_url%>'">
                             <span>
                               <%= "#{baby}#{prefixes[baby]}" %> Baby
                             </span>

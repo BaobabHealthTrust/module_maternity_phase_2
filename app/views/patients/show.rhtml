@@ -7,7 +7,7 @@
 
 <%
 
-next_task = @task.encounter_type.gsub('_',' ') rescue nil
+next_task = @next_user_task[0].gsub('_',' ') rescue nil
 
 %>
 
@@ -86,7 +86,7 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
       __$("patient-dashboard-application").appendChild(nextTask);
     }
 
-    __$("nextTask").innerHTML = "<b>Next Task:</b><br /><i><%= next_task.titleize %></i>";
+    __$("nextTask").innerHTML = "<b>Next Task:</b><br /><i><%= next_task.titleize rescue ""%></i>";
   }
 
   function selectChild(ctrl, arr){
@@ -234,9 +234,9 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
   #nextTask {
     border-radius: 50px;
     border: 1px solid #ccc;
-    width: 260px;
+    width: 320px;
     height: 50px;
-    font-size: 18px;
+    font-size: 17px;
     /*background-color: #efc;*/
     background-color: rgb(153, 238, 153);
     color: rgb(0, 0, 0);
@@ -244,7 +244,7 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
     z-index: 100;
     text-align: center;
     -moz-user-select: none;
-    margin-top: 5px;
+    margin-top: 2px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -274,7 +274,7 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
 
       <select id="links">
 
-        <% ["Ante Natal Exams", "Post Natal Exams", "Update Outcome", "Baby", "Social History", "Update Hiv Status", "Give Drugs"].each do |encounter| %>
+        <% ["Ante Natal Exams", "Post Natal Exams", "Update Outcome", "Baby Outcomes", "Social History", "Update Hiv Status", "Give Drugs"].each do |encounter| %>
 
           <%
           link = @links[encounter]
@@ -289,10 +289,14 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
             <optgroup label="<%= (!@task.labels[encounter.downcase].nil? ?
                           @task.labels[encounter.downcase] : encounter) %>" >
 
-              <% link.sort.each do |label, path| %>
+
+              <%
+              (@groupings[encounter].blank?? link.keys.sort : @groupings[encounter]).each do |label|
+                path = link[label.titleize]
+              %>
 
                 <option value="<%= path %>">
-                  <%= label %>
+                  <%= label.gsub(/examination/i, "exam").gsub(/baby\_exam/i, "Baby Examinations").humanize.titleize %>
                 </option>
 
               <% end %>
@@ -317,8 +321,8 @@ next_task = @task.encounter_type.gsub('_',' ') rescue nil
           Wrist Bands
         </option>
 
-        <% if @task.url != "/patients/show/#{@patient.id}?user_id=#{@user.id}" %>
-          <option link="<%= @task.url  %>" ttSize = "160px">Continue</option>
+        <% if @next_user_task.present? && @next_user_task[1] != "/patients/show/#{@patient.id}?user_id=#{@user.id}" %>
+          <option link="<%=  @next_user_task[1] + "&autoflow=true"  %>" ttSize = "160px">Continue</option>
         <% end %>
 
       </select>

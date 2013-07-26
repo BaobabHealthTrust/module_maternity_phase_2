@@ -33,4 +33,16 @@ class Person < ActiveRecord::Base
     "#{self.names.first.given_name} #{self.names.first.family_name}"
   end
 
+  def birthdate_formatted
+    if self.birthdate_estimated==1
+      if self.birthdate.day == 1 and self.birthdate.month == 7
+        self.birthdate.strftime("??/???/%Y")
+      elsif self.birthdate.day == 15
+        self.birthdate.strftime("??/%b/%Y")
+      end
+    else
+      self.birthdate.strftime("%d/%b/%Y")
+    end
+  end
+
 end
