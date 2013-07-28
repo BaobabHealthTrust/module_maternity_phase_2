@@ -15,7 +15,7 @@
 				Fundus (weeks) 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[FUNDUS]' helpText='Fundus (weeks) '  min='<%= (@patient.fundus_by_lmp - 1) rescue 42%>'  tt_pageStyleClass='NumbersOnly na'  max='<%= (@patient.fundus_by_lmp + 1) rescue 42%>'  pos='0'  field_type='number' />
+<input type='text' id='1.1.1'  name='concept[FUNDUS]' helpText='Fundus (weeks) '  max='<%= (@patient.fundus_by_lmp + 1) rescue 42%>'  tt_pageStyleClass='NumbersOnly na'  field_type='number'  pos='0'  min='<%= (@patient.fundus_by_lmp - 1) rescue 42%>' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Lie 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[LIE]' helpText='Lie ' condition='__$("1.1.1").value != "N/A"'  pos='1'  field_type='text' >
+<select id='1.1.2' name='concept[LIE]' helpText='Lie ' field_type='text'  condition='__$("1.1.1").value != "N/A"'  pos='1' >
 <option></option>
 <option value='Longitudinal'>Longitudinal</option>
  <option value='Transverse'>Transverse</option>
@@ -37,7 +37,7 @@
 				Contractions 
 			</td>
 			<td>
-<select id='1.1.3' name='concept[CONTRACTIONS]' helpText='Contractions ' condition='__$("1.1.1").value != "N/A"'  pos='2'  field_type='text' >
+<select id='1.1.3' name='concept[CONTRACTIONS]' helpText='Contractions ' field_type='text'  condition='__$("1.1.1").value != "N/A"'  pos='2' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -49,7 +49,7 @@
 				Contractions Intensity 
 			</td>
 			<td>
-<select id='1.1.4' name='concept[CONTRACTIONS INTENSITY]' helpText='Contractions Intensity ' condition='__$("1.1.3").value.trim().toUpperCase() == "YES"'  pos='3'  field_type='text' >
+<select id='1.1.4' name='concept[CONTRACTIONS INTENSITY]' helpText='Contractions Intensity ' field_type='text'  condition='__$("1.1.3").value.trim().toUpperCase() == "YES"'  pos='3' >
 <option></option>
 <option value='Mild'>Mild</option>
  <option value='Moderate'>Moderate</option>
@@ -63,7 +63,7 @@
 				Contractions Level 
 			</td>
 			<td>
-<input type='text' id='1.1.5'  name='concept[CONTRACTIONS LEVEL]' helpText='Contractions Level '  condition='__$("1.1.4").value.trim().toUpperCase() != "NIGGLING"'  tt_onLoad='changeIds()'  tt_pageStyleClass='NumbersOnly na'  pos='4'  absoluteMin='1'  absoluteMax='5'  field_type='number' />
+<input type='text' id='1.1.5'  name='concept[CONTRACTIONS LEVEL]' helpText='Contractions Level '  tt_pageStyleClass='NumbersOnly na'  absoluteMax='5'  tt_onLoad='changeIds()'  field_type='number'  condition='__$("1.1.4").value.trim().toUpperCase() != "NIGGLING"'  pos='4'  absoluteMin='1' />
 			</td>
 		</tr>
 		<tr>
@@ -71,7 +71,7 @@
 				Descent 
 			</td>
 			<td>
-<select id='1.1.6' name='concept[DESCENT]' helpText='Descent ' tt_pageStyleClass='NoKeyboard'  pos='5'  field_type='text' >
+<select id='1.1.6' name='concept[DESCENT]' helpText='Descent ' tt_pageStyleClass='NoKeyboard'  field_type='text'  pos='5' >
 <option></option>
 <option value='N/A'>N/A</option>
  <option value='5/5'>5/5</option>
@@ -88,7 +88,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.7'   helpText='Next URL '  name='ret'  type='hidden'  value='ante-natal'  pos='6' />
+<input  id='1.1.7'   helpText='Next URL '  value='ante-natal'  type='hidden'  pos='6'  name='ret' />
 			</td>
 		</tr>
 	</table>

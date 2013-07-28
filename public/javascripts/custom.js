@@ -117,9 +117,9 @@ function calculateEDOD(){
     }
 
     $("expected_date_of_delivery").innerHTML = "Expected Date Of Delivery: <i style='font-size: 1.2em; float: right;'>" +
-        edod + "</i><br /><br />Gestation Weeks: " + (gestation < 37 &&
+    edod + "</i><br /><br />Gestation Weeks: " + (gestation < 37 &&
         gestation.trim().length > 0 ? "<i style='color: red'>(Premature)</i>" : (gestation > 41 && gestation.trim().length > 0 ? "<i style='color: red'>(Abnormal)</i>" : "")) +
-        "<i style='font-size: 1.2em; float: right; width: 100px;'>" + gestation + "</i>";
+    "<i style='font-size: 1.2em; float: right; width: 100px;'>" + gestation + "</i>";
 
     timedEvent = setTimeout('calculateEDOD()', 500);
 }
@@ -209,7 +209,7 @@ function showPeriodOnARVs(){
     }
 
     $('arv_period').innerHTML = "<i style='font-size: 1.2em;float: left;'> Period On ARVs    </i> "
-        +  "<i style='font-size: 1.2em;float: right;'>" + calculatePeriodOnARVs() + ((calculatePeriodOnARVs() == 1)? " Month</i>" : " Months</i>")
+    +  "<i style='font-size: 1.2em;float: right;'>" + calculatePeriodOnARVs() + ((calculatePeriodOnARVs() == 1)? " Month</i>" : " Months</i>")
     if (temp != "eventSet"){
         timedEvent = self.setInterval(function(){
             showPeriodOnARVs()
@@ -298,10 +298,10 @@ function calculateBP(str){
     if(pos == 1){
         bp = ($("touchscreenInput" + tstCurrentPage).value.trim().length > 0 ? $("touchscreenInput" +
             tstCurrentPage).value.trim() : "?") +
-            "/" + ($(id2).value.trim().length > 0 ? $(id2).value.trim() : "?");
+        "/" + ($(id2).value.trim().length > 0 ? $(id2).value.trim() : "?");
     } else if(pos == 2){
         bp = ($(id1).value.trim().length > 0 ? $(id1).value.trim() : "?") +
-            "/" + ($("touchscreenInput" + tstCurrentPage).value.trim().length > 0 ? $("touchscreenInput" +
+        "/" + ($("touchscreenInput" + tstCurrentPage).value.trim().length > 0 ? $("touchscreenInput" +
             tstCurrentPage).value.trim() : "?");
     }
 
@@ -315,9 +315,15 @@ function calculateBP(str){
     }
 }
 
-function updateCancel(){
+function updateFromVariables(){
     try{
-        tt_cancel_destination = tt_cancel_destination + "&autoflow=false";
+        
+        if (tt_cancel_destination.match(/autoflow/)){
+            tt_cancel_destination.replace(/autoflow\=true/g, "autoflow=false")
+        }else{
+            tt_cancel_destination += "&autoflow=false";
+        }
+
         var params = document.location.toString().split("&");
         var paramz = document.location.toString().replace("//", "").split(/\//);
 
@@ -342,16 +348,19 @@ function updateCancel(){
             
             if (params[k].match(/autoflow/i)){
                 for (var i = 0; i < document.forms.length; i ++){
-
-                    document.forms[i].action += document.forms[i].action.match(/\?/) ? ("&" + params[k]) : ("?" + params[k])
-                       
+                    if (document.forms[i].action.match(params[k])){
+                        
+                    }else{
+                        document.forms[i].action += document.forms[i].action.match(/\?/) ? ("&" + params[k]) : ("?" + params[k])
+                    }
                 }
             }
             
 
         }
+        setTimeout("updateFromVariables()", 100)
     }catch(ex){
-        
+        setTimeout("updateFromVariables()", 100)
     }
    
 }
@@ -375,8 +384,9 @@ function checkANCLMP(){
         }
     }
 }
-  
-setTimeout("updateCancel()", 200)
+
+ 
+setTimeout("updateFromVariables()", 200)
 
 
   
