@@ -2,7 +2,7 @@ class Encounter < ActiveRecord::Base
   set_table_name :encounter
   set_primary_key :encounter_id
   include Openmrs
-  
+
   has_one :program_encounter, :foreign_key => :encounter_id, :conditions => {:voided => 0}
   has_many :observations, :dependent => :destroy, :conditions => {:voided => 0}
   has_many :drug_orders,  :through   => :orders,  :foreign_key => 'order_id'
@@ -12,8 +12,14 @@ class Encounter < ActiveRecord::Base
   belongs_to :patient, :conditions => {:voided => 0}
 
   # TODO, this needs to account for current visit, which needs to account for possible retrospective entry
-  named_scope :current, :conditions => 'DATE(encounter.encounter_datetime) = CURRENT_DATE()'
-
+  named_scope :current, :conditions => 'DATE(encounter.encounter_datetime) = CURRENT_DATE() AND encounter.voided = 0'
+  named_scope :current_pregnancy, :conditions => '(SELECT COUNT(*)  FROM obs ob WHERE ob.person_id = encounter.patient_id AND ob.concept_id =
+    (SELECT cnm.concept_id FROM concept_name cnm WHERE cnm.name = "DATE OF LAST MENSTRUAL PERIOD" LIMIT 1)
+    AND ob.value_datetime >= DATE_ADD(NOW(), INTERVAL -9 MONTH)
+    AND encounter.encounter_datetime > ob.value_datetime ) > 0
+    AND encounter.voided = 0'
+  named_scope :active, :conditions => 'encounter.voided = 0'
+  
   def before_save
     # self.provider = User.current if self.provider.blank?
     # TODO, this needs to account for current visit, which needs to account for possible retrospective entry
@@ -104,9 +110,9 @@ EOF
     encounter_types_hash = encounter_types.inject({}) {|result, row| result[row.encounter_type_id] = row.name; result }
     with_scope(:find => opts) do
       rows = self.all(
-         :select => 'count(*) as number, encounter_type', 
-         :group => 'encounter.encounter_type',
-         :conditions => ['encounter_type IN (?)', encounter_types.map(&:encounter_type_id)]) 
+        :select => 'count(*) as number, encounter_type',
+        :group => 'encounter.encounter_type',
+        :conditions => ['encounter_type IN (?)', encounter_types.map(&:encounter_type_id)])
       return rows.inject({}) {|result, row| result[encounter_types_hash[row['encounter_type']]] = row['number']; result }
     end     
   end

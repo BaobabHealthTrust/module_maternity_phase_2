@@ -23,7 +23,7 @@
 				Delivery Mode 
 			</td>
 			<td>
-<input type='text' id='1.1.2'  name='concept[STATUS OF BABY]'   ajaxURL='/encounters/baby_delivery_mode?search_string='  field_type='text'  condition='id_string.match(__$("1.1.1").value)'  helpText='Delivery Mode <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  pos='1' />
+<input type='text' id='1.1.2'  name='concept[STATUS OF BABY]'   helpText='Delivery Mode <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  ajaxURL='/encounters/baby_delivery_mode?search_string='  pos='1'  field_type='text'  condition='id_string.match(__$("1.1.1").value)' />
 			</td>
 		</tr>
 		<tr>
@@ -31,7 +31,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.3'   helpText='Next URL '  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  condition='id_string.match(__$("1.1.1").value)'  value='/two_protocol_patients/delivery_mode?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>'  type='hidden'  pos='2'  name='next_url' />
+<input  id='1.1.3'   helpText='Next URL '  type='hidden'  name='next_url'  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  pos='2'  condition='id_string.match(__$("1.1.1").value)'  value='/two_protocol_patients/delivery_mode?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>' />
 			</td>
 		</tr>
 	</table>

@@ -11,6 +11,7 @@ class Concept < ActiveRecord::Base
   has_many :concept_names, :conditions => {:voided => 0}
   has_many :concept_maps # no default scope
   has_many :concept_sets  # no default scope
+  has_one :name, :class_name => 'ConceptName', :conditions => 'concept_name.voided = 0'
   has_many :concept_answers do # no default scope
     def limit(search_string)
       return self if search_string.blank?

@@ -1,3 +1,6 @@
+require 'barby'
+require 'barby/barcode/code_128'
+require 'barby/outputter/rmagick_outputter'
 
 class PatientsController < ApplicationController
 
@@ -83,7 +86,7 @@ class PatientsController < ApplicationController
         encounter_name = @label_encounter_map[task.upcase]rescue nil
         concept = @task.task_scopes[task][:concept].upcase rescue nil
        
-        @task_status_map[task] = done(scope, encounter_name, concept)
+        @task_status_map[task] = done(scope, encounter_name, "", concept)
    
         @links[task.titleize] = "/#{ctrller}/#{task.downcase.gsub(/\s/, "_")}?patient_id=#{
         @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
@@ -107,9 +110,9 @@ class PatientsController < ApplicationController
           scope = "TODAY" if scope.blank?
           encounter_name = @label_encounter_map[t.upcase]rescue nil
           concept = @task.task_scopes[t.downcase][:concept].upcase rescue nil
-          ret = task[0].titleize.match(/ante natal|post natal/i)[0].gsub(/\s/, "-") rescue ""
-          
-          @task_status_map[t] = done(scope, encounter_name, concept, ret)
+          ret = task[0].titleize.match(/ante natal|post natal/i)[0].gsub(/\s/, "-").downcase rescue ""
+         
+          @task_status_map[t] = done(scope, encounter_name, ret, concept)
         
           @links[task[0].titleize][t.titleize] = "/#{ctrller}/#{t.downcase.gsub(/\s/, "_").downcase}?patient_id=#{
           @patient.id}&user_id=#{params[:user_id]}"
@@ -223,37 +226,42 @@ class PatientsController < ApplicationController
     
   end
 
-  def done(scope = "", encounter_name = "", concept = "", type="mother", ret="")
+  def done(scope = "", encounter_name = "", ret="", concept = "")
 
+    session_date = session[:datetime].to_date rescue Date.today
     patient_ids = [@task.patient.id]
     patient_ids += Relationship.find_all_by_person_a_and_relationship(@task.patient.id,
       RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child")).collect{|rel| rel.person_b}
-    ret = "" if ret.blank?
+      
     scope = "" if concept.blank?
     available = []
 
     case scope
     when "TODAY"
       available = Encounter.find(:all, :joins => [:observations], :conditions =>
-          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND COALESCE(obs.comments, '') = ? AND DATE(encounter_datetime) = ?",
-          patient_ids, EncounterType.find_by_name(encounter_name).id , ConceptName.find_by_name(concept).concept_id, ret, @task.current_date.to_date]) rescue []
-
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) = ?",
+          patient_ids, EncounterType.find_by_name(encounter_name).id ,
+          ConceptName.find_by_name(concept).concept_id, session_date]).collect{|enc| enc.observations.collect{|ob|
+          ob.comments.strip.downcase rescue nil }
+      }.flatten.delete_if{|cmt| (!cmt.match(ret) rescue true)}
+     
     when "RECENT"
       available = Encounter.find(:all, :joins => [:observations], :conditions =>
-          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND obs.comments = ?" +
-            "AND (DATE(encounter_datetime) >= ? AND DATE(encounter_datetime) <= ?)",
-          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id, ret,
-          (@task.current_date.to_date - 6.month), (@task.current_date.to_date + 6.month)]) rescue []
-
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ? AND DATE(encounter_datetime) <= ?",           
+          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id,
+          (session_date - 6.month), (session_date + 6.month)]).collect{|enc| enc.observations.collect{|ob|
+          ob.comments.strip.downcase rescue nil }
+      }.flatten.delete_if{|cmt| (!cmt.match(ret) rescue true)}
+      
     when "EXISTS"
       available = Encounter.find(:all, :joins => [:observations], :conditions =>
-          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND obs.comments = ?",
-          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id, ret]) rescue []
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ?",
+          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id]).collect{|enc| enc.observations.collect{|ob|
+          ob.comments.strip.downcase rescue nil }
+      }.flatten.delete_if{|cmt| (!cmt.match(ret) rescue true)}
 
     when ""
-      #available = Encounter.find(:all, :conditions =>
-      #  ["patient_id IN (?) AND encounter_type = ? AND DATE(encounter_datetime) = ?",
-      #  patient_ids, EncounterType.find_by_name(encounter_name).id , @task.current_date.to_date]) rescue []
+      
     end
 
     available = available.blank?? "notdone" : "done"
@@ -664,7 +672,173 @@ class PatientsController < ApplicationController
   end
 
   def admissions_note
-    raise params.to_yaml
+
+    @patient = Patient.find(params[:patient_id])
+    @return_url = request.referrer
+    
+  end
+
+  def admissions_note_printable
+    @patient    = Patient.find(params[:patient_id]) rescue nil
+    @user = params[:user_id]
+    @user_name = User.find(@user).name rescue nil if @user.present?
+    
+    @user_name = User.find(session[:user_id]).name rescue nil if @user_name.blank?
+
+    @facility = get_global_property_value("facility.name") rescue ""
+
+    @patient.create_barcode
+
+    @encounters = {}
+    @babyencounters = {}
+    @bbaencounters = {}
+    @outpatient_diagnosis = {}
+    @referral = {}
+
+    @deliveries = 0
+    @gravida = 0
+    @abortions = 0
+
+    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type = ?",
+        EncounterType.find_by_name("IS PATIENT REFERRED?").encounter_type_id]).each{|e|
+      e.observations.each{|o|
+        if o.concept.name.name == "IS PATIENT REFERRED?"
+          if !@referral[o.concept.name.name.upcase]
+            @referral[o.concept.name.name.upcase] = []
+          end
+
+          @referral[o.concept.name.name.upcase] << o.answer_string
+        elsif o.concept.name.name.include?("TIME")
+          @referral[o.concept.name.name.upcase] = o.value_datetime.to_date
+        else
+          @referral[o.concept.name.name.upcase] = o.answer_string
+        end
+      }
+    }
+
+    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type = ? OR encounter_type = ?",
+        EncounterType.find_by_name("DIAGNOSIS").encounter_type_id,
+        EncounterType.find_by_name("OBSERVATIONS").encounter_type_id]).each{|e|
+      e.observations.each{|o|
+        if o.concept.name.name.upcase == "DIAGNOSIS" || o.concept.name.name.upcase == "ADMISSION DIAGNOSIS"
+          if !@outpatient_diagnosis[o.concept.name.name.upcase]
+            @outpatient_diagnosis[o.concept.name.name.upcase] = []
+          end
+
+          @outpatient_diagnosis[o.concept.name.name.upcase] << o.answer_string
+        end
+      }
+    } 
+  
+    @enc_ids  = ["ABDOMINAL EXAMINATION", "OBSERVATIONS", "VITALS"].collect{|enc|
+      EncounterType.find_by_name(enc).encounter_type_id rescue nil}
+
+    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type IN (?) ",
+        @enc_ids]).each{|e|
+      e.observations.each{|o|
+        if o.concept.name.name.upcase == "DELIVERY MODE"
+          if !@encounters[o.concept.name.name.upcase]
+            @encounters[o.concept.name.name.upcase] = []
+          end
+
+          @encounters[o.concept.name.name.upcase] << o.answer_string
+        elsif o.concept.name.name.upcase.include?("TIME")
+          @encounters[o.concept.name.name.upcase] = o.value_datetime.strftime("%H:%M")
+        else
+          name = o.concept.name.name.upcase.gsub('"', "").strip
+          @encounters[name] = o.answer_string
+        end
+      }
+    }
+
+    @encounters.keys.each{|key|
+      @encounters[key] = @encounters[key].strip
+    }
+
+   
+    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type = ? ",
+        EncounterType.find_by_name("CURRENT BBA DELIVERY").encounter_type_id]).each{|e|
+      e.observations.each{|o|
+        if o.concept.name.name.upcase == "DELIVERY MODE"
+          if !@bbaencounters[o.concept.name.name.upcase]
+            @bbaencounters[o.concept.name.name.upcase] = []
+          end
+
+          @bbaencounters[o.concept.name.name.upcase] << o.answer_string
+        elsif o.concept.name.name.upcase.include?("TIME")
+          @bbaencounters[o.concept.name.name.upcase] = o.value_datetime.strftime("%H:%M")
+        else
+          @bbaencounters[o.concept.name.name.upcase] = o.answer_string
+        end
+      }
+    }
+
+    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type = ?",
+        EncounterType.find_by_name("PHYSICAL EXAMINATION BABY").encounter_type_id]).each{|e|
+      e.observations.each{|o|
+        if o.concept.name.name.upcase == "CONDITION OF BABY AT ADMISSION" ||
+            o.concept.name.name.upcase == "WEIGHT (KG)" ||
+            o.concept.name.name.upcase == "TEMPERATURE (C)" ||
+            o.concept.name.name.upcase == "RESPIRATORY RATE" ||
+            o.concept.name.name.upcase == "PULSE" ||
+            o.concept.name.name.upcase == "CORD CLEAN" ||
+            o.concept.name.name.upcase == "CORD TIED" ||
+            o.concept.name.name.upcase == "SPECIFY" ||
+            o.concept.name.name.upcase == "ABDOMEN"
+          if !@babyencounters[o.concept.name.name.upcase]
+            @babyencounters[o.concept.name.name.upcase] = []
+          end
+
+          @babyencounters[o.concept.name.name.upcase] << o.answer_string
+        elsif o.concept.name.name.upcase.include?("TIME")
+          @babyencounters[o.concept.name.name.upcase] = o.value_datetime.strftime("%H:%M")
+        else
+          @babyencounters[o.concept.name.name.upcase] = o.answer_string
+        end
+      }
+    } 
+
+    # raise @referral.to_yaml
+
+    @nok = (@patient.next_of_kin["GUARDIAN FIRST NAME"] + " " + @patient.next_of_kin["GUARDIAN LAST NAME"] +
+        " - " + @patient.next_of_kin["GUARDIAN RELATIONSHIP TO CHILD"] + " " +
+        (@patient.next_of_kin["NEXT OF KIN TELEPHONE"] ? " (" + @patient.next_of_kin["NEXT OF KIN TELEPHONE"] +
+          ")" : "")) rescue ""
+
+    @religion = (@patient.next_of_kin["RELIGION"] ? (@patient.next_of_kin["RELIGION"].upcase == "OTHER" ?
+          @patient.next_of_kin["OTHER"] : @patient.next_of_kin["RELIGION"]) : "") rescue ""
+
+    @education = @patient.next_of_kin["EDUCATION LEVEL"] rescue ""
+
+    @position = (@encounters["CEPHALIC"] ? @encounters["CEPHALIC"] : "") +
+      (@encounters["BREECH"] ? @encounters["BREECH"] : "") + (@encounters["FACE"] ? @encounters["FACE"] : "") +
+      (@encounters["SHOULDER"] ? @encounters["SHOULDER"] : "") rescue ""
+
+    if @encounters["PRESENTATION"] && @encounters["PRESENTATION"].upcase == "BREECH"
+      @position = @encounters["BREECH DELIVERY"] if  @encounters["BREECH DELIVERY"].downcase.match("sacro")
+    end
+
+    if (@encounters["ARV START DATE"].match("/") rescue false)
+      mon = [" ", "Jan","Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      year = @encounters["ARV START DATE"].split("/")[2].to_i
+      month = @encounters["ARV START DATE"].split("/")[1]
+      month = mon.index(month).to_i
+      day = @encounters["ARV START DATE"].split("/")[0].to_i
+      date_started_arvs = Date.new(year, month, day)
+      months_from_start_date = date_started_arvs.year * 12 + date_started_arvs.month
+      months_today = Date.today.year * 12 + Date.today.month
+      @period_on_arvs = months_today - months_from_start_date
+      @period_on_arvs_string = (@period_on_arvs > 11)? ((@period_on_arvs/12).to_s == 1? (@period_on_arvs/12).to_s + " Yr   " +
+          (@period_on_arvs%12).to_s + " months": (@period_on_arvs./12).to_s + " Yrs " + (@period_on_arvs%12).to_s + " months") :  (@period_on_arvs%12).to_s + " months"
+    else
+      @period_on_arvs_string = ""
+    end
+    lmp_date = (@encounters["DATE OF LAST MENSTRUAL PERIOD"].to_date + 7.days) rescue nil
+    current_date = (session[:datetime]? session[:datetime] : Date.today).to_date rescue nil
+
+    @edd_weeks = ((current_date - lmp_date).days).to_i/(60 * 60 * 24 * 7) rescue "Unknown"
+
+    render :layout => false
   end
 
   def all_recent_babies_entered?(patient)

@@ -39,6 +39,16 @@ class Patient < ActiveRecord::Base
     self.patient_identifiers.find_by_identifier_type(PatientIdentifierType.find_by_name("National id").id).identifier rescue nil
   end
 
+  def create_barcode
+
+    barcode = Barby::Code128B.new(self.national_id)
+
+    File.open(RAILS_ROOT + '/public/images/patient_id.png', 'w') do |f|
+      f.write barcode.to_png(:height => 100, :xdim => 2)
+    end
+
+  end
+  
   def national_id_with_dashes
     id = self.national_id
     id[0..4] + "-" + id[5..8] + "-" + id[9..-1] rescue id
@@ -484,5 +494,18 @@ class Patient < ActiveRecord::Base
 		end
 		return property_value
 	end
+
+  def next_of_kin
+    nok = {}
+
+    self.encounters.last(:conditions => ["encounter_type = ?",
+        EncounterType.find_by_name("SOCIAL HISTORY").id]).observations.each{|o|
+      nok[o.concept.name.name.upcase] = o.answer_string
+    }
+
+    nok
+
+  end
+
 
 end

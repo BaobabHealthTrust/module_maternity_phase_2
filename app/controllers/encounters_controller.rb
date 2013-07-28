@@ -911,5 +911,44 @@ class EncountersController < ApplicationController
     redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}"
 
   end
-  
+
+  def print_note
+
+    location = request.remote_ip rescue ""
+    
+    @patient    = Patient.find(params[:patient_id]) rescue (Patient.find(params[:id]) rescue (Patient.find(session[:patient_id]) rescue nil))
+
+    if @patient
+      current_printer = ""
+
+      wards = GlobalProperty.find_by_property("facility.ward.printers").property_value.split(",") rescue []
+
+      printers = wards.each{|ward|
+        current_printer = ward.split(":")[1] if ward.split(":")[0].upcase == location
+      } rescue []
+
+      t1 = Thread.new{
+        Kernel.system "wkhtmltopdf -s A4 http://" +
+          request.env["HTTP_HOST"] + "\"/patients/admissions_printable/" +
+          @patient.patient_id.to_s + "?patient_id=#{@patient.patient_id}&user_id=#{params[:user_id]}&ret=#{params[:ret]}"+ "\" /tmp/output-" + params[:user_id].to_s + ".pdf \n"
+      }
+
+      t2 = Thread.new{
+        sleep(5)
+        Kernel.system "lp #{(!current_printer.blank? ? '-d ' + current_printer.to_s : "")} /tmp/output-" +
+          session[:user_id].to_s + ".pdf\n"
+      }
+
+      t3 = Thread.new{
+        sleep(10)
+        Kernel.system "rm /tmp/output-" + session[:user_id].to_s + ".pdf\n"
+      }
+
+
+    end
+
+    redirect_to "/patients/admissions_note?patient_id=#{@patient.id}&user_id=#{session[:user_id]}"+
+      (params[:ret] ? "&ret=" + params[:ret] : "") and return
+  end
+
 end
