@@ -479,10 +479,8 @@ function ajaxPull(concept, user, patient){
                     if ($("touchscreenInput" + tstCurrentPage).value.length == 0){
                         $("touchscreenInput" + tstCurrentPage).value = result
                     }
-                }
-                
+                }                
                 $('page' + tstCurrentPage).appendChild(flag)
-                
             }
         }
     };

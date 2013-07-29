@@ -133,6 +133,64 @@ class ClinicController < ApplicationController
   end
 
   def overview
+    @program_encounter_details =  ProgramEncounterDetail.find(:all, :select => ["encounter_id"], :joins => [:program_encounter],
+      :conditions => ["program_encounter.program_id = ?",
+        Program.find_by_name("MATERNITY PROGRAM").program_id]).collect{|ed| ed.encounter_id } rescue []
+
+    User.current = User.find(session[:user]["user_id"])
+
+    if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
+      map = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
+        }"]["label.encounter.map"].split(",") rescue []
+    end
+
+    @types = []
+
+    map.each{ |tie|
+      encounter = tie.split("|")[1] rescue nil
+      @types << encounter if !encounter.blank?
+    }
+
+    @types.delete_if{|del| del.match(/Refer|Diagnosis|social|dispensing|observations|examination|vitals|admit|baby/i) || del.downcase == "outcome"}
+    
+    @me = Encounter.statistics(@types,  @program_encounter_details, :conditions =>
+        ['DATE(encounter_datetime) = DATE(NOW()) AND encounter.creator = ? AND encounter.location_id = ?',
+        User.current.user_id, session[:location_id]])
+
+    @today = Encounter.statistics(@types, @program_encounter_details, :conditions => ['DATE(encounter_datetime) = DATE(NOW()) AND encounter.location_id = ?',
+        session[:location_id]])
+
+    @year = Encounter.statistics(@types, @program_encounter_details, :conditions => ['YEAR(encounter_datetime) = YEAR(NOW()) AND encounter.location_id = ?',
+        session[:location_id]])
+
+    @ever = Encounter.statistics(@types, @program_encounter_details, :conditions => ['encounter.location_id = ?', session[:location_id]])
+
+    if (get_global_property_value("assign_serial_numbers").to_s == "true" rescue false)
+
+      @me["BIRTH REPORTS"] = {}
+      @me["BIRTH REPORTS"]["SENT"] = BirthReport.unsent_between("sent", Date.today, Date.today, User.current.user_id)
+      @me["BIRTH REPORTS"]["PENDING"] = BirthReport.unsent_between("pending", Date.today, Date.today, User.current.user_id)
+      @me["BIRTH REPORTS"]["UNATTEMPTED"] = BirthReport.unsent_between("unattempted", Date.today, Date.today, User.current.user_id)
+
+      @today["BIRTH REPORTS"] = {}
+      @today["BIRTH REPORTS"]["SENT"] = BirthReport.unsent_between("sent", Date.today, Date.today)
+      @today["BIRTH REPORTS"]["PENDING"] = BirthReport.unsent_between("pending", Date.today, Date.today)
+      @today["BIRTH REPORTS"]["UNATTEMPTED"] = BirthReport.unsent_between("unattempted", Date.today, Date.today)
+
+      @year["BIRTH REPORTS"] = {}
+      @year["BIRTH REPORTS"]["SENT"] = BirthReport.unsent_between("sent", "#{Date.today.strftime('%Y')}-01-01".to_date, "#{Date.today.strftime('%Y')}-12-31".to_date)
+      @year["BIRTH REPORTS"]["PENDING"] = BirthReport.unsent_between("pending", "#{Date.today.strftime('%Y')}-01-01".to_date, "#{Date.today.strftime('%Y')}-12-31".to_date)
+      @year["BIRTH REPORTS"]["UNATTEMPTED"] = BirthReport.unsent_between("unattempted", "#{Date.today.strftime('%Y')}-01-01".to_date, "#{Date.today.strftime('%Y')}-12-31".to_date)
+
+      @ever["BIRTH REPORTS"] = {}
+      @ever["BIRTH REPORTS"]["SENT"] = BirthReport.unsent_between("sent")
+      @ever["BIRTH REPORTS"]["PENDING"] = BirthReport.unsent_between("pending")
+      @ever["BIRTH REPORTS"]["UNATTEMPTED"] = BirthReport.unsent_between("unattempted")
+
+      @types = @types + @ever["BIRTH REPORTS"].keys.reverse
+      
+    end
+
     render :layout => false
   end
 
@@ -595,6 +653,34 @@ class ClinicController < ApplicationController
     }
 
     render :text => @fields.to_json
+  end
+
+  def serial_numbers
+    @remaining_serial_numbers = SerialNumber.find(:all, :conditions => ["national_id IS NULL"]).size
+    @print_string = (@remaining_serial_numbers ==1)?  "" + @remaining_serial_numbers.to_s + " Serial Number Remaining" : "" + @remaining_serial_numbers.to_s + " Serial Numbers Remaining"
+    @limited_serial_numbers = (SerialNumber.all.size  <= 100) rescue false
+    render :layout => false
+  end
+  
+  def create_batch
+    @initial_numbers = SerialNumber.all.size
+
+    if ((!params[:start_serial_number].blank? rescue false) && (!params[:end_serial_number].blank? rescue false) &&
+          (params[:start_serial_number].to_i < params[:end_serial_number].to_i) rescue false)
+      (params[:start_serial_number]..params[:end_serial_number]).each do |number|
+        snum = SerialNumber.new()
+        snum.serial_number = number
+        snum.creator = params[:user_id]
+        snum.save if (SerialNumber.find(number).nil? rescue true)
+      end
+      @final_numbers = initial_numbers = SerialNumber.all.size
+    else
+    end
+    redirect_to "/?user_id=#{session[:user]['user_id']}&location_id=#{session[:location_id]}"
+  end
+
+  def add_batch
+
   end
 
   protected

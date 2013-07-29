@@ -4,6 +4,13 @@ class EncountersController < ApplicationController
 
   def create
 
+    assign_serial_numbers = get_global_property_value("assign_serial_numbers").to_s == "true" rescue false
+
+    if assign_serial_numbers      
+      serial_num = SerialNumber.find(:first, :conditions => ["national_id IS NULL"])rescue nil
+      redirect_to "/encounters/no_serial_number"  and return  if serial_num.blank?
+    end
+    
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
 
     if params[:autoflow].present? && params[:autoflow].to_s == "true"
@@ -95,9 +102,31 @@ class EncountersController < ApplicationController
 
       mother_address = PersonAddress.find_by_person_id(params[:patient_id]) rescue nil
 
-      export_mother_addresss(params[:patient_id],
-        patient.patient_id) rescue nil if !mother_address.blank? && params[:patient_id] != patient.patient_id
-          
+
+      if !mother_address.blank? && params[:patient_id] != patient.patient_id
+
+        export_mother_addresss(params[:patient_id], patient.patient_id) rescue nil       
+
+        if assign_serial_numbers
+
+          id_type = PatientIdentifierType.find_by_name("Serial Number").patient_identifier_type_id
+          serial_num = SerialNumber.find(:first, :conditions => ["national_id IS NULL"])
+
+          PatientIdentifier.create(:patient_id => patient.patient_id,
+            :identifier => serial_num.serial_number,
+            :identifier_type => id_type,
+            :location_id => session[:location_id]
+          ) if serial_num.present? && id_type.present?
+
+          serial_num.national_id = patient.national_id
+          serial_num.date_assigned = session[:datetime].to_date rescue Date.today
+          serial_num.save
+
+        end
+        
+      end
+      
+      
       if !params["concept"]["BABY OUTCOME"].match(/Alive/i)
         patient.person.update_attributes(:dead => true) if (!my_baby.first.blank? rescue false)
       end
