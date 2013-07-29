@@ -951,4 +951,24 @@ class EncountersController < ApplicationController
       (params[:ret] ? "&ret=" + params[:ret] : "") and return
   end
 
+  def probe_values
+    patient = Patient.find(params[:patient_id])
+    result = ""
+    session_date = session[:datetime].to_date rescue Date.today
+     
+    patient.encounters.find(:all, :order => ["encounter_datetime DESC"], :limit => 1, :joins => [:observations],
+      :conditions => ["obs.concept_id = ? AND DATE(encounter_datetime) >= ?",
+        ConceptName.find_by_name(params[:concept_name]).concept_id, (session_date - 1.month)]).each{|enc|
+
+      enc.observations.each{|obs|
+        if obs.concept.name.name.downcase.strip == params[:concept_name].downcase.strip          
+          result = obs.answer_string.strip if result.blank?
+        end
+      }
+      
+    }
+   
+    render :text => result.to_s.to_json
+  end
+
 end

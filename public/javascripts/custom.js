@@ -9,6 +9,7 @@ var temp = ""
 var lmp = "";
 var name = '';
 var bpOn = '';
+var currentConcept = "";
 
 function setMax(id){
     __$(id).setAttribute("absoluteMax", parseInt(__$("touchscreenInput" + tstCurrentPage).value) - 1)
@@ -414,9 +415,88 @@ function bpAlerts(){
     }
 }
 
+function probeValues(){
+   
+    try{
+        var pageConcept = $("touchscreenInput" + tstCurrentPage).name.replace(/concept\[|]/g, "");
+        if (pageConcept != currentConcept){
+            currentConcept =  pageConcept;
+            
+            var user = "";
+            var patient = "";
+            
+            var inputNodes = document.getElementsByTagName("input")
+            for (var i = 0; i < inputNodes.length; i ++){
+                if (inputNodes[i].name == "patient_id"){
+                    patient = inputNodes[i].value
+                }else if (inputNodes[i].name == "user_id"){
+                    user = inputNodes[i].value
+                }
+            }
+           
+            ajaxPull(currentConcept, user, patient);
+        }
+    }catch(ex){
+        
+    }
+    setTimeout("probeValues()", 300);
+}
 
- 
-setTimeout("updateFromVariables()", 200)
+function ajaxPull(concept, user, patient){
+
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function() {
+
+        if ((!httpRequest) || (!concept) || (!patient)) return;
+        if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+            httpRequest.status == 304)) {
+
+            var result = JSON.parse(httpRequest.responseText);
+            if (result.toString().length > 0){
+                /*
+                var flag = document.createElement("div")
+                flag.id = "flag"
+                flag.style.background = "url('/images/drop_icon.jpg')";
+                flag.style.position = "absolute";
+                flag.style.top = "feed";
+                flag.style.zIndex = 100;
+                flag.style.width = "85px";
+                flag.style.height = "75px";
+                flag.style.left = "0.5%"
+                
+                flag.onclick = function(){
+                    this.style.display = "none";
+                    $('inputFrame' + tstCurrentPage).style.marginLeft = "25px";
+                    $('helpText' + tstCurrentPage).style.marginLeft = "0px";
+                    $('inputFrame' + tstCurrentPage).style.width = "96.5%";
+                    $("touchscreenInput" + tstCurrentPage).value = result
+                }
+                $('inputFrame' + tstCurrentPage).style.marginLeft = "100px";
+                $('inputFrame' + tstCurrentPage).style.width = "90%";
+                 $('helpText' + tstCurrentPage).style.marginLeft = "80px";
+                */
+                $('inputFrame' + tstCurrentPage).onclick = function(){
+                    if ($("touchscreenInput" + tstCurrentPage).value.length == 0){
+                        $("touchscreenInput" + tstCurrentPage).value = result
+                    }
+                }
+                
+                $('page' + tstCurrentPage).appendChild(flag)
+                
+            }
+        }
+    };
+    
+    try {
+        var aUrl = "/encounters/probe_values?concept_name=" + concept + "&patient_id=" + patient + "&user_id=" + user;
+        httpRequest.open('GET', aUrl, true);
+        httpRequest.send(null);
+    } catch(e){
+    }
+}
+
+setTimeout("updateFromVariables()", 200);
+setTimeout("probeValues()", 20);
 
 
 
