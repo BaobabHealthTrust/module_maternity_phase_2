@@ -7,7 +7,8 @@ var mother_status = "";
 var timedEvent = "";
 var temp = ""
 var lmp = "";
-var name = ''
+var name = '';
+var bpOn = '';
 
 function setMax(id){
     __$(id).setAttribute("absoluteMax", parseInt(__$("touchscreenInput" + tstCurrentPage).value) - 1)
@@ -385,8 +386,38 @@ function checkANCLMP(){
     }
 }
 
+
+function bpAlerts(){
+    if (bpOn == 1 || bpOn == 2){
+        var type = bpOn;
+        var val = $("touchscreenInput" + tstCurrentPage).value
+        var complication = "";
+
+        if (val > 0){
+            // check for complications
+            var val = parseInt(val);
+            if (type == 1){
+                complication = (val >= 120 && val <= 139) ? "Prehypertension" : ((val >= 140 && val <= 159 ) ? "Hypertension Stage 1" : ((val >= 160 && val <= 180) ? "Hypertension Stage 2" : ((val > 180)? "Emergency Care Needed" : "")));
+            }else{
+                complication = (val >= 80 && val <= 89) ? "Prehypertension" : ((val >= 90 && val <= 99 ) ? "Hypertension Stage 1" : ((val >= 100 && val <= 110) ? "Hypertension Stage 2" : ((val > 110)? "Emergency Care Needed" : "")));
+            }
+        }
+
+        if(!$("bpFlag")){
+            try{
+                $("bp").innerHTML += "<div style='color:red;width:100%;text-align:center;' id='bpFlag'><i style='float=right;align:center;'>" + complication + "</i></div>";
+            }catch(e){};
+        }else{
+            $("bpFlag").innerHTML = "<div style='color:red;width:100%;text-align:center;' id='bpFlag'><i style='float=right;align:center;'>" + complication + "</i></div>";
+        }
+        setTimeout("bpAlerts()", 20)
+    }
+}
+
+
  
 setTimeout("updateFromVariables()", 200)
+
 
 
   

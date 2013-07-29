@@ -86,7 +86,7 @@ class PatientsController < ApplicationController
         encounter_name = @label_encounter_map[task.upcase]rescue nil
         concept = @task.task_scopes[task][:concept].upcase rescue nil
        
-        @task_status_map[task] = done(scope, encounter_name, "", concept)
+        @task_status_map[task] = done_ret(scope, encounter_name, "", concept)
    
         @links[task.titleize] = "/#{ctrller}/#{task.downcase.gsub(/\s/, "_")}?patient_id=#{
         @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
@@ -112,7 +112,7 @@ class PatientsController < ApplicationController
           concept = @task.task_scopes[t.downcase][:concept].upcase rescue nil
           ret = task[0].titleize.match(/ante natal|post natal/i)[0].gsub(/\s/, "-").downcase rescue ""
          
-          @task_status_map[t] = done(scope, encounter_name, ret, concept)
+          @task_status_map[t] = done_ret(scope, encounter_name, ret, concept)
         
           @links[task[0].titleize][t.titleize] = "/#{ctrller}/#{t.downcase.gsub(/\s/, "_").downcase}?patient_id=#{
           @patient.id}&user_id=#{params[:user_id]}"
@@ -125,8 +125,7 @@ class PatientsController < ApplicationController
     @links.delete_if{|key, link|
       @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
     }
-    #raise @links.to_yaml
-    
+     
     @links["Give Drugs"] = "/encounters/give_drugs?patient_id=#{@patient.id}&user_id=#{@user.id}"
     @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
     
