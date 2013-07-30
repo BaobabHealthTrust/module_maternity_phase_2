@@ -264,7 +264,7 @@
                 <td style="text-align: right; padding-top: 10px;">
                   Address of Parent(s)
                 </td>
-                <td id="resm" colspan="2" style="text-align: left; padding-bottom: 0px; padding-top: 10px;" class="cell">
+                <td id="resm" colspan="3" style="text-align: left; padding-bottom: 0px; padding-top: 10px;" class="cell">
                   <%= @anc_mother.current_address rescue nil %>
                 </td>
                 <td style="text-align: center; padding-bottom: 0px; padding-top: 9px;">
@@ -278,7 +278,7 @@
                 <td style="text-align: right; padding-top: 9px;">
                   &nbsp;
                 </td>
-                <td id="resf" colspan="2" style="text-align: left; padding-bottom: 0px; padding-top: 9px;" class="cell">
+                <td id="resf" colspan="3" style="text-align: left; padding-bottom: 0px; padding-top: 9px;" class="cell">
                   <%= (@anc_father.current_address != @anc_mother.current_address ?
                       @anc_father.current_address : "") rescue nil %>
                 </td>
@@ -377,7 +377,7 @@
                 <td style="text-align: left; padding-top: 9px; padding-left: 80px;">
                   Name:
                 </td>
-                <td colspan="2" style="text-align: left; padding-bottom: 0px; padding-top: 9px;  padding-left: 20px;"
+                <td colspan="3" style="text-align: left; padding-bottom: 0px; padding-top: 9px;  padding-left: 20px;"
                     class="cell">
                       <%= @provider_name%>&nbsp;
                 </td>
@@ -392,7 +392,7 @@
                 <td style="text-align: left; padding-top: 9px; padding-left: 80px;">
                   Title:
                 </td>
-                <td colspan="2" style="text-align: left; padding-bottom: 0px; padding-top: 9px;  padding-left: 20px;"
+                <td colspan="3" style="text-align: left; padding-bottom: 0px; padding-top: 9px;  padding-left: 20px;"
                     class="cell">
                       <% @title = @anc_patient.get_full_attribute("Provider Title") rescue nil %>
                   <%= @title.value if !@title.nil? %>&nbsp;
@@ -408,7 +408,7 @@
                 <td style="text-align: left; padding-top: 9px; padding-left: 80px;">
                   Signature:
                 </td>
-                <td colspan="2" style="text-align: left; padding-bottom: 0px; padding-top: 9px;" class="cell">
+                <td colspan="3" style="text-align: left; padding-bottom: 0px; padding-top: 9px;" class="cell">
                   &nbsp;
                 </td>
                 <td style="text-align: center; padding-bottom: 0px; padding-top: 9px;">
@@ -422,7 +422,7 @@
                 <td style="text-align: left; padding-top: 9px; padding-left: 80px;">
                   Hospital Date:
                 </td>
-                <td colspan="2" style="text-align: left; padding-bottom: 0px; padding-top: 9px;  padding-left: 20px;"
+                <td colspan="3" style="text-align: left; padding-bottom: 0px; padding-top: 9px;  padding-left: 20px;"
                     class="cell">
                       <% @facility_date = @anc_patient.get_full_attribute("Hospital Date") rescue nil %>
                   <%= @facility_date.value.to_date.strftime("%d/%b/%Y") if !@facility_date.nil? %>&nbsp;

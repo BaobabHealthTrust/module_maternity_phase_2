@@ -664,19 +664,19 @@ class ClinicController < ApplicationController
   
   def create_batch
     @initial_numbers = SerialNumber.all.size
-
+    user_id = session[:user]["user_id"] || params[:user_id]
     if ((!params[:start_serial_number].blank? rescue false) && (!params[:end_serial_number].blank? rescue false) &&
           (params[:start_serial_number].to_i < params[:end_serial_number].to_i) rescue false)
       (params[:start_serial_number]..params[:end_serial_number]).each do |number|
         snum = SerialNumber.new()
         snum.serial_number = number
-        snum.creator = params[:user_id]
+        snum.creator = user_id
         snum.save if (SerialNumber.find(number).nil? rescue true)
       end
       @final_numbers = initial_numbers = SerialNumber.all.size
     else
     end
-    redirect_to "/?user_id=#{session[:user]['user_id']}&location_id=#{session[:location_id]}"
+    redirect_to "/?user_id=#{user_id}&location_id=#{session[:location_id]}"
   end
 
   def add_batch

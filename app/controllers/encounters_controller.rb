@@ -124,15 +124,18 @@ class EncountersController < ApplicationController
 
         end
         
-      end
+      end      
       
-      
-      if !params["concept"]["BABY OUTCOME"].match(/Alive/i)
+      if  params["concept"]["BABY OUTCOME"].present? && !params["concept"]["BABY OUTCOME"].match(/Alive/i)
         patient.person.update_attributes(:dead => true) if (!my_baby.first.blank? rescue false)
+        patient.release_serial_number if (!my_baby.first.blank? rescue false)
       end
-      
     end
-   
+    
+    if params["concept"]["STATUS OF BABY"].present? && !params["concept"]["STATUS OF BABY"].match(/Alive/i)
+      patient.person.update_attributes(:dead => true)
+    end
+      
     if !patient.blank?
       
       type = EncounterType.find_by_name(params[:encounter_type]).id rescue nil
@@ -613,6 +616,7 @@ class EncountersController < ApplicationController
     search_string = params[:search_string]
     @options = Concept.find_by_name("BABY OUTCOME").concept_answers.collect{|c| c.name}
     @options = @options.collect{|rel| rel if rel.downcase.include?(search_string.downcase)}
+    @options.delete_if{|rel| rel.match(/Intrauterine/i)}
     render :text => "<li></li><li>" + @options.join("</li><li>") + "</li>"
  	end
 	def presentation
@@ -944,7 +948,7 @@ class EncountersController < ApplicationController
   def print_note
 
     location = request.remote_ip rescue ""
-    
+    zoom = get_global_property_value("report.zoom.percentage")/100.0 rescue 1
     @patient    = Patient.find(params[:patient_id]) rescue (Patient.find(params[:id]) rescue (Patient.find(session[:patient_id]) rescue nil))
 
     if @patient
@@ -957,7 +961,7 @@ class EncountersController < ApplicationController
       } rescue []
 
       t1 = Thread.new{
-        Kernel.system "wkhtmltopdf -s A4 http://" +
+        Kernel.system "wkhtmltopdf --zoom #{zoom} -s A4 http://" +
           request.env["HTTP_HOST"] + "\"/patients/admissions_printable/" +
           @patient.patient_id.to_s + "?patient_id=#{@patient.patient_id}&user_id=#{params[:user_id]}&ret=#{params[:ret]}"+ "\" /tmp/output-" + params[:user_id].to_s + ".pdf \n"
       }

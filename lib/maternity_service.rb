@@ -418,9 +418,11 @@ module MaternityService
         @serial_number = PatientIdentifier.find(:first, :conditions => ["patient_id = ? AND identifier_type = ?", 
             child.patient.id,
             PatientIdentifierType.find_by_name("Serial Number").id]).identifier rescue nil
+        return {} if @serial_number.blank?
          
         mother = ANCService::ANC.new(self.mother.person.patient) rescue nil
         father = ANCService::ANC.new(self.father.relation.patient) rescue nil
+        
         {
           "birthdate_estimated" => (self.person.birthdate_estimated rescue 0),
           "gender" => (child.person.gender rescue nil),

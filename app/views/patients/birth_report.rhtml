@@ -33,20 +33,21 @@
   <button onclick="window.location = '/patients/print_note/<%= @person.id %>?patient_id=<%= @patient.id %>&user_id=<%= params[:user_id]%>';"
           class="button navButton blue"
           id="backButton" style="margin-top: 10px;" ><span>Print</span>
-  </button>
+  </button> 
 
- 
+  <% unless @anc_patient.get_full_attribute("Provider Name") && @anc_patient.get_full_attribute("Provider Title") %>
+    <button onclick="window.location = '/patients/provider_details/<%= @patient.id %>?patient_id=<%=params[:patient_id]%>&person_id=<%=params[:person_id]%>&user_id=<%=params[:user_id]%>';"
+            class="button navButton blue"
+            id="backButton" style="margin-top: 10px;" ><span>Provider Details</span>
+    </button>
+  <%else%>
+
     <button onclick="window.location = '/patients/send_birth_report/<%= @person.id %>?patient_id=<%= @patient.id %>&user_id=<%= params[:user_id]%>';"
             class="button navButton blue"
             id="backButton" style="margin-top: 10px;" ><span>Send Birth Report</span>
     </button>
 
-  <% unless @anc_patient.get_full_attribute("Provider Name") && @anc_patient.get_full_attribute("Provider Title") %>
-  <button onclick="window.location = '/patients/provider_details/<%= @patient.id %>?patient_id=<%=params[:patient_id]%>&person_id=<%=params[:person_id]%>&user_id=<%=params[:user_id]%>';"
-          class="button navButton blue"
-          id="backButton" style="margin-top: 10px;" ><span>Provider Details</span>
-  </button>
   <%end%>
-  
+
 
 </div>

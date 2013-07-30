@@ -1,5 +1,5 @@
 <script>
-  tt_cancel_destination = "/";
+  tt_cancel_destination = "/clinic?user_id=<%= session[:user]['user_id'] %>&location_id=<%= session[:location_id] %>";
 </script>
 <form id='batch_limits' action="/clinic/create_batch">
  <%= text_field_tag("start_serial_number", nil, {:field_type => 'number', :tt_PageStyleClass => 'NumbersOnly', :helpText => 'Start Serial Number'}) %> <br>

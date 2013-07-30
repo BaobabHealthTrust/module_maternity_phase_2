@@ -7,7 +7,7 @@ class PatientsController < ApplicationController
 	unloadable  
 
   before_filter :sync_user, :except => [:index, :user_login, :user_logout, 
-    :set_datetime, :update_datetime, :reset_datetime]
+    :set_datetime, :update_datetime, :reset_datetime, :admissions_note_printable, :birth_report_printable]
 
 
   def show
@@ -550,7 +550,7 @@ class PatientsController < ApplicationController
 
     @facility = get_global_property_value("facility.name")
 
-    @district = get_global_property_value("current_district") rescue ''
+    @district = get_global_property_value("district.name") rescue ''
 
     maternity = MaternityService::Maternity.new(@patient) rescue nil
 
@@ -564,6 +564,8 @@ class PatientsController < ApplicationController
 
     @patient    = Patient.find(params[:patient_id] || params[:id] || session[:patient_id]) rescue nil
     person_id = params[:id] || params[:person_id]
+    zoom = get_global_property_value("report.zoom.percentage")/100.0 rescue 1
+    
     if @patient
       current_printer = ""
 
@@ -578,7 +580,7 @@ class PatientsController < ApplicationController
         name = rec.split(":").last.downcase.gsub("(", "").gsub(")", "") if !rec.blank?
 
         t1 = Thread.new{
-          Kernel.system "wkhtmltopdf --zoom 0.8 -s A4 http://" +
+          Kernel.system "wkhtmltopdf --zoom #{zoom} -s A4 http://" +
             request.env["HTTP_HOST"] + "\"/patients/birth_report_printable/" +
             person_id.to_s + "?patient_id=#{@patient.id}&person_id=#{person_id}&user_id=#{params[:user_id]}&recipient=#{@recipient}" + "\" /tmp/output-#{Regexp.escape(name)}" + ".pdf \n"
         } if !rec.blank?
@@ -590,7 +592,7 @@ class PatientsController < ApplicationController
 
         t3 = Thread.new{
           sleep(3)
-          Kernel.system "rm /tmp/output-#{Regexp.escape(name)}"+ ".pdf\n"
+          #Kernel.system "rm /tmp/output-#{Regexp.escape(name)}"+ ".pdf\n"
         }if !rec.blank?
         sleep(1)
       end
@@ -603,7 +605,7 @@ class PatientsController < ApplicationController
 
     facility = get_global_property_value("facility.name") rescue ''
 
-    district = get_global_property_value("current_district") rescue ''
+    district = get_global_property_value("district.name") rescue ''
 
     patient = Patient.find(params[:id]) rescue nil
 
@@ -614,14 +616,77 @@ class PatientsController < ApplicationController
 
     uri = get_global_property_value("birth_registration_url") rescue nil
 
-    result = RestClient.post(uri, data) rescue "birth report couldnt be sent"
+    @anc_patient = ANCService::ANC.new(patient) rescue nil
 
-    if ((result.downcase rescue "") == "baby added") and params[:update].nil?
-      flash[:error] = "Birth Report Sent"
-      BirthReport.create(:person_id => params[:id])
-    else
-      flash[:error] = "Sending failed. Check configurations and make sure you are not resending"
+    hospital_date = @anc_patient.get_attribute("Hospital Date")
+    health_center = @anc_patient.get_attribute("Health Center")
+    health_district = @anc_patient.get_attribute("Health District")
+    provider_title = @anc_patient.get_attribute("Provider Title")
+    provider_name = @anc_patient.get_attribute("Provider Name")
+
+    @provider_details_available = true if (hospital_date and health_center and health_district and provider_title and provider_name)
+
+    if @provider_details_available
+      result = RestClient.post(uri, data) rescue "birth report couldnt be sent"
     end
+
+    birth_report = BirthReport.find_by_person_id(params[:id]) rescue nil
+
+    if !@provider_details_available
+      flash[:error] = "Provider Details Incomplete"
+    elsif ((result.downcase rescue "") == "baby added") and params[:update].nil?
+
+      flash[:error] = "Birth Report Sent"
+
+      if birth_report.present?
+        birth_report.update_attributes(:created_by => session[:user_id],
+          :sent_by => session[:user_id],
+          :date_updated => Time.now,
+          :acknowledged => Time.now)
+      else
+        BirthReport.create(:person_id => params[:id],
+          :created_by => session[:user_id],
+          :sent_by => session[:user_id],
+          :date_created => Time.now,
+          :acknowledged => Time.now)
+      end
+
+    elsif ((result.downcase rescue "") == "baby added") and params[:update].present?
+
+      flash[:error] = "Birth Report Updated"
+
+      if birth_report.present?
+        birth_report.update_attributes(:created_by => session[:user_id],
+          :sent_by => session[:user_id],
+          :date_updated => Time.now,
+          :acknowledged => Time.now)
+      else
+        BirthReport.create(:person_id => params[:id],
+          :created_by => session[:user_id],
+          :sent_by => session[:user_id],
+          :date_created => Time.now,
+          :acknowledged => Time.now)
+      end
+
+    elsif ((result.downcase rescue "") == "baby not added") and params[:update].nil?
+      flash[:error] = "Remote System Could Not Add Birth Report"
+
+      BirthReport.create(:person_id => params[:id],
+        :created_by => session[:user_id],
+        :date_created => Time.now)  if birth_report.blank?
+
+    elsif ((result.downcase rescue "") == "baby not added") and params[:update].present?
+      flash[:error] = "Remote System Could Not Update Birth Report"
+      BirthReport.create(:person_id => params[:id],
+        :created_by => session[:user_id],
+        :date_created => Time.now)  if birth_report.blank?
+    else
+      flash[:error] = "Sending failed"
+      BirthReport.create(:person_id => params[:id],
+        :created_by => session[:user_id],
+        :date_created => Time.now)  if birth_report.blank?
+    end
+
 
     redirect_to "/patients/birth_report/#{params[:id]}?person_id=#{params[:id]}&user_id=#{params[:user_id]}&patient_id=#{params[:patient_id]}&today=1" and return
   end

@@ -9,6 +9,8 @@ class Patient < ActiveRecord::Base
   has_many :programs, :through => :patient_programs
   has_many :relationships, :foreign_key => :person_a, :dependent => :destroy, :conditions => {:voided => 0}
   has_many :orders, :conditions => {:voided => 0}
+  has_one :mother, :class_name => "Relationship", :foreign_key => :person_b, :dependent => :destroy,
+    :conditions => {:voided => 0, :relationship => RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id}
 
   has_many :program_encounters, :class_name => 'ProgramEncounter',
     :foreign_key => :patient_id, :dependent => :destroy
@@ -507,5 +509,13 @@ class Patient < ActiveRecord::Base
 
   end
 
+  def release_serial_number
+    serial_number = SerialNumber.find_by_national_id(self.national_id)
+    serial_num = SerialNumber.find(:first, :conditions => ["national_id IS NULL"])
+    serial_number.update_attributes(:national_id =>  serial_num.national_id,
+      :date_assigned => serial_num.date_assigned,
+      :voided_by => serial_num.voided_by
+    )
+  end rescue nil
 
 end
