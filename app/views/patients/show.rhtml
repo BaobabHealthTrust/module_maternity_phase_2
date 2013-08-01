@@ -40,7 +40,7 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
         }else{
 
           try{
-            var text = bts[i].innerHTML.toLowerCase().trim();            
+            var text = bts[i].innerHTML.toLowerCase().trim().replace(/vaginal exam/, "vaginal examination").replace(/abdominal exam/, "abdominal examination");
             if (task_status_map[text] == "done"){
               bts[i].className = "menu_button done";
             }
@@ -274,10 +274,11 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
 
       <select id="links">
 
-        <% ["Ante Natal Exams", "Post Natal Exams", "Update Outcome", "Baby Outcomes", "Social History", "Update Hiv Status", "Give Drugs"].each do |encounter| %>
+        <% @first_level_order.each do |encounter| %>
 
           <%
           link = @links[encounter]
+          next if link.blank?
           unless @links[encounter].class.to_s.upcase == "HASH" %>
 
             <optgroup value='<%= link %>' label="<%= (!@task.labels[encounter.downcase].nil? ?

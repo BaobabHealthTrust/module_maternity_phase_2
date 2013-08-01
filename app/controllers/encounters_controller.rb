@@ -115,7 +115,7 @@ class EncountersController < ApplicationController
           PatientIdentifier.create(:patient_id => patient.patient_id,
             :identifier => serial_num.serial_number,
             :identifier_type => id_type,
-            :location_id => session[:location_id]
+            :location_id => (session[:location_id] || params[:location_id])
           ) if serial_num.present? && id_type.present?
 
           serial_num.national_id = patient.national_id
@@ -427,7 +427,6 @@ class EncountersController < ApplicationController
 
           redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{params[:patient_id]}&user_id=#{@user_id}&prefix=#{@prefix}#{@ret}" and return
  
-
         end
         
       end
@@ -435,19 +434,27 @@ class EncountersController < ApplicationController
       @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id])
       
       unless ((params[:patient_id] != patient.patient_id && params["encounter_type"].to_s.downcase.strip == "baby delivery") rescue false)
-        redirect_to params[:next_url] + "#{@ret}" and return if !params[:next_url].blank?
-        redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}" and return
-        redirect_to @task.next_task.url + "#{@ret}" and return
+        
+        if params["encounter_type"].downcase.strip == "update outcome" && params["concept"]["DISCHARGED"].present?
+          
+          print_and_redirect("/encounters/label/?encounter_id=#{@encounter.id}",
+            params[:next_url] + "#{@ret}")  and return if !params[:next_url].blank?
+          
+          print_and_redirect("/encounters/label/?encounter_id=#{@encounter.id}",
+            "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}") and return
+          
+        else
+          redirect_to params[:next_url] + "#{@ret}" and return if !params[:next_url].blank?
+          redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}" and return
+        end
+        
       else
         
         print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
           params[:next_url] + "#{@ret}")  and return if !params[:next_url].blank?
-
         print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
           "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}") and return
-
-        print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
-          @task.next_task.url + "#{@ret}") and return
+        
       end
     end
     
@@ -456,6 +463,10 @@ class EncountersController < ApplicationController
   def all_recent_babies_entered?(patient)
     
     (patient.recent_babies < patient.recent_delivery_count) rescue false
+  end
+
+  def label
+    send_label(Encounter.find(params[:encounter_id]).label)
   end
 
   def list_observations
@@ -580,61 +591,61 @@ class EncountersController < ApplicationController
     render :text => "<li></li><li>" + @religions.join("</li><li>") + "</li>"
   end
   def diagnoses
-		search_string = (params[:search_string] || '').upcase
-		filter_list = params[:filter_list].split(/, */) rescue []
-		outpatient_diagnosis = ConceptName.find_by_name("DIAGNOSIS").concept
+    search_string = (params[:search_string] || '').upcase
+    filter_list = params[:filter_list].split(/, */) rescue []
+    outpatient_diagnosis = ConceptName.find_by_name("DIAGNOSIS").concept
 
-		diagnosis_concept_set = ConceptName.find_by_name("MATERNITY DIAGNOSIS LIST").concept
-		diagnosis_concepts = Concept.find(:all, :joins => :concept_sets,
+    diagnosis_concept_set = ConceptName.find_by_name("MATERNITY DIAGNOSIS LIST").concept
+    diagnosis_concepts = Concept.find(:all, :joins => :concept_sets,
       :conditions => ['concept_set = ?', diagnosis_concept_set.id])
 
-		valid_answers = diagnosis_concepts.map{|concept|
-			name = concept.fullname rescue nil
-			name.upcase.include?(search_string) ? name : nil rescue nil
-		}.compact
-		previous_answers = []
-		# TODO Need to check global property to find out if we want previous answers or not (right now we)
-		previous_answers = Observation.find_most_common(outpatient_diagnosis, search_string)
-		@suggested_answers = (previous_answers + valid_answers.sort!).reject{|answer| filter_list.include?(answer) }.uniq[0..10]
-		@suggested_answers = @suggested_answers - params[:search_filter].split(',') rescue @suggested_answers
+    valid_answers = diagnosis_concepts.map{|concept|
+      name = concept.fullname rescue nil
+      name.upcase.include?(search_string) ? name : nil rescue nil
+    }.compact
+    previous_answers = []
+    # TODO Need to check global property to find out if we want previous answers or not (right now we)
+    previous_answers = Observation.find_most_common(outpatient_diagnosis, search_string)
+    @suggested_answers = (previous_answers + valid_answers.sort!).reject{|answer| filter_list.include?(answer) }.uniq[0..10]
+    @suggested_answers = @suggested_answers - params[:search_filter].split(',') rescue @suggested_answers
 
-		render :text => "<li></li>" + "<li>" + @suggested_answers.join("</li><li>") + "</li>"
-	end
+    render :text => "<li></li>" + "<li>" + @suggested_answers.join("</li><li>") + "</li>"
+  end
 
-	def current_baby_exam
+  def current_baby_exam
 
-		children = Encounter.find(:all, :joins =>[:observations],
+    children = Encounter.find(:all, :joins =>[:observations],
       :conditions => ["person_id = ? AND encounter_type = ? AND encounter_datetime > ? AND concept_id = ? AND value_text = ?",
         params[:patient_id], EncounterType.find_by_name("OUTCOME"), 9.months.ago.strftime("%Y-%m-%d"),
         Concept.find_by_name("BABY OUTCOME"),
         "ALIVE"
       ]).length rescue 0
-		redirect to "/two_protocol_patients/current_baby_exam_baby?baby=#{params[:baby]}&patient_id=#{params[:patient_id]}&baby_total=#{children}"
-	end
+    redirect to "/two_protocol_patients/current_baby_exam_baby?baby=#{params[:baby]}&patient_id=#{params[:patient_id]}&baby_total=#{children}"
+  end
 
-	def baby_delivery_mode
+  def baby_delivery_mode
     search_string = params[:search_string]
     @options = Concept.find_by_name("BABY OUTCOME").concept_answers.collect{|c| c.name}
     @options = @options.collect{|rel| rel if rel.downcase.include?(search_string.downcase)}
     @options.delete_if{|rel| rel.match(/Intrauterine/i)}
     render :text => "<li></li><li>" + @options.join("</li><li>") + "</li>"
- 	end
-	def presentation
+  end
+  def presentation
     search_string = params[:search_string]
     @options = Concept.find_by_name("PRESENTATION").concept_answers.collect{|c| c.name}
     @options = @options.collect{|rel| rel if rel.downcase.include?(search_string.downcase)}
     render :text => "<li></li><li>" + @options.join("</li><li>") + "</li>"
- 	end
-	def concept_set_options
-		search_string = params[:search_string]
-		set = params[:set].gsub("_", " ").strip.upcase
+  end
+  def concept_set_options
+    search_string = params[:search_string]
+    set = params[:set].gsub("_", " ").strip.upcase
     @options = Concept.find_by_name(set).concept_answers.collect{|c| c.name}
     @options = @options.collect{|rel| rel if rel.downcase.include?(search_string.downcase)}
    
     @options.delete_if{|opt| !opt.blank? and opt.match(/Intrauterine death/i) and set.downcase == "baby outcome"}
     render :text => "<li></li><li>" + @options.join("</li><li>") + "</li>"
-	end
-	def procedure_diagnoses
+  end
+  def procedure_diagnoses
 
     procedure = params[:procedure].upcase.gsub("_", " ")
     procedure ="Exploratory laparatomy +/- adnexectomy".upcase  if params[:procedure] == "laparatomy"
@@ -642,12 +653,12 @@ class EncountersController < ApplicationController
     search_string         = (params[:search_string] || '').upcase
 
     diagnosis_concept_set = ConceptName.find_by_name(procedure).concept
-		diagnosis_concepts = Concept.find(:all, :joins => :concept_sets,
+    diagnosis_concepts = Concept.find(:all, :joins => :concept_sets,
       :conditions => ['concept_set = ?', diagnosis_concept_set.id])
-		valid_answers = diagnosis_concepts.map{|concept|
-			name = concept.fullname rescue nil
-			name.upcase.include?(search_string) ? name : nil rescue nil
-		}.compact
+    valid_answers = diagnosis_concepts.map{|concept|
+      name = concept.fullname rescue nil
+      name.upcase.include?(search_string) ? name : nil rescue nil
+    }.compact
 
     @results = valid_answers.collect{|e| e if e.downcase.include?(search_string.downcase)}
 
@@ -962,7 +973,7 @@ class EncountersController < ApplicationController
 
       t1 = Thread.new{
         Kernel.system "wkhtmltopdf --zoom #{zoom} -s A4 http://" +
-          request.env["HTTP_HOST"] + "\"/patients/admissions_printable/" +
+          request.env["HTTP_HOST"] + "\"/patients/admissions_note_printable/" +
           @patient.patient_id.to_s + "?patient_id=#{@patient.patient_id}&user_id=#{params[:user_id]}&ret=#{params[:ret]}"+ "\" /tmp/output-" + params[:user_id].to_s + ".pdf \n"
       }
 
@@ -973,8 +984,8 @@ class EncountersController < ApplicationController
       }
 
       t3 = Thread.new{
-        sleep(10)
-        Kernel.system "rm /tmp/output-" + session[:user_id].to_s + ".pdf\n"
+        sleep(20)
+        Kernel.system "rm /tmp/output-*"
       }
 
 
@@ -994,7 +1005,7 @@ class EncountersController < ApplicationController
         ConceptName.find_by_name(params[:concept_name]).concept_id, (session_date - 1.month)]).each{|enc|
 
       enc.observations.each{|obs|
-        if obs.concept.name.name.downcase.strip == params[:concept_name].downcase.strip          
+        if obs.concept.name.name.downcase.strip == params[:concept_name].downcase.strip
           result = obs.answer_string.strip if result.blank?
         end
       }

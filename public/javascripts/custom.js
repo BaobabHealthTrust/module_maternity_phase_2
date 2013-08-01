@@ -198,11 +198,10 @@ function calculatePeriodOnARVs(){
     var date = createDate(date_started);
     var today = new Date();
     var periodOnARVs = Math.round(Math.abs(today - date)/one_month);
-    //feed a value as a patient selection
-    // $("period_on_arvs").value = periodOnARVs;
     return periodOnARVs;
 }
 function showPeriodOnARVs(){
+  
     if(!$('arv_period')){
         var div = document.createElement("div");
         div.id = "arv_period";
@@ -212,13 +211,8 @@ function showPeriodOnARVs(){
 
     $('arv_period').innerHTML = "<i style='font-size: 1.2em;float: left;'> Period On ARVs    </i> "
     +  "<i style='font-size: 1.2em;float: right;'>" + calculatePeriodOnARVs() + ((calculatePeriodOnARVs() == 1)? " Month</i>" : " Months</i>")
-    if (temp != "eventSet"){
-        timedEvent = self.setInterval(function(){
-            showPeriodOnARVs()
-        }, 100);
-        temp = "eventSet"
-    }
 }
+
 function checkHIVTestUnkown(id){
     if($(id).value.toLowerCase() == "unknown"){
 
@@ -227,6 +221,16 @@ function checkHIVTestUnkown(id){
     }
     return false;
 }
+
+function checkNVPStart(id){
+    if($(id).value.toLowerCase().trim() == "no"){
+
+        showMessage("Baby needs to start NVP Now!", true);
+        return true;
+    }
+    return false;
+}
+
 function isValidDateFormat(value){
     return value.trim().match(/(\d{4})\-(\d{2})\-(\d{2})\s(\d{2})\:(\d{2})/);
 }
@@ -318,6 +322,40 @@ function calculateBP(str){
 }
 
 function updateFromVariables(){
+    //show period on ARVs
+    try{
+        if (currentConcept.match(/art start date/i)){
+            showPeriodOnARVs();
+        }else{
+            $("arv_period").style.display = "none"
+        }
+    }catch(ex){
+    
+    }
+    conc = currentConcept.toLowerCase().trim();
+    try{
+        if (conc == "plan" || conc == "impression" || conc == "clinician notes" || conc == "notes"){
+            /*  $("inputFrame" + tstCurrentPage).style.height = "300px";
+            $("touchscreenInput" + tstCurrentPage).style.height = "300px";
+            $("touchscreenInput" + tstCurrentPage).setAttribute("field_type", "text")
+            $("viewport").style.height = "300px" */
+            if ($("touchscreenInput" + tstCurrentPage).outerHTML.match(/\<textarea/)){
+
+            }else{
+                $("touchscreenInput" + tstCurrentPage).outerHTML = $("touchscreenInput" + tstCurrentPage).outerHTML.replace(/\<input/, "<textarea")
+                $("touchscreenInput" + tstCurrentPage).setAttribute('class','touchscreenTextAreaInput');
+                $("touchscreenInput" + tstCurrentPage).setAttribute("cols", 67);
+                $("touchscreenInput" + tstCurrentPage).setAttribute("rows", 6);
+                $("return").style.display = "block";
+            }
+        }else{
+            $("arv_period").style.display = "none"
+        }
+    }catch(ex){
+
+    }
+
+
     try{
         
         if (tt_cancel_destination.match(/autoflow/)){
@@ -326,6 +364,7 @@ function updateFromVariables(){
             tt_cancel_destination += "&autoflow=false";
         }
 
+        var pageConcept = $("touchscreenInput" + tstCurrentPage).name.replace(/concept\[|]/g, "");
         var params = document.location.toString().split("&");
         var paramz = document.location.toString().replace("//", "").split(/\//);
 
@@ -333,7 +372,7 @@ function updateFromVariables(){
 
             try{
 
-                if (params[k].match(/ret\=/i) || paramz[1].match(/protocol\_patient/i)){
+                if (params[k].match(/ret\=/i) || paramz[1].match(/protocol\_patient/i) && !pageConcept.match(/APGAR/i)){
                     var ret = params[k].split("=")[1].replace("-", " ");
                     var encounter = paramz[2].split("?")[0].replace(/\_/g, " ").replace(/\-/g, " ")
 
@@ -360,7 +399,8 @@ function updateFromVariables(){
             
 
         }
-        setTimeout("updateFromVariables()", 100)
+        setTimeout("updateFromVariables()", 100);
+        
     }catch(ex){
         setTimeout("updateFromVariables()", 100)
     }
@@ -474,12 +514,12 @@ function ajaxPull(concept, user, patient){
                 $('inputFrame' + tstCurrentPage).style.marginLeft = "100px";
                 $('inputFrame' + tstCurrentPage).style.width = "90%";
                  $('helpText' + tstCurrentPage).style.marginLeft = "80px";
-                */
+                 */
                 $('inputFrame' + tstCurrentPage).onclick = function(){
                     if ($("touchscreenInput" + tstCurrentPage).value.length == 0){
                         $("touchscreenInput" + tstCurrentPage).value = result
                     }
-                }                
+                }
                 $('page' + tstCurrentPage).appendChild(flag)
             }
         }
@@ -493,7 +533,44 @@ function ajaxPull(concept, user, patient){
     }
 }
 
-setTimeout("updateFromVariables()", 200);
+function setLMPDate(str){
+    try{
+        var period = str.split("|")[0]
+        var date = str.split("|")[1]
+        var year = date.split("-")[0]
+        var day = date.split("-")[2]
+        var month = date.split("-")[1]
+
+        var d = new Date();
+
+        d.setDate(parseInt(day));
+        d.setYear(parseInt(year));
+        d.setMonth(parseInt(month) - 1);
+        
+        d.setMonth(d.getMonth() - parseInt(period));
+        if (parseInt(period) >= 0){
+            __$("1.1.17").value = d.getFullYear() + "-" + padZeros((d.getMonth() + 1), 2) + "-" + padZeros(d.getDate(),2);
+        }
+    }catch(e){
+        __$("1.1.17").value = ""
+    }
+}
+
+function padZeros(number, positions){
+    var zeros = parseInt(positions) - String(number).length;
+    var padded = "";
+
+    for(var i = 0; i < zeros; i++){
+        padded += "0";
+    }
+
+    padded += String(number);
+
+    return padded;
+}
+
+
+setTimeout("updateFromVariables()", 1);
 setTimeout("probeValues()", 20);
 
 

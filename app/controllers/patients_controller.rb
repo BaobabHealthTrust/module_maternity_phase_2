@@ -111,7 +111,7 @@ class PatientsController < ApplicationController
           encounter_name = @label_encounter_map[t.upcase]rescue nil
           concept = @task.task_scopes[t.downcase][:concept].upcase rescue nil
           ret = task[0].titleize.match(/ante natal|post natal/i)[0].gsub(/\s/, "-").downcase rescue ""
-         
+       
           @task_status_map[t] = done_ret(scope, encounter_name, ret, concept)
         
           @links[task[0].titleize][t.titleize] = "/#{ctrller}/#{t.downcase.gsub(/\s/, "_").downcase}?patient_id=#{
@@ -145,33 +145,66 @@ class PatientsController < ApplicationController
       end
     }
     
+    @links = @links.delete_if{|key, val| key.match(/hiv/i)}
+
     @groupings = {}
     @groupings["Ante Natal Exams"] = ["ante_natal_admission_details", "ante_natal_vitals", "ante_natal_patient_history", "ante natal pmtct", "physical_exam", "ante_natal_vaginal_examination", "general_body_exam", "admission_diagnosis", "ante natal notes", "admissions_note"]
-    @groupings["Post Natal Exams"] = ["current_delivery", "post_natal_admission_details", "abdominal examination", "post natal pmtct", "post_natal_patient_history", "post_natal_vitals", "post_natal_vaginal_examination", "post natal notes", "admissions_note"]
-    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "update_baby_outcome", "kangaroo_review_visit"]
+    @groupings["Post Natal Exams"] = ["post_natal_admission_details", "abdominal examination", "post natal pmtct", "post_natal_patient_history", "post_natal_vitals", "post_natal_vaginal_examination", "post natal notes", "admissions_note"]
+    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "kangaroo_review_visit"]
     @groupings["Update Outcome"] = ["delivered", "discharged", "referred_out", "absconded", "patient_died"]
-
+    @first_level_order = ["Ante Natal Exams", "Post Natal Exams", "Update Outcome", "Baby Outcomes", "Social History", "Give Drugs"]
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
+    
+    @first_level_order.delete_if{|order| 
+      ((@patient.recent_babies.to_i < 1 && order.match(/Baby Outcomes/i)) rescue false)
+    }
+
     if ((all_recent_babies_entered?(@patient) == true) rescue false)
       prefix = (@patient.recent_babies.to_i + 1) rescue 0
 
       @prefix = "Baby"
-
-      case prefix
-      when 1
-        @prefix = "1<sup>st</sup> " + @prefix
-      when 2
-        @prefix = "2<sup>nd</sup> " + @prefix
-      when 3
-        @prefix = "3<sup>rd</sup> " + @prefix
-      else
-        @prefix = "#{prefix}<sup>th</sup> " + @prefix
+      unless (@patient.recent_delivery_count.to_i == 1 rescue false)
+        case prefix
+        when 1
+          @prefix = "1<sup>st</sup> " + @prefix
+        when 2
+          @prefix = "2<sup>nd</sup> " + @prefix
+        when 3
+          @prefix = "3<sup>rd</sup> " + @prefix
+        else
+          @prefix = "#{prefix}<sup>th</sup> " + @prefix
+        end
       end
       
       @next_user_task = ["#{@prefix} Delivery",
         "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}&prefix=#{@prefix}#{@ret}"
       ]
       redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}&prefix=#{@prefix}#{@ret}" and return  if (session[:autoflow].to_s == "true" rescue false)
+
+    else
+      
+      #watch for the following encounters, if done
+      @route = ""
+      ["blood transfusion"].each do |concept|
+        @check = @patient.encounters.current_pregnancy.find(:first, :joins => [:observations],
+          :conditions => ["encounter.encounter_type = ? AND obs.concept_id = ?", EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name(concept).concept_id])
+
+        next if !@route.blank?
+        if @check.blank?
+
+          route = {"blood transfusion" => "mother_delivery_details",
+            "procedure done" => "delivery_procedures"
+          }
+          
+          @route = route[concept.downcase]
+          
+          @next_user_task = ["#{@route.titleize}",
+            "/two_protocol_patients/#{@route}?patient_id=#{@patient.id}&user_id=#{@user.id}"
+          ]
+          
+        end
+        
+      end if (@patient.recent_delivery_count > 0 rescue false)
 
     end
     
@@ -198,8 +231,13 @@ class PatientsController < ApplicationController
     end
     
     if @next_user_task.blank?
+      @next_user_task = ["Delivery Outcome",
+        "/two_protocol_patients/delivered?patient_id=#{@patient.id}&user_id=#{@user.id}"
+      ] if (@patient.recent_babies.to_i == 0  rescue false)
+
       @groupings["Post Natal Exams"].each do |encounter|
-        next if !@next_user_task.blank? && ((@patient.recent_babies.to_i > 0 rescue false) ? encounter.match(/current\_delivery/i) : false)
+        
+        next if !@next_user_task.blank? || (@patient.recent_babies.to_i == 0  rescue true)
         next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(encounter.titleize.upcase)
           
         scope = @task.task_scopes[encounter.downcase][:scope].upcase rescue nil
@@ -220,7 +258,10 @@ class PatientsController < ApplicationController
      
       end
     end
-       
+    
+    @groupings.delete_if{|key, links|
+      @groupings[key].blank?
+    }
     @babies = @patient.current_babies rescue []
     
   end
@@ -273,7 +314,7 @@ class PatientsController < ApplicationController
     session_date = session[:datetime].to_date rescue Date.today
     patient_ids = [@task.patient.id]
     available = []
-    ret = " if ret.blank?"
+    ret = "" if ret.blank?
     case scope
     when "TODAY"
       available = Encounter.find(:all, :joins => [:observations], :conditions =>
@@ -574,6 +615,7 @@ class PatientsController < ApplicationController
       printers = wards.each{|ward|
         current_printer = ward.split(":")[1] if ward.split(":")[0].upcase == location
       } rescue []
+
       ["ORIGINAL FOR:(PARENT)", "DUPLICATE FOR DISTRICT:REGISTRY OF BIRTH", "TRIPLICATE FOR DISTRICT:REGISTRY OF ORIGINAL HOME", "QUADRUPLICATE FOR:THE HOSPITAL", ""].each do |rec|
 
         @recipient = rec
@@ -590,12 +632,12 @@ class PatientsController < ApplicationController
           Kernel.system "lp #{(!current_printer.blank? ? '-d ' + current_printer.to_s : "")} /tmp/output-#{Regexp.escape(name)}" + ".pdf\n"
         } if !rec.blank?
 
-        t3 = Thread.new{
-          sleep(3)
-          #Kernel.system "rm /tmp/output-#{Regexp.escape(name)}"+ ".pdf\n"
-        }if !rec.blank?
-        sleep(1)
       end
+
+      t3 = Thread.new{
+        sleep(20)
+        Kernel.system "rm /tmp/output-*"
+      }
 
     end
     redirect_to "/patients/birth_report/#{person_id}?person_id=#{person_id}&patient_id=#{params[:patient_id]}&user_id=#{params[:user_id]}" and return
@@ -911,6 +953,23 @@ class PatientsController < ApplicationController
     
   end
   
+  def delivery_print
+
+    patient = Patient.find(params[:patient_id])
+
+    if [false, 0, "0", "false"].include?(patient.person.dead)
+      print_string = (patient.national_id_label rescue "") + (patient.baby_details("summary") rescue "") + (patient.baby_details("apgar") rescue "") + (patient.baby_details("complications") rescue "")
+    else
+      print_string = (patient.national_id_label rescue "") + (patient.baby_details("summary") rescue "") + (patient.baby_details("complications") rescue "")
+    end
+
+    send_data(print_string,
+      :type=>"application/label; charset=utf-8",
+      :stream=> false,
+      :filename=>"#{params[:patient_id]}#{rand(10000)}.lbl",
+      :disposition => "inline")
+  end
+
   def delivery_print
 
     patient = Patient.find(params[:patient_id])

@@ -71,9 +71,10 @@ O.1.1.15.2. Vacuum extraction delivery
 O.1.1.15.3. Caesarean Section
 O.1.1.15.4. Spontaneous vaginal delivery
 
-Q.1.1.16. TT Status [concept: TT STATUS, field_type: number, pos: 14, absoluteMin: 0, max: 5, tt_pageStyleClass: NumbersOnly]
+Q.1.1.16. TTV Status [concept: TT STATUS, field_type: number, pos: 14, absoluteMin: 0, max: 5, tt_pageStyleClass: NumbersOnly]
 
 Q.1.1.17. Last Menstrual Period [concept: LAST MENSTRUAL PERIOD, field_type: date, pos: 15, tt_onLoad:  lmp = "<%= params["lmp"] rescue '' %>"; name = "<%= ' For <br>' + @patient.name rescue '' %>"; checkANCLMP(); calculateEDOD("1.1.17"), tt_onUnLoad: window.clearInterval(timedEvent)]
+Q.1.1.18. Gestation (months) [disabled: disabled, concept: estimate LMP, max: 9, min: 6, tt_onUnLoad: var date = "<%= Date.today%>"; setLMPDate($("touchscreenInput" + tstCurrentPage).value + "|" + date), tt_pageStyleClass: NumbersOnly, condition: $("1.1.17").value.toLowerCase().trim() == "unknown", field_type: number, pos:16]
 
-Q.1.1.18. Next URL [pos: 16, name: ret, value: ante-natal, type: hidden]
+Q.1.1.19. Next URL [pos: 19, name: ret, value: ante-natal, type: hidden]
 

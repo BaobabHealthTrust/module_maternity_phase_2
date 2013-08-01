@@ -1,7 +1,7 @@
-P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: station, label: Ante Natal Vaginal Examination, pos: 12, parent: 4]
+P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: Cervical Dilation, label: Ante Natal Vaginal Examination, pos: 12, parent: 4]
 C.1.1. Given a registered patient, capture their relevenat Vaginal Examinations
 
-Q.1.1.1. Genetalia Inspection [concept: GENETALIA INSPECTION, field_type: text, pos: 0, tt_pageStyleClass: LongSelectList]
+Q.1.1.1. Genetalia Inspection [concept: GENETALIA INSPECTION, field_type: text, pos: 0, tt_pageStyleClass: LongSelectList, tt_onLoad: $("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"]
 O.1.1.1.1. Show
 O.1.1.1.2. Nothing Abnormal Detected
 O.1.1.1.3. Varicose Veins
@@ -12,7 +12,7 @@ O.1.1.1.7. Sores
 O.1.1.1.8. Scar
 O.1.1.1.9. Not Done
 
-Q.1.1.2. Station [concept: STATION, field_type: text, pos: 1, tt_pageStyleClass: LongSelectList]
+Q.1.1.2. Station [concept: STATION, field_type: text, pos: 1, tt_pageStyleClass: LongSelectList,  tt_onLoad: $("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"]
 O.1.1.2.1. -3
 O.1.1.2.2. -2
 O.1.1.2.3. -1
@@ -50,7 +50,7 @@ Q.1.1.7. Membranes Rupture Time [concept: RUPTURE TIME, field_type: advancedTime
 
 Q.1.1.8. Membranes Rupture Date [concept: RUPTURE DATE, field_type: date, pos: 7, condition: __$("1.1.6").value.trim().toUpperCase() == "RUPTURED"]
 
-Q.1.1.9. Colour of Liqour [concept: COLOUR OF LIQOUR, field_type: text, pos: 8, condition: __$("1.1.6").value.trim().toUpperCase() == "RUPTURED"]
+Q.1.1.9. Colour of Liqour [concept: COLOUR OF LIQOUR, field_type: text, pos: 8, condition: __$("1.1.6").value.trim().toUpperCase() == "RUPTURED",  tt_onLoad: $("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"]
 O.1.1.9.1. Pus
 O.1.1.9.2. Absent
 O.1.1.9.3. Blood
@@ -59,7 +59,7 @@ O.1.1.9.5. Meconium Grade 2
 O.1.1.9.6. Meconium Grade 1
 O.1.1.9.7. Clear
 
-Q.1.1.10. Presenting Part [concept: PRESENTING PART, field_type: text, pos: 9]
+Q.1.1.10. Presenting Part [concept: PRESENTING PART, field_type: text, pos: 9,  tt_onLoad: $("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"]
 O.1.1.10.1. Cord
 O.1.1.10.2. Shoulder
 O.1.1.10.3. Foot

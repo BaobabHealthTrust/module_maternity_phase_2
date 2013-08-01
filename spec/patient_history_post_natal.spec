@@ -71,6 +71,6 @@ O.1.1.15.2. Vacuum extraction delivery
 O.1.1.15.3. Caesarean Section
 O.1.1.15.4. Spontaneous vaginal delivery
 
-Q.1.1.16. TT Status [concept: TT STATUS, field_type: number, pos: 14, absoluteMin: 0, max: 5, tt_pageStyleClass: NumbersOnly]
+Q.1.1.16. TTV Status [concept: TT STATUS, field_type: number, pos: 14, absoluteMin: 0, max: 5, tt_pageStyleClass: NumbersOnly]
 
 Q.1.1.18. Next URL [pos: 16, name: ret, value: post-natal, type: hidden]

@@ -123,23 +123,6 @@ if params[:user_id].nil?
 
 	end
 
-	def update_hiv_status
-
-	@patient = Patient.find(params[:patient_id]) rescue nil
-
-	redirect_to '/encounters/no_patient' and return if @patient.nil?
-
-if params[:user_id].nil?
-	redirect_to '/encounters/no_user' and return
-	end
-
-	@user = User.find(params[:user_id]) rescue nil?
-
-	redirect_to '/encounters/no_patient' and return if @user.nil?
-	
-
-	end
-
 	def give_drugs
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
@@ -345,23 +328,6 @@ if params[:user_id].nil?
 	end
 
 	def post_natal_vitals
-
-	@patient = Patient.find(params[:patient_id]) rescue nil
-
-	redirect_to '/encounters/no_patient' and return if @patient.nil?
-
-if params[:user_id].nil?
-	redirect_to '/encounters/no_user' and return
-	end
-
-	@user = User.find(params[:user_id]) rescue nil?
-
-	redirect_to '/encounters/no_patient' and return if @user.nil?
-	
-
-	end
-
-	def current_delivery
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
@@ -668,23 +634,6 @@ if params[:user_id].nil?
 	end
 
 	def mother_delivery_details
-
-	@patient = Patient.find(params[:patient_id]) rescue nil
-
-	redirect_to '/encounters/no_patient' and return if @patient.nil?
-
-if params[:user_id].nil?
-	redirect_to '/encounters/no_user' and return
-	end
-
-	@user = User.find(params[:user_id]) rescue nil?
-
-	redirect_to '/encounters/no_patient' and return if @user.nil?
-	
-
-	end
-
-	def bba_delivery
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 

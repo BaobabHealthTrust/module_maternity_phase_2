@@ -14,7 +14,7 @@ Q.1.1.4. Respiratory Rate [concept: RESPIRATORY RATE, field_type: number, min: 0
 
 Q.1.1.5. Heart Rate [concept: HEART RATE, field_type: number, min: 20, max: 60, tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, pos: 4, units: bpm, helpText: Heart Rate, condition: id_string.match(__$("1.1.1").value) && __$("1.1.2").value.trim().toUpperCase() != "DEAD"]
 
-Q.1.1.6. Weight [concept: WEIGHT, field_type: number, tt_onLoad: attribute("1.1.5*validationRule*([0-9]+\\.[0-9])|Unknown$"), min: 2500, max: 5000, tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, pos: 5, absoluteMin: 0, absoluteMax: 20, helpText: Weight, condition: id_string.match(__$("1.1.1").value) && __$("1.1.2").value.trim().toUpperCase() != "DEAD"]
+Q.1.1.6. Weight [concept: WEIGHT, field_type: number, tt_onLoad: attribute("1.1.5*validationRule*([0-9]+\\.[0-9])|Unknown$"), min: 2500, max: 5000, tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, pos: 5, helpText: Weight, condition: id_string.match(__$("1.1.1").value) && __$("1.1.2").value.trim().toUpperCase() != "DEAD"]
 
 Q.1.1.7. Abdomen [concept: ABDOMEN, field_type: text, pos: 6, helpText: Abdomen, condition: id_string.match(__$("1.1.1").value) && __$("1.1.2").value.trim().toUpperCase() != "DEAD"]
 O.1.1.7.1. Soft

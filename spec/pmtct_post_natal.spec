@@ -12,7 +12,7 @@ Q.1.1.3. On ARVs [helpText: On ART?, concept: ON ARVS, field_type: text, pos: 2,
 O.1.1.3.1. No
 O.1.1.3.2. Yes
 
-Q.1.1.4. ARV Start Date [concept: ART Start Date, field_type: date, pos: 3, condition: __$("1.1.3").value.trim().toUpperCase() == "YES", tt_onUnLoad: window.clearInterval(timedEvent), tt_onLoad: showPeriodOnARVs();]
+Q.1.1.4. ARV Start Date [concept: ART Start Date, field_type: date, pos: 3, condition: __$("1.1.3").value.trim().toUpperCase() == "YES"]
 
 Q.1.1.5. Mother ART registration number [pos: 4, condition: __$("1.1.3").value.trim().toUpperCase() == "YES"]
 

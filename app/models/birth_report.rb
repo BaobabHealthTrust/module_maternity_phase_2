@@ -67,7 +67,7 @@ class BirthReport < ActiveRecord::Base
 
     reports.each do |res|
 
-      if res.date_created.to_date >= start_date.to_date and res.date_created.to_date <= end_date.to_date and (Person.find(res.person_b).dead == false)
+      if res.date_created.to_date >= start_date.to_date and res.date_created.to_date <= end_date.to_date and (Person.find(res.person_b).dead == false || Person.find(res.person_b).dead == 0)
         results += 1
       end
 
