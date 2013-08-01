@@ -5,7 +5,7 @@ Q.1.1.1. Next Of Kin First Name [concept: Guardian First Name, field_type: text,
 
 Q.1.1.2. Next Of Kin Last Name [concept: Guardian Last Name, field_type: text, pos: 1]
 
-Q.1.1.3. Next Of Kin Phone Number [concept: Next of Kin Telephone, validationRule: ^0\\d{7}$|Unknown|Not Available|^0\\d{9}$, validationMessage: Not a valid phone number, field_type: number, tt_pageStyleClass: nota NumbersOnlyWithUnknown, pos: 3]
+Q.1.1.3. Next Of Kin Phone Number [concept: Next of Kin Telephone, validationRule: ^0\d{7}$|Unknown|Not Available|^0\d{9}$|^N\/A$, validationMessage: Not a valid phone number, field_type: number, tt_pageStyleClass: nota NumbersOnlyWithUnknown, pos: 3]
 
 Q.1.1.4. Next Of Kin Relation Type [concept: GUARDIAN RELATION, pos: 4, ajaxURL: /encounters/relation_type?search_string=]
 

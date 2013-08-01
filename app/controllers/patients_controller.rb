@@ -150,7 +150,7 @@ class PatientsController < ApplicationController
     @groupings = {}
     @groupings["Ante Natal Exams"] = ["ante_natal_admission_details", "ante_natal_vitals", "ante_natal_patient_history", "ante natal pmtct", "physical_exam", "ante_natal_vaginal_examination", "general_body_exam", "admission_diagnosis", "ante natal notes", "admissions_note"]
     @groupings["Post Natal Exams"] = ["post_natal_admission_details", "abdominal examination", "post natal pmtct", "post_natal_patient_history", "post_natal_vitals", "post_natal_vaginal_examination", "post natal notes", "admissions_note"]
-    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "kangaroo_review_visit"]
+    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "kangaroo_review_visit", "Notes"]
     @groupings["Update Outcome"] = ["delivered", "discharged", "referred_out", "absconded", "patient_died"]
     @first_level_order = ["Ante Natal Exams", "Post Natal Exams", "Update Outcome", "Baby Outcomes", "Social History", "Give Drugs"]
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""

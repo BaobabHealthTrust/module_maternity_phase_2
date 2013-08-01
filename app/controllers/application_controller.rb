@@ -72,4 +72,14 @@ class ApplicationController < ActionController::Base
 
   end
 
+  def send_label(label_data)
+    send_data(
+      label_data,
+      :type=>"application/label; charset=utf-8",
+      :stream => false,
+      :filename => "#{Time.now.to_i}#{rand(100)}.lbl",
+      :disposition => "inline"
+    )
+  end
+
 end

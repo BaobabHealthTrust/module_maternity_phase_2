@@ -15,7 +15,7 @@
 				Delivered 
 			</td>
 			<td>
-<input  id='1.1.1'   helpText='Delivered '  type='hidden'  value='Delivered'  name='concept[Outcome]'  pos='0' />
+<input  id='1.1.1'   helpText='Delivered '  value='Delivered'  type='hidden'  name='concept[Outcome]'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Number of babies 
 			</td>
 			<td>
-<input type='text' id='1.1.2'  name='concept[NUMBER OF BABIES]' helpText='Number of babies '  field_type='number'  absoluteMin='1'  tt_onUnLoad='__$("1.1.3").value = __$("1.1.3").value + __$("touchscreenInput" + tstCurrentPage).value'  max='5'  pos='1'  absoluteMax='10'  tt_pageStyleclass='NumbersOnly' />
+<input type='text' id='1.1.2'  name='concept[NUMBER OF BABIES]' helpText='Number of babies '  absoluteMax='10'  tt_onUnLoad='__$("1.1.3").value = __$("1.1.3").value + __$("touchscreenInput" + tstCurrentPage).value'  max='5'  field_type='number'  absoluteMin='1'  tt_pageStyleclass='NumbersOnly'  pos='1' />
 			</td>
 		</tr>
 		<tr>
@@ -31,7 +31,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.3'   helpText='Next URL '  type='hidden'  value='/two_protocol_patients/baby_delivery?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=1&baby_total='  name='next_url'  pos='2' />
+<input  id='1.1.3'   helpText='Next URL '  value='/two_protocol_patients/baby_delivery?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=1&baby_total='  type='hidden'  name='next_url'  pos='2' />
 			</td>
 		</tr>
 	</table>

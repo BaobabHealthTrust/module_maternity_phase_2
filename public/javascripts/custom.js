@@ -338,7 +338,7 @@ function updateFromVariables(){
             /*  $("inputFrame" + tstCurrentPage).style.height = "300px";
             $("touchscreenInput" + tstCurrentPage).style.height = "300px";
             $("touchscreenInput" + tstCurrentPage).setAttribute("field_type", "text")
-            $("viewport").style.height = "300px" */
+            $("viewport").style.height = "300px" 
             if ($("touchscreenInput" + tstCurrentPage).outerHTML.match(/\<textarea/)){
 
             }else{
@@ -347,7 +347,7 @@ function updateFromVariables(){
                 $("touchscreenInput" + tstCurrentPage).setAttribute("cols", 67);
                 $("touchscreenInput" + tstCurrentPage).setAttribute("rows", 6);
                 $("return").style.display = "block";
-            }
+            }*/
         }else{
             $("arv_period").style.display = "none"
         }

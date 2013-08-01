@@ -657,7 +657,8 @@ class ClinicController < ApplicationController
 
   def serial_numbers
     @remaining_serial_numbers = SerialNumber.find(:all, :conditions => ["national_id IS NULL"]).size
-    @print_string = (@remaining_serial_numbers ==1)?  "" + @remaining_serial_numbers.to_s + " Serial Number Remaining" : "" + @remaining_serial_numbers.to_s + " Serial Numbers Remaining"
+    @assigned_serial_numbers = SerialNumber.find(:all, :conditions => ["national_id IS NOT NULL"]).size
+    @print_string = (@remaining_serial_numbers ==1)?  "" + @remaining_serial_numbers.to_s + " Serial Number Remaining" : "" + @remaining_serial_numbers.to_s + " Serial Numbers Remaining<br /><br /><span style='padding-left: 0px;'>" + @assigned_serial_numbers.to_s + "  Serial Numbers Assigned </span>"
     @limited_serial_numbers = (SerialNumber.all.size  <= 100) rescue false
     render :layout => false
   end
