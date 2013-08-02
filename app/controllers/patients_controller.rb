@@ -14,7 +14,7 @@ class PatientsController < ApplicationController
     
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
     @next_user_task = []
-    
+
     if params[:autoflow].present? && params[:autoflow].to_s == "true"
       session[:autoflow] = "true"
     elsif params[:autoflow].present? && params[:autoflow].to_s == "false"
@@ -33,9 +33,14 @@ class PatientsController < ApplicationController
     
     redirect_to "/encounters/no_user" and return if @user.nil?
 
+
+    if params[:from_search].present?
+      redirect_to "/two_protocol_patients/referral?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
+    end
+    
     @task = TaskFlow.new(params[:user_id], @patient.id)
 
-    if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
+    if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done" 
 
       @next_user_task = ["Social History",
         "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}"
@@ -986,6 +991,8 @@ class PatientsController < ApplicationController
       :filename=>"#{params[:patient_id]}#{rand(10000)}.lbl",
       :disposition => "inline")
   end
+  
+  
  
   protected
 

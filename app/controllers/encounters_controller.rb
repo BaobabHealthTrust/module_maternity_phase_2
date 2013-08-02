@@ -399,7 +399,15 @@ class EncountersController < ApplicationController
         redirect_to "/encounters/missing_encounter_type?encounter_type=#{params[:encounter_type]}" and return
 
       end
-      
+=begin
+      if (recent_parity > recent_historical_babies) && @encounter.type.name.match(/UPDATE OUTCOME/i)
+        
+        params[:next_task] = params[:next_task].gsub(/prefix\=\d/,
+          (params[:next_task].match(/prefix\=\d/)[0].match(/\d/)[0].to_i + 1).to_s ) rescue params[:next_task]
+        
+        redirect_to params[:next_task]
+      end
+=end
       if ((params[:patient_id] && all_recent_babies_entered?(Patient.find(params[:patient_id])) == true) rescue false)
         prefix = (Patient.find(params[:patient_id]).recent_babies.to_i + 1) rescue 0
 

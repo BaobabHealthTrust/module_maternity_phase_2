@@ -15,7 +15,7 @@
 				Scan baby barcode 
 			</td>
 			<td>
-<input type='text' id='1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}'  pos='0' />
+<input type='text' id='1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Baby weight at admission (grams) 
 			</td>
 			<td>
-<input type='text' id='1.4'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  tt_pageStyleClass='NumbersOnlyWithDecimal'  absoluteMax='10000'  max='5000'  min='2000'  field_type='number'  absoluteMin='100'  condition='id_string.match(__$("1.1").value)'  pos='3' />
+<input type='text' id='1.4'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  absoluteMax='10000'  field_type='number'  min='2000'  absoluteMin='100'  max='5000'  condition='id_string.match(__$("1.1").value)'  pos='3'  tt_pageStyleClass='NumbersOnlyWithDecimal' />
 			</td>
 		</tr>
 		<tr>

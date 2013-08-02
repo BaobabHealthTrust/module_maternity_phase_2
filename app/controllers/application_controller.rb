@@ -37,15 +37,15 @@ class ApplicationController < ActionController::Base
 
   def check_user
 
-    if !params[:token].nil?
+    if !params[:token].blank?
       session[:token] = params[:token]
     end
 
-    if !params[:user_id].nil?
+    if !params[:user_id].blank?
       session[:user_id] = params[:user_id]
     end
 
-    if !params[:location_id].nil?
+    if !params[:location_id].blank?
       session[:location_id] = params[:location_id]
     end
 

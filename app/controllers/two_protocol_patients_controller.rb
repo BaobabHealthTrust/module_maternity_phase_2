@@ -174,6 +174,40 @@ if params[:user_id].nil?
 
 	end
 
+	def baby_historical_outcome
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def admit_to_ward
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
 	def admission_diagnosis
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
@@ -498,6 +532,23 @@ if params[:user_id].nil?
 	end
 
 	def post_natal_exams
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def referral
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 

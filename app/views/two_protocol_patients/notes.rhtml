@@ -6,7 +6,7 @@
 
 <form method='post' action='/encounters/create'>
 	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
-	<input type='hidden' name='encounter_type' value='Update Outcome ' />
+	<input type='hidden' name='encounter_type' value='Observations ' />
 	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
 	<input type='hidden' name='user_id' value='<%= session[:user_id] %>' />
 	<table>
@@ -20,18 +20,10 @@
 		</tr>
 		<tr>
 			<td>
-				Delivery Mode 
+				Notes 
 			</td>
 			<td>
-<input type='text' id='1.1.2'  name='concept[STATUS OF BABY]'   field_type='text'  ajaxURL='/encounters/baby_delivery_mode?search_string='  helpText='Delivery Mode <%= params["baby"] + ((params["baby"].to_i == 1) ? "<sup>st</sup>" : ((params["baby"].to_i == 2) ? "<sup>nd</sup>" : ((params["baby"].to_i == 3) ? "<sup>rd</sup>" : "<sup>th</sup>" ))) %> baby'  condition='id_string.match(__$("1.1.1").value)'  pos='1' />
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Next URL 
-			</td>
-			<td>
-<input  id='1.1.3'   helpText='Next URL '  name='next_url'  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  value='/two_protocol_patients/delivery_mode?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>'  condition='id_string.match(__$("1.1.1").value)'  pos='2'  type='hidden' />
+<input type='text' id='1.1.2'  name='concept[CLINICIAN NOTES]' helpText='Notes '  field_type='text'  optional='true'  pos='1'  condition='id_string.match(__$("1.1.1").value)'  allowFreeText='true' />
 			</td>
 		</tr>
 	</table>
