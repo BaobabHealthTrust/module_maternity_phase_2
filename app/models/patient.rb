@@ -518,4 +518,54 @@ class Patient < ActiveRecord::Base
     )
   end rescue nil
 
+  def recent_location(session_date = Date.today)
+    location_id = ProgramEncounterDetail.find(:first, :order => ["encounter_datetime DESC"], :joins => [:encounter],
+      :conditions => ["program_id = ? AND DATE(encounter_datetime) > ? AND patient_id = ?",
+        Program.find_by_name("MATERNITY PROGRAM").id, (session_date - 7.day), self.patient_id]).encounter.location_id rescue nil
+    Location.find(location_id) rescue nil
+  end
+
+  def is_discharged_mother?(session_date = Date.today)
+    
+    ProgramEncounterDetail.find(:all, :limit => 20, :order => ["encounter_datetime DESC"], :joins => [:encounter],
+      :conditions => ["program_id = ? AND DATE(encounter_datetime) > ? AND encounter_type = ? AND patient_id = ?",
+        Program.find_by_name("MATERNITY PROGRAM").id, (session_date - 7.day),
+        EncounterType.find_by_name("UPDATE OUTCOME").id, self.patient_id]).collect{|enc|
+      enc.encounter.observations.collect{|obs|
+        obs.answer_string.upcase if obs.concept.name.name.upcase.strip == "DISCHARGED"
+      }
+    }.flatten.delete_if{|val| val.blank?}.present? rescue false
+   
+  end
+
+  def next_undischarged_baby(session_date = Date.today)
+    #check current mother discharge
+    @type = RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id rescue nil
+    @baby = nil
+    Relationship.find(:all, :order => ["date_created"], :conditions => ["voided = 0 AND person_a = ? AND relationship = ? and DATE(date_created) > ?",
+        self.patient_id, @type,  (session_date - 7.day)]).each{|baby|
+
+      next if @baby.present?
+       
+      @baby = baby if !Patient.find(baby.person_b).is_discharged?
+    }
+
+    @baby
+  end
+
+  def is_discharged?
+    concept_id = ConceptName.find_by_name("STATUS OF BABY").concept_id
+    check = Observation.find_by_concept_id_and_person_id(concept_id, self.patient_id).present? rescue false
+    check
+  end
+
+  def gravida
+    concept_id = ConceptName.find_by_name("Gravida").concept_id
+    Observation.find_by_concept_id_and_person_id(concept_id, self.patient_id).answer_string.to_i rescue 0;
+  end
+
+  def known_babies
+    
+  end
+  
 end

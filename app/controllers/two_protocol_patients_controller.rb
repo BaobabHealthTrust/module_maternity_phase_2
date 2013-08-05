@@ -21,7 +21,7 @@ if params[:user_id].nil?
 
 	end
 
-	def delivery_mode
+	def baby_discharge_outcome
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 

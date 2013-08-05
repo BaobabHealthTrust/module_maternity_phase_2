@@ -10,6 +10,84 @@ var lmp = "";
 var name = '';
 var bpOn = '';
 var currentConcept = "";
+var artData = {};
+
+function check(id){
+    var sum = 0;
+    var loc = document.location.toString();
+    var gravida = parseInt($("1.1.1").value);
+  
+    if (id == "1.1.5"){
+        sum = parseInt($("1.1.5").value)
+        if (sum < gravida){
+            var vall = loc.match(/ante\_natal/i)? (gravida - sum - 1) : (gravida - sum)
+            $("1.1.6").setAttribute("absoluteMax", vall);
+            if (vall == 0){
+                $("1.1.6").value = vall
+            }
+        }else{          
+    //$("touchscreeninput" + tstCurrentPage + 1).setAttribute("condition", false)
+    }
+    }
+    
+    if (id == "1.1.6"){
+        sum = parseInt($("1.1.5").value) + parseInt($("1.1.6").value)
+        if (sum < gravida){
+            var vall = loc.match(/ante\_natal/i)? (gravida - sum - 1) : (gravida - sum)
+            $("1.1.7").setAttribute("absoluteMax", vall);
+            if (vall == 0){
+                $("1.1.7").value = vall
+            }
+        }else{
+    //$("touchscreeninput" + tstCurrentPage + 1).setAttribute("condition", false)
+    }
+    }
+    
+    if (id == "1.1.7"){
+        sum = parseInt($("1.1.5").value) + parseInt($("1.1.6").value) + parseInt($("1.1.7").value)
+        if (sum < gravida){
+            var vall = loc.match(/ante\_natal/i)? (gravida - sum - 1) : (gravida - sum)
+            $("1.1.8").setAttribute("absoluteMax", vall);
+            if (vall == 0){
+                $("1.1.8").value = vall
+            }
+        }else{           
+            
+    }
+    }
+  
+}
+
+function checkDeliveriesLimits(cat){
+    var gravida = parseInt($("1.1.1").value);
+
+    if (cat == "ante-natal"){
+        $("touchscreenInput" + tstCurrentPage).setAttribute("absoluteMax", (gravida - 1));
+    }else{
+        $("touchscreenInput" + tstCurrentPage).setAttribute("absoluteMax", gravida);
+    }
+}
+
+function checkAbortionsLimits(cat){
+    var gravida = parseInt($("1.1.1").value);
+    var deliveries = parseInt($("1.1.3").value);
+    var diff = parseInt(gravida) - parseInt(deliveries);
+    if (cat == "ante-natal"){
+        $("1.1.4").setAttribute("absoluteMax", (diff - 1));
+        $("1.1.4").setAttribute("absoluteMin", (diff - 1));
+        $("1.1.5").setAttribute("absoluteMax", (gravida - 1));
+        $("1.1.4").value = diff - 1;
+    }else{
+        $("1.1.4").setAttribute("absoluteMax", diff);
+        $("1.1.4").setAttribute("absoluteMin", diff);
+        $("1.1.5").setAttribute("absoluteMax", gravida);
+        $("1.1.4").value = diff;
+    }
+}
+
+function checkArtData(national_id){
+    artPull(national_id);
+}
 
 function setMax(id){
     __$(id).setAttribute("absoluteMax", parseInt(__$("touchscreenInput" + tstCurrentPage).value) - 1)
@@ -335,7 +413,7 @@ function updateFromVariables(){
     conc = currentConcept.toLowerCase().trim();
     try{
         if (conc == "plan" || conc == "impression" || conc == "clinician notes" || conc == "notes"){
-            /*  $("inputFrame" + tstCurrentPage).style.height = "300px";
+        /*  $("inputFrame" + tstCurrentPage).style.height = "300px";
             $("touchscreenInput" + tstCurrentPage).style.height = "300px";
             $("touchscreenInput" + tstCurrentPage).setAttribute("field_type", "text")
             $("viewport").style.height = "300px" 
@@ -349,7 +427,11 @@ function updateFromVariables(){
                 $("return").style.display = "block";
             }*/
         }else{
-            $("arv_period").style.display = "none"
+            try{
+
+            }catch(ex){
+                $("arv_period").style.display = "none"
+            }
         }
     }catch(ex){
 
@@ -493,40 +575,48 @@ function ajaxPull(concept, user, patient){
 
             var result = JSON.parse(httpRequest.responseText);
             if (result.toString().length > 0){
-                /*
-                var flag = document.createElement("div")
-                flag.id = "flag"
-                flag.style.background = "url('/images/drop_icon.jpg')";
-                flag.style.position = "absolute";
-                flag.style.top = "feed";
-                flag.style.zIndex = 100;
-                flag.style.width = "85px";
-                flag.style.height = "75px";
-                flag.style.left = "0.5%"
                 
-                flag.onclick = function(){
-                    this.style.display = "none";
-                    $('inputFrame' + tstCurrentPage).style.marginLeft = "25px";
-                    $('helpText' + tstCurrentPage).style.marginLeft = "0px";
-                    $('inputFrame' + tstCurrentPage).style.width = "96.5%";
-                    $("touchscreenInput" + tstCurrentPage).value = result
-                }
-                $('inputFrame' + tstCurrentPage).style.marginLeft = "100px";
-                $('inputFrame' + tstCurrentPage).style.width = "90%";
-                 $('helpText' + tstCurrentPage).style.marginLeft = "80px";
-                 */
                 $('inputFrame' + tstCurrentPage).onclick = function(){
                     if ($("touchscreenInput" + tstCurrentPage).value.length == 0){
                         $("touchscreenInput" + tstCurrentPage).value = result
                     }
                 }
-                $('page' + tstCurrentPage).appendChild(flag)
+                try{
+                    $('page' + tstCurrentPage).appendChild(flag)
+                }catch(ex){}
             }
         }
     };
     
     try {
         var aUrl = "/encounters/probe_values?concept_name=" + concept + "&patient_id=" + patient + "&user_id=" + user;
+        httpRequest.open('GET', aUrl, true);
+        httpRequest.send(null);
+    } catch(e){
+    }
+}
+
+function artPull(national_id){
+  
+    var nat_id = national_id
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function() {
+
+        if (!httpRequest) return;
+        if (httpRequest.readyState == 4 && (httpRequest.status == 200 ||
+            httpRequest.status == 304)) {
+
+            var result = JSON.parse(httpRequest.responseText);
+            artData = {}
+            artData[national_id] = result;
+        //Do something with this art data
+        // alert(Object.keys(result["HIV TEST"]))
+                     
+        }
+    };
+
+    try {
+        var aUrl = "/patients/art_summary?national_id=" + national_id;
         httpRequest.open('GET', aUrl, true);
         httpRequest.send(null);
     } catch(e){

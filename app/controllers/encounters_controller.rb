@@ -452,7 +452,14 @@ class EncountersController < ApplicationController
             "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}") and return
           
         else
-          redirect_to params[:next_url] + "#{@ret}" and return if !params[:next_url].blank?
+
+          unless (params[:next_url].match(/admit\_to\_ward/i) &&
+                Location.find(session[:location_id]).name.match(/registration/i) rescue false)
+         
+            redirect_to params[:next_url] + "#{@ret}" and return if !params[:next_url].blank?
+            
+          end
+          
           redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}" and return
         end
         
@@ -1007,14 +1014,17 @@ class EncountersController < ApplicationController
     patient = Patient.find(params[:patient_id])
     result = ""
     session_date = session[:datetime].to_date rescue Date.today
-     
+
+    concept_id = ConceptName.find_by_name(params[:concept_name]).concept_id rescue nil
+    render :text => "".to_json  and return if concept_id.blank?
+
     patient.encounters.find(:all, :order => ["encounter_datetime DESC"], :limit => 1, :joins => [:observations],
       :conditions => ["obs.concept_id = ? AND DATE(encounter_datetime) >= ?",
-        ConceptName.find_by_name(params[:concept_name]).concept_id, (session_date - 1.month)]).each{|enc|
+        concept_id, (session_date - 1.month)]).each{|enc|
 
       enc.observations.each{|obs|
-        if obs.concept.name.name.downcase.strip == params[:concept_name].downcase.strip
-          result = obs.answer_string.strip if result.blank?
+        if obs.concept.concept_id == concept_id
+          result = obs.answer_string.titleize.strip if result.blank?
         end
       }
       

@@ -33,20 +33,46 @@ class PatientsController < ApplicationController
     
     redirect_to "/encounters/no_user" and return if @user.nil?
 
-
-    if params[:from_search].present?
+    @last_location = @patient.recent_location.location_id rescue nil
+    @current_location_name = Location.find(session[:location_id]).name rescue nil
+  
+    if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration/i) rescue false)
+      redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
+    end
+    
+    if params[:from_search].present? && @last_location.blank?
       redirect_to "/two_protocol_patients/referral?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
     end
     
     @task = TaskFlow.new(params[:user_id], @patient.id)
 
+    @undischarged_baby = @patient.next_undischarged_baby rescue nil
+ 
+    unless  @undischarged_baby.blank?
+      
+      @baby = Patient.find(@undischarged_baby.person_b) rescue nil
+      name = @baby.name rescue "...  "
+      national_id = @baby.national_id rescue " NOT FOUND"
+      if ((@baby.person.dead == 1 || @baby.person.dead == true) rescue false)
+        @value = "Dead"
+      else
+        @value = ""
+      end
+    
+      @next_user_task = ["#{@baby.name} Discharge Outcome",
+        "/two_protocol_patients/baby_discharge_outcome?patient_id=#{@patient.id}&user_id=#{@user.id}&value=#{@value}&baby_name=#{name}&baby_national_id=#{national_id}"
+      ]
+      redirect_to @next_user_task[1] #and return if (session[:autoflow] == "true")
+      
+    end if @patient.is_discharged_mother?
+    
     if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done" 
 
       @next_user_task = ["Social History",
         "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}"
       ]
 
-      redirect_to "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}" and return if (session[:autoflow] == "true")
+      redirect_to @next_user_task[1] and return if (session[:autoflow] == "true")
 
     end
 
@@ -91,7 +117,7 @@ class PatientsController < ApplicationController
         encounter_name = @label_encounter_map[task.upcase]rescue nil
         concept = @task.task_scopes[task][:concept].upcase rescue nil
        
-        @task_status_map[task] = done_ret(scope, encounter_name, "", concept)
+        @task_status_map[task] = done_ret(scope, encounter_name, "", concept) unless task.upcase.match(/notes/i)
    
         @links[task.titleize] = "/#{ctrller}/#{task.downcase.gsub(/\s/, "_")}?patient_id=#{
         @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
@@ -117,7 +143,7 @@ class PatientsController < ApplicationController
           concept = @task.task_scopes[t.downcase][:concept].upcase rescue nil
           ret = task[0].titleize.match(/ante natal|post natal/i)[0].gsub(/\s/, "-").downcase rescue ""
        
-          @task_status_map[t] = done_ret(scope, encounter_name, ret, concept)
+          @task_status_map[t] = done_ret(scope, encounter_name, ret, concept) unless t.upcase.match(/notes/i)
         
           @links[task[0].titleize][t.titleize] = "/#{ctrller}/#{t.downcase.gsub(/\s/, "_").downcase}?patient_id=#{
           @patient.id}&user_id=#{params[:user_id]}"
@@ -191,8 +217,9 @@ class PatientsController < ApplicationController
       #watch for the following encounters, if done
       @route = ""
       ["blood transfusion"].each do |concept|
-        @check = @patient.encounters.current_pregnancy.find(:first, :joins => [:observations],
-          :conditions => ["encounter.encounter_type = ? AND obs.concept_id = ?", EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name(concept).concept_id])
+        @check = @patient.encounters.find(:first, :joins => [:observations],
+          :conditions => ["DATE(encounter.encounter_datetime) > ?  AND encounter.encounter_type = ? AND obs.concept_id = ?",
+            ((session[:datetime].to_date rescue Date.today) - 1.month), EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name(concept).concept_id])
 
         next if !@route.blank?
         if @check.blank?
@@ -992,7 +1019,20 @@ class PatientsController < ApplicationController
       :disposition => "inline")
   end
   
-  
+  def art_summary
+
+    art_link = get_global_property_value("art.link") rescue nil
+
+    data = JSON.parse(RestClient.get("#{art_link}/encounters/art_summary?national_id=#{params[:national_id]}")) rescue {}
+
+    data.keys.each {|key|
+      data[key.titleize.upcase] = data[key]
+      data.delete(key)
+    }
+    
+    render :text => data.to_json
+    
+  end
  
   protected
 
