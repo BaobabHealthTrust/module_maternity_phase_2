@@ -15,7 +15,7 @@
 				Scan baby barcode 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  value='<%= params["baby_national_id"]%>'  pos='0'  condition='false' />
+<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  condition='false'  value='<%= params["baby_national_id"]%>'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -23,19 +23,11 @@
 				Delivery Mode 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[STATUS OF BABY]'  helpText='<%= params["baby_name"]%> discharge outcome'  field_type='text'  tt_OnLoad='$("touchscreenInput" + tstCurrentPage).value = "<%= params['value']%>"; if ("<%= params["value"]%>".trim().toLowerCase() == "dead"){gotoNextPage()}'  pos='1' >
+<select id='1.1.2' name='concept[STATUS OF BABY]'  helpText='<%= params["baby_name"]%> discharge outcome'  tt_OnLoad='$("touchscreenInput" + tstCurrentPage).value = "<%= params['value']%>"; if ("<%= params["value"]%>".trim().toLowerCase() == "dead"){gotoNextPage()}'  field_type='text'  pos='1' >
 <option></option>
 <option value='Alive'>Alive</option>
  <option value='Dead'>Dead</option>
  </select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Next URL 
-			</td>
-			<td>
-<input  id='1.1.3'   helpText='Next URL '  name='next_url'  type='hidden'  value='/two_protocol_patients/delivery_mode?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&baby=<%= params["baby"].to_i + 1 %>&baby_total=<%= params["baby_total"]%>'  pos='2'  <%= (params["baby"].to_i >= params["baby_total"].to_i ? "disabled" : "") %>  condition='id_string.match(__$("1.1.1").value)' />
 			</td>
 		</tr>
 	</table>

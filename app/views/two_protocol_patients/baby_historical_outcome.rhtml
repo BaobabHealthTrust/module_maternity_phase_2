@@ -15,7 +15,7 @@
 				Year of Birth 
 			</td>
 			<td>
-<input type='text' id='1.1.2'  name='concept[YEAR OF BIRTH]'   tt_pageStyleClass='NumbersOnly'  max='min'  helpText='<%= params["prefix"]%> Year of Birth'  field_type='number'  min='<%= (Date.today - (@patient.age.years + 10)).year%>'  pos='0' />
+<input type='text' id='1.1.2'  name='concept[YEAR OF BIRTH]'   max='min'  helpText='<%= params["prefix"]%> Year of Birth'  min='<%= (Date.today - (@patient.age.years + 10)).year%>'  tt_pageStyleClass='NumbersOnly'  field_type='number'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -45,7 +45,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.5'   helpText='Next URL '  name='next_url'  type='hidden'  value='/two_protocol_patients/baby_historical_outcome?user_id=<%= @user.id%>&patient_id=<%= @patient.id%>&prefix=1%>'  pos='3' />
+<input  id='1.1.5'   helpText='Next URL '  type='hidden'  name='next_url'  value='/two_protocol_patients/baby_historical_outcome?user_id=<%= @user.id%>&patient_id=<%= @patient.id%>&prefix=1%>'  pos='3' />
 			</td>
 		</tr>
 	</table>

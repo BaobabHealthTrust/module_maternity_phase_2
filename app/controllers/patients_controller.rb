@@ -51,15 +51,17 @@ class PatientsController < ApplicationController
     unless  @undischarged_baby.blank?
       
       @baby = Patient.find(@undischarged_baby.person_b) rescue nil
-      name = @baby.name rescue "...  "
+     
+      name = @baby.name.delete("^a-z\sA-Z0-9") rescue "...  "
+     
       national_id = @baby.national_id rescue " NOT FOUND"
       if ((@baby.person.dead == 1 || @baby.person.dead == true) rescue false)
         @value = "Dead"
       else
         @value = ""
       end
-    
-      @next_user_task = ["#{@baby.name} Discharge Outcome",
+      
+      @next_user_task = ["#{name} Discharge Outcome",
         "/two_protocol_patients/baby_discharge_outcome?patient_id=#{@patient.id}&user_id=#{@user.id}&value=#{@value}&baby_name=#{name}&baby_national_id=#{national_id}"
       ]
       redirect_to @next_user_task[1] #and return if (session[:autoflow] == "true")

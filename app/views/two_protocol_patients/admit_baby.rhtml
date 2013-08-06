@@ -23,7 +23,7 @@
 				Ward 
 			</td>
 			<td>
-<select id='1.2' name='concept[Ward ]' helpText='Ward ' pos='1'  condition='id_string.match(__$("1.1").value)' >
+<select id='1.2' name='concept[Ward ]' helpText='Ward ' condition='id_string.match(__$("1.1").value)'  pos='1' >
 <option></option>
 <option value='Kangaroo'>Kangaroo</option>
  <option value='Nursery'>Nursery</option>
@@ -35,7 +35,7 @@
 				Admission date 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  field_type='date'  pos='2'  condition='id_string.match(__$("1.1").value)' />
+<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  condition='id_string.match(__$("1.1").value)'  field_type='date'  pos='2' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Baby weight at admission (grams) 
 			</td>
 			<td>
-<input type='text' id='1.4'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  tt_pageStyleClass='NumbersOnlyWithDecimal'  max='5000'  absoluteMin='100'  field_type='number'  absoluteMax='10000'  min='2000'  pos='3'  condition='id_string.match(__$("1.1").value)' />
+<input type='text' id='1.4'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  absoluteMin='100'  absoluteMax='10000'  max='5000'  min='2000'  condition='id_string.match(__$("1.1").value)'  tt_pageStyleClass='NumbersOnlyWithDecimal'  field_type='number'  pos='3' />
 			</td>
 		</tr>
 		<tr>
@@ -51,7 +51,7 @@
 				Reason for admission 
 			</td>
 			<td>
-<input type='text' id='1.5'  name='concept[Reason for admission ]' helpText='Reason for admission '  ajaxUrl='/encounters/diagnoses?&search_string='  pos='4'  condition='id_string.match(__$("1.1").value)' />
+<input type='text' id='1.5'  name='concept[Reason for admission ]' helpText='Reason for admission '  ajaxUrl='/encounters/diagnoses?&search_string='  condition='id_string.match(__$("1.1").value)'  pos='4' />
 			</td>
 		</tr>
 	</table>
