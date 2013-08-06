@@ -14,7 +14,8 @@ class PatientsController < ApplicationController
     
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
     @next_user_task = []
-
+    session_date = session[:datetime].to_date rescue Date.today
+    
     if params[:autoflow].present? && params[:autoflow].to_s == "true"
       session[:autoflow] = "true"
     elsif params[:autoflow].present? && params[:autoflow].to_s == "false"
@@ -94,7 +95,6 @@ class PatientsController < ApplicationController
       @label_encounter_map[label] = encounter if !label.blank? && !encounter.blank?
 
     }
-
     
     @task_status_map = {}
 
@@ -187,7 +187,10 @@ class PatientsController < ApplicationController
     @groupings["Update Outcome"] = ["delivered", "discharged", "referred_out", "absconded", "patient_died"]
     @first_level_order = ["Ante Natal Exams", "Post Natal Exams", "Update Outcome", "Baby Outcomes", "Social History", "Give Drugs"]
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
-    
+
+    #disable tasks for some wrong entries
+    @first_level_order = [] if @patient.age(session_date) < 10 || !@patient.gender.match(/f/i)
+
     @first_level_order.delete_if{|order| 
       ((@patient.recent_babies.to_i < 1 && order.match(/Baby Outcomes/i)) rescue false)
     }
@@ -196,6 +199,7 @@ class PatientsController < ApplicationController
       prefix = (@patient.recent_babies.to_i + 1) rescue 0
 
       @prefix = "Baby"
+      
       unless (@patient.recent_delivery_count.to_i == 1 rescue false)
         case prefix
         when 1
@@ -431,10 +435,12 @@ class PatientsController < ApplicationController
       RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id) rescue nil
 
     @baby_programs = {}
+    @name_sex_map = {}
      
     @children.each {|chil|
       name = Patient.find(chil.person_b).name rescue "Unknown Baby Name"
       @baby_programs["#{name}"] = []
+      @name_sex_map["#{name.downcase}"] = (Patient.find(chil.person_b).gender.match(/f/i)? "female" : "male") rescue nil
     }
   
     

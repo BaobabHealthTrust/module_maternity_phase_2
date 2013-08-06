@@ -1,4 +1,4 @@
-P.1. PHYSICAL EXAMINATION BABY [program: MATERNITY PROGRAM, includejs: vitals, label: Baby Examination, pos: 17, parent: 2]
+P.1. PHYSICAL EXAMINATION BABY [program: MATERNITY PROGRAM, label: Baby Examination, pos: 17, parent: 2]
 C.1.1. Given a registered patient, capture each babies physical examination
 
 Q.1.1.1. Scan baby barcode [pos: 0, concept: Baby identifier, tt_onLoad: __$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}]
@@ -24,8 +24,8 @@ Q.1.1.8. Cord Tied [concept: CORD TIED, field_type: text, pos: 7, helpText: Cord
 O.1.1.8.1. No
 O.1.1.8.2. Yes
 
-Q.1.1.9. Any Abnormalities [concept: Any abnormalities, field_type: text, pos: 8, helpText: Any Abnormalities, condition: id_string.match(__$("1.1.1").value) && __$("1.1.").value.trim().toUpperCase() != "DEAD"]
+Q.1.1.9. Any Abnormalities [concept: Any abnormalities, field_type: text, pos: 8, helpText: Any Abnormalities, condition: id_string.match(__$("1.1.1").value) && __$("1.1.2").value.trim().toUpperCase() != "DEAD"]
 O.1.1.9.1. No
 O.1.1.9.2. Yes
 
-Q.1.1.10. Specify Abnormalities [concept: SPECIFY, field_type: text, pos: 9, helpText: Specify Abnormality(s), condition: id_string.match(__$("1.1.1").value) && __$("1.1.1").value.trim().toUpperCase() != "DEAD"; __$("1.1.9").value.trim().toUpperCase() == "YES"]
+Q.1.1.10. Specify Abnormalities [concept: SPECIFY, field_type: text, pos: 9, helpText: Specify Abnormality(s), condition: id_string.match(__$("1.1.1").value) && __$("1.1.2").value.trim().toUpperCase() != "DEAD"; __$("1.1.9").value.trim().toUpperCase() == "YES"]

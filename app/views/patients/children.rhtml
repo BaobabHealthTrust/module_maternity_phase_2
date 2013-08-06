@@ -161,7 +161,7 @@
 
                             <div id="<%= "parent_program#{programs[e][0]}" %>" style="display: table-row;"
                                  onclick="__$('obs').innerHTML = '';checkRadio('program<%= programs[e][0] %>', controlsSet1);
-                                   ajaxCustomRequest(__$('encounters'), '/list_encounters?user_id=<%= params[:user_id]
+                                       ajaxCustomRequest(__$('encounters'), '/list_encounters?user_id=<%= params[:user_id]
                                %>&program_id=<%= programs[e][0] %>', 'program')">
 
                               <div style="display: table-cell; vertical-align: middle; cursor: pointer;
@@ -185,6 +185,14 @@
                                 </div>
 
                               </div>
+                              <div style="display: table-cell; vertical-align: middle; cursor: pointer;
+                              <%= (e == 0 ? " border-top: 1px dotted #6281a7; " : "") %>
+                                   width: 30px; text-align: center; border-bottom: 1px dotted #6281a7;">
+
+                                <img src="/images/<%= @name_sex_map[name.downcase].downcase %>.gif"  alt="" />
+
+                              </div>
+                            
                             </div>
 
                           </div>

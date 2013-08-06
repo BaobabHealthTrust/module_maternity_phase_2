@@ -413,15 +413,17 @@ class EncountersController < ApplicationController
 
         @prefix = "Baby"
 
-        case prefix
-        when 1
-          @prefix = "1<sup>st</sup> " + @prefix
-        when 2
-          @prefix = "2<sup>nd</sup> " + @prefix
-        when 3
-          @prefix = "3<sup>rd</sup> " + @prefix
-        else
-          @prefix = "#{prefix}<sup>th</sup> " + @prefix
+        unless (Patient.find(params[:patient_id]).recent_delivery_count.to_i == 1 rescue false)
+          case prefix
+          when 1
+            @prefix = "1<sup>st</sup> " + @prefix
+          when 2
+            @prefix = "2<sup>nd</sup> " + @prefix
+          when 3
+            @prefix = "3<sup>rd</sup> " + @prefix
+          else
+            @prefix = "#{prefix}<sup>th</sup> " + @prefix
+          end
         end
 
         @user_id = session[:user]["user_id"] rescue params[:users_id]
