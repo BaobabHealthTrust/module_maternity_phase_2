@@ -403,11 +403,12 @@ class PatientsController < ApplicationController
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
 
     @programs = @patient.program_encounters.find(:all, :order => ["date_time DESC"]).collect{|p|
-
+     
       [
         p.id,
         p.to_s,
         p.program_encounter_types.collect{|e|
+          next if e.encounter.blank?
           [
             e.encounter_id, e.encounter.type.name,
             e.encounter.encounter_datetime.strftime("%H:%M"),
@@ -448,6 +449,7 @@ class PatientsController < ApplicationController
             p.id,
             p.to_s,
             p.program_encounter_types.collect{|e|
+              next if e.encounter.blank?
               [
                 e.encounter_id, e.encounter.type.name,
                 e.encounter.encounter_datetime.strftime("%H:%M"),

@@ -345,15 +345,17 @@
 
               row.appendChild(cell2);
 
-              var imgDel = document.createElement("img");
-              imgDel.src = "/touchscreentoolkit/lib/images/cancel_flat_small_red.png";
-              imgDel.alt = "X";
-              imgDel.setAttribute("encounter_id", result[i][0]);
-              imgDel.onclick = function(){
-                confirmDeletion('Do you really want to delete this encounter?', this.getAttribute("encounter_id"));
-              }
+              if (textcell.innerHTML.toUpperCase().trim() != "TREATMENT"){
+                var imgDel = document.createElement("img");
+                imgDel.src = "/touchscreentoolkit/lib/images/cancel_flat_small_red.png";
+                imgDel.alt = "X";
+                imgDel.setAttribute("encounter_id", result[i][0]);
+                imgDel.onclick = function(){
+                  confirmDeletion('Do you really want to delete this encounter?', this.getAttribute("encounter_id"));
+                }
 
-              cell2.appendChild(imgDel);
+                cell2.appendChild(imgDel);
+              }
 
             }
 
@@ -395,7 +397,8 @@
               cell1.style.width = "200px";
               cell1.style.color = "#1f3b5e";
               cell1.style.verticalAlign = "top";
-              cell1.innerHTML = result[i][1].trim().split("|")[0];
+
+              cell1.innerHTML = (result[i][0] == "drg")? result[i][1].split(":")[0].replace(/null/g, " -- ") : result[i][1].trim().split("|")[0];
 
               row.appendChild(cell1);
 
@@ -403,10 +406,11 @@
               cell2.style.display = "table-cell";
               cell2.style.paddingBottom = "4px";
               cell2.style.paddingTop = "4px";
+              cell2.style.paddingLeft = "20px";
               cell2.style.textAlign = "left";
               cell2.style.color = "green";
               cell2.style.verticalAlign = "top";
-              cell2.innerHTML = result[i][1].trim().split("|")[1];
+              cell2.innerHTML = (result[i][0] == "drg")? result[i][1].split(": ")[1].replace(/null/g, " -- ") : result[i][1].trim().split("|")[1];
 
               row.appendChild(cell2);
 
@@ -414,7 +418,7 @@
           }
         }
       }
-
+      
       function runCmd(id){
         ajaxCustomRequest(__$('obs'), '/void?user_id=<%= @user["user_id"] %>&encounter_id=' + id);
 
