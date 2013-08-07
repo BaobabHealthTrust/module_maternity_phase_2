@@ -793,7 +793,10 @@ class EncountersController < ApplicationController
   end
 
   def create_prescription
+
     User.current = User.find(session[:user]["user_id"])
+    redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}" and return if params[:prescription].blank?
+    
     if params[:prescription]
 
       params[:prescription].each do |prescription|
@@ -920,13 +923,6 @@ class EncountersController < ApplicationController
       encounter.encounter_datetime ||= session[:datetime]
       encounter.save
 
-      if !params[:formulation]
-        #redirect_to "/patients/print_exam_label/?patient_id=#{@patient.id}" and return if (encounter.type.name.upcase rescue "") ==
-        #  "TREATMENT"
-        next
-        #redirect_to next_task(@patient) and return
-      end
-
       unless params[:location]
         session_date = session[:datetime] || params[:encounter_datetime] || Time.now()
       else
@@ -971,7 +967,7 @@ class EncountersController < ApplicationController
    
     redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}"
 
-  end
+  end 
 
   def print_note
 
