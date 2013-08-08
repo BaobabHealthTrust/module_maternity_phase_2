@@ -309,6 +309,15 @@ function checkNVPStart(id){
     return false;
 }
 
+function checkARTStart(id){
+    if($(id).value.toLowerCase().trim() == "no"){
+
+        showMessage("Start ARV's Now!", true);
+        return true;
+    }
+    return false;
+}
+
 function isValidDateFormat(value){
     return value.trim().match(/(\d{4})\-(\d{2})\-(\d{2})\s(\d{2})\:(\d{2})/);
 }

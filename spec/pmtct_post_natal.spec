@@ -8,7 +8,7 @@ O.1.1.1.3. Unknown
 
 Q.1.1.2. PMTCT Test Date [concept: HIV TEST DATE, field_type: date, pos: 1, condition: __$("1.1.1").value.trim().toUpperCase() != "UNKNOWN", tt_onUnLoad: checkHIVTestDate("1.1.2"); ]
 
-Q.1.1.3. On ARVs [helpText: On ART?, concept: ON ARVS, field_type: text, pos: 2, condition: __$("1.1.1").value.trim().toUpperCase() == "REACTIVE"]
+Q.1.1.3. On ARVs [helpText: On ART?, concept: ON ARVS, tt_BeforeUnLoad: checkARTStart("1.1.3"), field_type: text, pos: 2, condition: __$("1.1.1").value.trim().toUpperCase() == "REACTIVE"]
 O.1.1.3.1. No
 O.1.1.3.2. Yes
 

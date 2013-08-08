@@ -251,7 +251,7 @@ class EncountersController < ApplicationController
 
               end
               
-              obs = Observation.create(
+              obs = Observation.new(
                 :person_id => @encounter.patient_id,
                 :concept_id => concept,
                 :location_id => @encounter.location_id,
@@ -262,32 +262,34 @@ class EncountersController < ApplicationController
               case concept_type
               when "date"
 
-                obs.update_attribute("value_datetime", value)
+                obs.value_datetime = value
 
               when "time"
 
-                obs.update_attribute("value_datetime", "#{Date.today.strftime("%Y-%m-%d")} " + value)
+                obs.value_datetime = "#{Date.today.strftime("%Y-%m-%d")} " + value
 
               when "number"
 
-                obs.update_attribute("value_numeric", value)
+                obs.value_numeric = value
 
               when "value_coded"
 
-                obs.update_attribute("value_coded", value_coded.concept_id)
-                obs.update_attribute("value_coded_name_id", value_coded.concept_name_id)
+                obs.value_coded = value_coded.concept_id
+                obs.value_coded_name_id = value_coded.concept_name_id
 
               else
 
-                obs.update_attribute("value_text", value)
+                obs.value_text = value
                 
               end
 
               if params[:ret] && !params[:ret].blank?
 
-                obs.update_attributes(:comments => params[:ret])
+                obs.comments = params[:ret]
 
               end
+              
+              obs.save
 
             else
 
@@ -344,7 +346,7 @@ class EncountersController < ApplicationController
 
                 end
 
-                obs = Observation.create(
+                obs = Observation.new(
                   :person_id => @encounter.patient_id,
                   :concept_id => concept,
                   :location_id => @encounter.location_id,
@@ -355,33 +357,35 @@ class EncountersController < ApplicationController
                 case concept_type
                 when "date"
 
-                  obs.update_attribute("value_datetime", item)
+                  obs.value_datetime = item
 
                 when "time"
 
-                  obs.update_attribute("value_datetime", "#{Date.today.strftime("%Y-%m-%d")} " + item)
+                  obs.value_datetime = "#{Date.today.strftime("%Y-%m-%d")} " + item
 
                 when "number"
 
-                  obs.update_attribute("value_numeric", item)
+                  obs.value_numeric = item
 
                 when "value_coded"
 
-                  obs.update_attribute("value_coded", value_coded.concept_id)
-                  obs.update_attribute("value_coded_name_id", value_coded.concept_name_id)
+                  obs.value_coded = value_coded.concept_id
+                  obs.value_coded_name_id = value_coded.concept_name_id
 
                 else
 
-                  obs.update_attribute("value_text", item)
+                  obs.value_text = item
 
                 end
 
                 if params[:ret] && !params[:ret].blank?
 
-                  obs.update_attributes(:comments => params[:ret])
+                  obs.comments = params[:ret]
 
                 end
-
+                
+                obs.save
+                
               else
 
                 redirect_to "/encounters/missing_concept?concept=#{item}" and return if !item.blank?
