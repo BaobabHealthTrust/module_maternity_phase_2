@@ -44,4 +44,6 @@ mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/custom.s
 mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/serial_number.sql
 mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/birth_report.sql
 mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/create_dde_server_connection.sql
+mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/create_site_printers.sql
+mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/create_site_wards.sql
 
