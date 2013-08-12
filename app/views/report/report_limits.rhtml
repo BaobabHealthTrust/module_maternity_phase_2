@@ -1,5 +1,5 @@
 <script>
-  tt_cancel_destination = "/people?active_tab=tab3";
+  tt_cancel_destination = "/clinic?user_id=<%= session[:user]['user_id'] %>&location_id=<%= session[:location_id] %>";
 </script>
 <form id='outcome' action="/report/<%= @action %>" method='post'>
   <label for="report"></label>

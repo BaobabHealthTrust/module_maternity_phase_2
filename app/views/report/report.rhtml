@@ -5,8 +5,8 @@
     <script language="javascript" type="text/javascript" src="/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
     <script type="text/javascript" language="javascript">
       <!--
-      tt_cancel_destination = '/report/report_limits';
-      tt_show = '/clinic';
+      tt_cancel_destination = "/clinic?user_id=<%= session[:user]['user_id'] %>&location_id=<%= session[:location_id] %>";
+      tt_cancel_show = "/clinic?user_id=<%= session[:user]['user_id'] %>&location_id=<%= session[:location_id] %>";
       //-->  
     </script>
     <style media="print">
