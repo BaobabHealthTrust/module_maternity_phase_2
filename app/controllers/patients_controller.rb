@@ -12,6 +12,10 @@ class PatientsController < ApplicationController
 
   def show
     
+    d = (session[:datetime].to_date rescue Date.today)
+    t = Time.now
+    session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
+ 
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
     @next_user_task = []
     session_date = session[:datetime].to_date rescue Date.today
@@ -382,19 +386,42 @@ class PatientsController < ApplicationController
   end
   
   def current_visit
-    @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
-
-    ProgramEncounter.current_date = (session[:date_time] || Time.now)
     
-    @programs = @patient.program_encounters.current.collect{|p|
+    @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
+    d = (session[:datetime].to_date rescue Date.today)
+    t = Time.now
+    session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
+    
+    ProgramEncounter.current_date = session_date.to_date
+    
+    @task = TaskFlow.new(params[:user_id], @patient.id)
 
+    if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
+      map = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
+        }"]["label.encounter.map"].split(",") rescue []
+    end
+
+    @label_encounter_map = {}
+
+    map.each{ |tie|
+      label = tie.split("|")[0]
+      encounter = tie.split("|")[1] rescue nil
+
+      concept = @task.task_scopes[label.titleize.downcase.strip][:concept].upcase rescue ""
+      key  = encounter + "|" + concept
+      @label_encounter_map[key] = label if !label.blank? && !encounter.blank?
+    }
+    
+    @programs = @patient.program_encounters.find(:all, :order => ["date_time DESC"],
+      :conditions => ["DATE(date_time) = ?", session_date.to_date]).collect{|p|
       [
         p.id,
         p.to_s,
         p.program_encounter_types.collect{|e|
           next if e.encounter.blank?
+          labl = label(e.encounter_id, @label_encounter_map) || e.encounter.type.name
           [
-            e.encounter_id, e.encounter.type.name,
+            e.encounter_id, labl,
             e.encounter.encounter_datetime.strftime("%H:%M"),
             e.encounter.creator
           ]
@@ -403,14 +430,30 @@ class PatientsController < ApplicationController
       ]
     } if !@patient.blank?
 
-    # raise @programs.inspect
-
     render :layout => false
   end
 
   def visit_history
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
 
+    @task = TaskFlow.new(params[:user_id], @patient.id)
+        
+    if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
+      map = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
+        }"]["label.encounter.map"].split(",") rescue []
+    end
+
+    @label_encounter_map = {}
+
+    map.each{ |tie|
+      label = tie.split("|")[0]
+      encounter = tie.split("|")[1] rescue nil
+
+      concept = @task.task_scopes[label.titleize.downcase.strip][:concept].upcase rescue ""
+      key  = encounter + "|" + concept
+      @label_encounter_map[key] = label if !label.blank? && !encounter.blank?
+    }
+   
     @programs = @patient.program_encounters.find(:all, :order => ["date_time DESC"]).collect{|p|
      
       [
@@ -418,8 +461,9 @@ class PatientsController < ApplicationController
         p.to_s,
         p.program_encounter_types.collect{|e|
           next if e.encounter.blank?
+          labl = label(e.encounter_id, @label_encounter_map) || e.encounter.type.name
           [
-            e.encounter_id, e.encounter.type.name,
+            e.encounter_id, labl,
             e.encounter.encounter_datetime.strftime("%H:%M"),
             e.encounter.creator
           ] rescue []
@@ -428,9 +472,16 @@ class PatientsController < ApplicationController
       ]
     } if !@patient.nil?
 
-    # raise @programs.inspect
 
     render :layout => false
+  end
+
+  def label(encounter_id, hash)
+    concepts = Encounter.find(encounter_id).observations.collect{|ob| ob.concept.name.name.downcase}
+    lbl = ""
+    hash.each{|val, label|
+      lbl = label if (concepts.include?(val.split("|")[1].downcase) rescue false)}
+    lbl
   end
 
   def children
@@ -630,16 +681,14 @@ class PatientsController < ApplicationController
     @serial_number = PatientIdentifier.find(:first, :conditions => ["patient_id = ? AND identifier_type = ?",
         @person.id,
         PatientIdentifierType.find_by_name("Serial Number").id]).identifier rescue "?"
-
-    #user = PersonName.find_by_person_id(User.find(params[:user_id]).person_id) rescue nil
-
-    #@provider_name = user.given_name.split("")[0].upcase + ".  " + user.family_name.humanize if user
-    @provider_name = User.find(params[:user_id]).name
-
+    
+    user = session[:user_id] || session[:user]["user_id"] || params[:user_id]
+    @provider_name = User.find(user).name rescue nil
+    
     @facility = get_global_property_value("facility.name")
 
     @district = get_global_property_value("district.name") rescue ''
-
+    
     maternity = MaternityService::Maternity.new(@patient) rescue nil
 
     data = maternity.export_person((params[:user_id] rescue 1), @facility, @district)
@@ -729,13 +778,13 @@ class PatientsController < ApplicationController
 
       if birth_report.present?
         birth_report.update_attributes(:created_by => session[:user_id],
-          :sent_by => session[:user_id],
+          :sent_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
           :date_updated => Time.now,
           :acknowledged => Time.now)
       else
         BirthReport.create(:person_id => params[:id],
-          :created_by => session[:user_id],
-          :sent_by => session[:user_id],
+          :created_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
+          :sent_by => ssession[:user_id] || session[:user]["user_id"] || params[:user_id],
           :date_created => Time.now,
           :acknowledged => Time.now)
       end
@@ -746,13 +795,13 @@ class PatientsController < ApplicationController
 
       if birth_report.present?
         birth_report.update_attributes(:created_by => session[:user_id],
-          :sent_by => session[:user_id],
+          :sent_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
           :date_updated => Time.now,
           :acknowledged => Time.now)
       else
         BirthReport.create(:person_id => params[:id],
-          :created_by => session[:user_id],
-          :sent_by => session[:user_id],
+          :created_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
+          :sent_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
           :date_created => Time.now,
           :acknowledged => Time.now)
       end
@@ -761,23 +810,23 @@ class PatientsController < ApplicationController
       flash[:error] = "Remote System Could Not Add Birth Report"
 
       BirthReport.create(:person_id => params[:id],
-        :created_by => session[:user_id],
+        :created_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
         :date_created => Time.now)  if birth_report.blank?
 
     elsif ((result.downcase rescue "") == "baby not added") and params[:update].present?
       flash[:error] = "Remote System Could Not Update Birth Report"
       BirthReport.create(:person_id => params[:id],
-        :created_by => session[:user_id],
+        :created_by => ssession[:user_id] || session[:user]["user_id"] || params[:user_id],
         :date_created => Time.now)  if birth_report.blank?
     else
       flash[:error] = "Sending failed"
       BirthReport.create(:person_id => params[:id],
-        :created_by => session[:user_id],
+        :created_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
         :date_created => Time.now)  if birth_report.blank?
     end
 
-
-    redirect_to "/patients/birth_report/#{params[:id]}?person_id=#{params[:id]}&user_id=#{params[:user_id]}&patient_id=#{params[:patient_id]}&today=1" and return
+    user = session[:user_id] || session[:user]["user_id"] || params[:user_id]
+    redirect_to "/patients/birth_report/#{params[:id]}?person_id=#{params[:id]}&user_id=#{user}&patient_id=#{params[:patient_id]}&today=1" and return
   end
 
   def void
@@ -789,8 +838,10 @@ class PatientsController < ApplicationController
   def provider_details
     @patient = Patient.find(params[:patient_id])
     @person = Person.find(params[:person_id])
-
-    @name = Person.find(User.find(params[:user_id]).id).name rescue " "
+    user = session[:user_id] || session[:user]["user_id"] || params[:user_id]
+    @name = User.find(user).name rescue " "
+    
+    @roles = session[:user]["roles"].join(", ") rescue nil
 
     @facility = get_global_property_value("facility.name") rescue ''
 
@@ -802,7 +853,9 @@ class PatientsController < ApplicationController
 
     @patient = Patient.find(params[:person_id]) rescue nil
     @anc_patient = ANCService::ANC.new(@patient) rescue nil
-
+    @roles = session[:user]["roles"].join(", ") rescue nil
+    params[:ProviderTitle] = @roles if params[:ProviderTitle].blank?
+    
     @facility = get_global_property_value("facility.name") rescue ''
 
     @district = get_global_property_value("district.name") rescue ''

@@ -100,7 +100,7 @@ EOF
 
     Encounter.find(:first, :order => ["encounter_datetime DESC"], :joins => [:observations],
       :conditions => ["encounter.encounter_type = ? AND obs.concept_id = ? AND encounter.patient_id = ?",
-        EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name("DISCHARGED").concept_id, self.patient_id]).encounter_datetime.to_date rescue " - "
+        EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name("DISCHARGED").concept_id, self.patient_id]).encounter_datetime.to_date.strftime("%d/%b/%Y") rescue " - "
 
   end
 

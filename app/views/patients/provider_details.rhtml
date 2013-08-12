@@ -31,10 +31,23 @@
     :tt_onLoad => "$('touchscreenInput'+tstCurrentPage).value = name",
   } %>
 
-  <%= select_tag "ProviderTitle", options_for_select(["","Nurse","Clinician","Midwife","Clerk"]),
-    {
-    :helptext => "Provider Title"
-  } %>
+  <%if ((@roles.blank?) rescue true)%>
+    <%= select_tag "ProviderTitle", options_for_select(["","Nurse","Clinician","Midwife","Clerk"]),
+      {
+      :helptext => "Provider Title"
+    } %>
+
+  <%else%>
+
+    <%= select_tag "ProviderTitle", options_for_select(["","Nurse","Clinician","Midwife","Clerk"]),
+      {
+      :helptext => "Provider Title",
+      :condition => "false",
+      :value => "#{@roles}"
+    } %>
+
+  <%end%>
+
   <%if false%>
     <%= text_field_tag "Hospital", nil,
       {

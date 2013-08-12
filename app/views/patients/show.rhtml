@@ -409,23 +409,27 @@ end
 
       </select>
 
-      <select id="navigation_links">
-        <% id = params[:patient_id].blank?? params[:id] : params[:patient_id] %>
-        <% if !@demographics_url.nil? %>
-          <option link="/patients/general_demographics/<%= id %>?patient_id=<%= id %>&user_id=<%=params[:user_id]%>" ttSize = "160px">
-            Demographics
+      <%
+      session_date = session[:datetime].to_date rescue Date.today
+      unless (@patient.age(session_date) < 10 || !@patient.gender.match(/f/i)) %>
+        <select id="navigation_links">
+          <% id = params[:patient_id].blank?? params[:id] : params[:patient_id] %>
+          <% if !@demographics_url.nil? %>
+            <option link="/patients/general_demographics/<%= id %>?patient_id=<%= id %>&user_id=<%=params[:user_id]%>" ttSize = "160px">
+              Demographics
+            </option>
+          <% end %>
+
+          <option link="<%= @list_band_url %>" ttSize = "160px">
+            Wrist Bands
           </option>
-        <% end %>
 
-        <option link="<%= @list_band_url %>" ttSize = "160px">
-          Wrist Bands
-        </option>
+          <% if @next_user_task.present? && @next_user_task[1] != "/patients/show/#{@patient.id}?user_id=#{@user.id}" %>
+            <option link="<%=  @next_user_task[1] + "&autoflow=true"  %>" ttSize = "160px">Continue</option>
+          <% end %>
 
-        <% if @next_user_task.present? && @next_user_task[1] != "/patients/show/#{@patient.id}?user_id=#{@user.id}" %>
-          <option link="<%=  @next_user_task[1] + "&autoflow=true"  %>" ttSize = "160px">Continue</option>
-        <% end %>
-
-      </select>
+        </select>
+      <%  end %>
 
       <input type='submit' value='Finish' />
     </form>

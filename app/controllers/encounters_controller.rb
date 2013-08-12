@@ -3,10 +3,14 @@ class EncountersController < ApplicationController
  	unloadable  
 
   def create
-
+    
+    d = (session[:datetime].to_date rescue Date.today)   
+    t = Time.now
+    session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
+    
     assign_serial_numbers = get_global_property_value("assign_serial_numbers").to_s == "true" rescue false
 
-    if assign_serial_numbers      
+    if assign_serial_numbers
       serial_num = SerialNumber.find(:first, :conditions => ["national_id IS NULL"])rescue nil
       redirect_to "/encounters/no_serial_number"  and return  if serial_num.blank?
     end
@@ -36,7 +40,7 @@ class EncountersController < ApplicationController
           rel.person_b
         } rescue []
         
-      end 
+      end
       
       if ((my_baby.blank? || !my_children.include?(my_baby.first.patient.patient_id)) rescue true)
         
@@ -50,9 +54,9 @@ class EncountersController < ApplicationController
         params[:person_id] = my_baby.first.patient.patient_id
       end
       
-    end   
+    end
     
-    patient = Patient.find(params[:person_id]) rescue nil if params[:person_id]    
+    patient = Patient.find(params[:person_id]) rescue nil if params[:person_id]
     patient = Patient.find(params[:patient_id]) rescue nil if patient.blank?
         
     if params[:encounter_type].downcase.squish == "kangaroo review visit"
@@ -105,7 +109,7 @@ class EncountersController < ApplicationController
 
       if !mother_address.blank? && params[:patient_id] != patient.patient_id
 
-        export_mother_addresss(params[:patient_id], patient.patient_id) rescue nil       
+        export_mother_addresss(params[:patient_id], patient.patient_id) rescue nil
 
         if assign_serial_numbers
 
@@ -124,7 +128,7 @@ class EncountersController < ApplicationController
 
         end
         
-      end      
+      end
       
       if  params["concept"]["BABY OUTCOME"].present? && !params["concept"]["BABY OUTCOME"].match(/Alive/i)
         patient.person.update_attributes(:dead => true) if (!my_baby.first.blank? rescue false)
@@ -145,6 +149,7 @@ class EncountersController < ApplicationController
           :patient_id => patient.id,
           :provider_id => (params[:user_id]),
           :encounter_type => type,
+          :encounter_datetime => session_date,
           :location_id => (session[:location_id] || params[:location_id])
         )
 
@@ -158,13 +163,13 @@ class EncountersController < ApplicationController
 
             @program_encounter = ProgramEncounter.find_by_program_id(@program.id,
               :conditions => ["patient_id = ? AND DATE(date_time) = ?",
-                patient.id, Date.today.strftime("%Y-%m-%d")])
+                patient.id, session_date.to_date.strftime("%Y-%m-%d")])
 
             if @program_encounter.blank?
 
               @program_encounter = ProgramEncounter.create(
                 :patient_id => patient.id,
-                :date_time => Time.now,
+                :date_time => session_date,
                 :program_id => @program.id
               )
 
@@ -184,7 +189,7 @@ class EncountersController < ApplicationController
               @current = PatientProgram.create(
                 :patient_id => patient.id,
                 :program_id => @program.id,
-                :date_enrolled => Time.now
+                :date_enrolled => session_date
               )
 
             end
@@ -217,8 +222,8 @@ class EncountersController < ApplicationController
                 
                 @current.transition({
                     :state => "#{value}",
-                    :start_date => Time.now,
-                    :end_date => Time.now
+                    :start_date => session_date,
+                    :end_date => session_date
                   }) if !selected_state.nil?
               end
               
@@ -321,8 +326,8 @@ class EncountersController < ApplicationController
 
                   @current.transition({
                       :state => "#{item}",
-                      :start_date => Time.now,
-                      :end_date => Time.now
+                      :start_date => session_date,
+                      :end_date => session_date
                     }) if !selected_state.nil?
                 end
               
@@ -856,7 +861,7 @@ class EncountersController < ApplicationController
 
                 @program_encounter = ProgramEncounter.create(
                   :patient_id => @patient.id,
-                  :date_time => Time.now,
+                  :date_time => session_date,
                   :program_id => @program.id
                 )
 
@@ -876,7 +881,7 @@ class EncountersController < ApplicationController
                 @current = PatientProgram.create(
                   :patient_id => @patient.id,
                   :program_id => @program.id,
-                  :date_enrolled => Time.now
+                  :date_enrolled => session_date
                 )
 
               end
@@ -989,7 +994,7 @@ class EncountersController < ApplicationController
    
     redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}"
 
-  end 
+  end
 
   def print_note
 
