@@ -296,6 +296,11 @@ class PatientsController < ApplicationController
      
       end
     end
+
+    @assign_serial_numbers = get_global_property_value("assign_serial_numbers").to_s == "true" rescue false
+    
+    @pending_birth_reports = BirthReport.pending(@patient)
+    @user_unsent_birth_reports = BirthReport.unsent_babies(session[:user_id], @patient.id).map(& :person_b) if session[:user_id].present?
     
     @groupings.delete_if{|key, links|
       @groupings[key].blank?
