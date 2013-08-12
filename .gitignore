@@ -1,5 +1,6 @@
 log/
 tmp/
+public/images/patient_id.png
 nbproject/
 *.swap
 *.yml

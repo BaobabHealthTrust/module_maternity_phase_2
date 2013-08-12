@@ -288,6 +288,15 @@ class EncountersController < ApplicationController
                 obs.comments = params[:ret]
 
               end
+
+              if (params[:concept].keys.include?("Admission Section") && params[:encounter_type].downcase.strip == "admit patient")
+                
+                @last_location = Encounter.find(:last, :order => ["encounter_datetime"],
+                  :conditions => ["patient_id = ? AND encounter_type = ? AND encounter_datetime >= ?", params[:patient_id], EncounterType.find_by_name("ADMIT PATIENT").id, 7.days.ago]).location_id  rescue nil
+
+                obs.comments = @last_location if ((@last_location.present? && session[:location_id].to_i != @last_location.to_i) rescue false)
+
+              end
               
               obs.save
 
@@ -381,6 +390,15 @@ class EncountersController < ApplicationController
                 if params[:ret] && !params[:ret].blank?
 
                   obs.comments = params[:ret]
+
+                end
+
+                if (params[:concept].keys.include?("Admission Section") && params[:encounter_type].downcase.strip == "admit patient")
+
+                  @last_location = Encounter.find(:last, :order => ["encounter_datetime"],
+                    :conditions => ["patient_id = ? AND encounter_type = ? AND encounter_datetime >= ?", params[:patient_id], EncounterType.find_by_name("ADMIT PATIENT").id, 7.days.ago]).location_id  rescue nil
+
+                  obs.comments = @last_location if ((@last_location.present? && session[:location_id].to_i != @last_location.to_i) rescue false)
 
                 end
                 
