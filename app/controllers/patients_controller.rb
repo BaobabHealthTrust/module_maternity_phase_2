@@ -296,7 +296,7 @@ class PatientsController < ApplicationController
      
       end
     end
-
+ 
     @assign_serial_numbers = get_global_property_value("assign_serial_numbers").to_s == "true" rescue false
     
     @pending_birth_reports = BirthReport.pending(@patient)

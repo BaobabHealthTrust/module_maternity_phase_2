@@ -41,7 +41,7 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
         }else{
 
           try{
-            var text = bts[i].innerHTML.toLowerCase().trim().replace(/vaginal exam/, "vaginal examination").replace(/abdominal exam/, "abdominal examination");
+            var text = bts[i].innerHTML.toLowerCase().trim().replace(/vaginal exam/, "vaginal examination").replace(/abdominal exam/, "abdominal examination").replace(/\s\s+/g, "").trim();
             if (task_status_map[text] == "done"){
               bts[i].className = "menu_button done";
             }
