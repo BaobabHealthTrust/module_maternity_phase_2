@@ -1,4 +1,4 @@
-P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: Admission Date, label: Post Natal Admission Details, pos: 6, parent: 3]
+P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: Admission Time, label: Post Natal Admission Details, pos: 6, parent: 3]
 C.1.1. Given a registered patient, capture their admission diagnoses
 
 Q.1.1.1. Admission Date [concept: Admission date, field_type: date, pos: 0]

@@ -1,4 +1,4 @@
-P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, label: Post Natal Notes, pos: 38, parent: 3]
+P.1. Observations [program: MATERNITY PROGRAM, concept: Impression, scope: TODAY, label: Post Natal Notes, pos: 38, parent: 3]
 C.1.1. Given a registered patient, Notes
 
 Q.1.1.1. Impression [concept: IMPRESSION, field_type: text, allowFreeText: true, pos: 0, optional: true]

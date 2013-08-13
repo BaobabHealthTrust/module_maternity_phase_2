@@ -394,24 +394,6 @@ class PatientsController < ApplicationController
     
     ProgramEncounter.current_date = session_date.to_date
     
-    @task = TaskFlow.new(params[:user_id], @patient.id)
-
-    if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
-      map = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
-        }"]["label.encounter.map"].split(",") rescue []
-    end
-
-    @label_encounter_map = {}
-
-    map.each{ |tie|
-      label = tie.split("|")[0]
-      encounter = tie.split("|")[1] rescue nil
-
-      concept = @task.task_scopes[label.titleize.downcase.strip][:concept].upcase rescue ""
-      key  = encounter + "|" + concept
-      @label_encounter_map[key] = label if !label.blank? && !encounter.blank?
-    }
-    
     @programs = @patient.program_encounters.find(:all, :order => ["date_time DESC"],
       :conditions => ["DATE(date_time) = ?", session_date.to_date]).collect{|p|
       [
@@ -419,9 +401,9 @@ class PatientsController < ApplicationController
         p.to_s,
         p.program_encounter_types.collect{|e|
           next if e.encounter.blank?
-          labl = label(e.encounter_id, @label_encounter_map) || e.encounter.type.name
+         
           [
-            e.encounter_id, labl,
+            e.encounter_id, e.encounter.type.name,
             e.encounter.encounter_datetime.strftime("%H:%M"),
             e.encounter.creator
           ]

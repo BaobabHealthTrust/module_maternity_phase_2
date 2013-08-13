@@ -1,4 +1,4 @@
-P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: gravida, includejs: vitals, label: Ante Natal Patient History, pos: 36, parent: 4]
+P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: TT status, includejs: vitals, label: Ante Natal Patient History, pos: 36, parent: 4]
 C.1.1. Given a registered patient, capture their Patient History
 
 Q.1.1.1. Gravida [concept: GRAVIDA, field_type: number, absoluteMin: 1, Max: 15, pos: 0, tt_pageStyleClass: NumbersOnly, tt_onUnLoad: count = 1]

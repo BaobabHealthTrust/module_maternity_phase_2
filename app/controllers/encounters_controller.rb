@@ -426,15 +426,7 @@ class EncountersController < ApplicationController
         redirect_to "/encounters/missing_encounter_type?encounter_type=#{params[:encounter_type]}" and return
 
       end
-=begin
-      if (recent_parity > recent_historical_babies) && @encounter.type.name.match(/UPDATE OUTCOME/i)
-        
-        params[:next_task] = params[:next_task].gsub(/prefix\=\d/,
-          (params[:next_task].match(/prefix\=\d/)[0].match(/\d/)[0].to_i + 1).to_s ) rescue params[:next_task]
-        
-        redirect_to params[:next_task]
-      end
-=end
+
       if ((params[:patient_id] && all_recent_babies_entered?(Patient.find(params[:patient_id])) == true) rescue false)
         prefix = (Patient.find(params[:patient_id]).recent_babies.to_i + 1) rescue 0
 
@@ -576,7 +568,8 @@ class EncountersController < ApplicationController
       result = program.program_encounter_types.find(:all, :joins => [:encounter],
         :order => ["encounter_datetime DESC"]).collect{|e|
         next if e.encounter.blank?
-        labl = (label(e.encounter_id, @label_encounter_map) || e.encounter.type.name).titleize
+        labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil
+        labl = e.encounter.type.name.titleize if labl.blank?
         [
           e.encounter_id, labl,
           e.encounter.encounter_datetime.strftime("%H:%M"),
@@ -589,12 +582,14 @@ class EncountersController < ApplicationController
     render :text => result.to_json
   end
 
-  def label(encounter_id, hash)
-    concepts = Encounter.find(encounter_id).observations.collect{|ob| ob.concept.name.name.downcase}
+  def labell(encounter_id, hash)
+    encounter = Encounter.find(encounter_id)
+    concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase}
     lbl = ""
     hash.each{|val, label|
-      lbl = label if (concepts.include?(val.split("|")[1].downcase) rescue false)}
-    lbl
+      lbl = label if (concepts.include?(val.split("|")[1].downcase) rescue false) 
+    }
+    lbl.gsub(/examination/i , "exam")
   end
   
   def static_locations

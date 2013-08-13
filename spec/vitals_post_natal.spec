@@ -1,4 +1,4 @@
-P.1. Vitals [program: MATERNITY PROGRAM, scope: TODAY, concept: Systolic Blood Pressure, includejs: vitals, pos: 34, label: Post Natal Vitals, parent: 3]
+P.1. Vitals [program: MATERNITY PROGRAM, scope: TODAY, concept: Diastolic Blood Pressure, includejs: vitals, pos: 34, label: Post Natal Vitals, parent: 3]
 C.1.1. Given a registered patient, capture Vitals
 
 Q.1.1.1. Systolic Blood Pressure [concept: SYSTOLIC BLOOD PRESSURE, field_type: number, tt_onLoad: bpOn = 1; bpAlerts(); calculateBP("1.1.1*1.1.2*1"); attribute("1.1.1*validationRule*([0-9]+\\.[0-9])|Unknown$"); attribute("1.1.1*validationMessage*You must enter a decimal between 0 and 9 (for example 36<b>.6</b>)"), min: 90, max: 140, tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, pos: 0, allowFreeText: true, absoluteMin: 20, absoluteMax: 250, units: mm Hg, tt_onUnLoad: window.clearInterval(timedEvent); temp = ""; bpOn = false;]

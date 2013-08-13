@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
 
     link = get_global_property_value("user.management.url").to_s rescue nil
 
-    if link.nil?
+    if link.blank?
       flash[:error] = "Missing configuration for <br/>user management connection!"
 
       redirect_to "/no_user" and return
@@ -66,7 +66,7 @@ class ApplicationController < ActionController::Base
 
     f.close
 
-    if session[:token].nil?
+    if session[:token].blank?
       redirect_to "/user_login?internal=true" and return
     end
 
