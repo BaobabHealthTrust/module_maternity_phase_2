@@ -17,7 +17,7 @@
 				Gravida 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[GRAVIDA]' helpText='Gravida '  tt_pageStyleClass='NumbersOnly'  pos='0'  Max='15'  field_type='number'  tt_onUnLoad='count = 1'  absoluteMin='1' />
+<input type='text' id='1.1.1'  name='concept[GRAVIDA]' helpText='Gravida '  field_type='number'  pos='0'  tt_pageStyleClass='NumbersOnly'  absoluteMin='1'  tt_onUnLoad='count = 1'  Max='15' />
 			</td>
 		</tr>
 		<tr>
@@ -25,7 +25,7 @@
 				Multiple gestation? 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[MULTIPLE GESTATION]' helpText='Multiple gestation? ' condition='parseInt(__$("1.1.1").value.trim()) > 1'  pos='1'  field_type='text' >
+<select id='1.1.2' name='concept[MULTIPLE GESTATION]' helpText='Multiple gestation? ' field_type='text'  pos='1'  condition='parseInt(__$("1.1.1").value.trim()) > 1' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -37,7 +37,7 @@
 				Number of delivered pregnancies 
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[PARITY]' helpText='Number of delivered pregnancies '  condition='__$("1.1.1").value > 1'  Max='15'  tt_pageStyleClass='NumbersOnly'  pos='2'  field_type='number'  tt_OnLoad='checkDeliveriesLimits("post-natal")'  tt_OnUnLoad='checkAbortionsLimits("post-natal")'  absoluteMin='0' />
+<input type='text' id='1.1.3'  name='concept[PARITY]' helpText='Number of delivered pregnancies '  field_type='number'  pos='2'  tt_OnUnLoad='checkAbortionsLimits("post-natal")'  tt_pageStyleClass='NumbersOnly'  absoluteMin='0'  Max='15'  condition='__$("1.1.1").value > 1'  tt_OnLoad='checkDeliveriesLimits("post-natal")' />
 			</td>
 		</tr>
 		<tr>
@@ -45,7 +45,7 @@
 				Number of abortions 
 			</td>
 			<td>
-<input type='text' id='1.1.4'  name='concept[NUMBER OF ABORTIONS]' helpText='Number of abortions '  condition='__$("1.1.1").value > 1'  Max='5;  num_babies = __$("1.1.3").value;'  tt_pageStyleClass='NumbersOnly'  pos='3'  field_type='number'  absoluteMin='0' />
+<input type='text' id='1.1.4'  name='concept[NUMBER OF ABORTIONS]' helpText='Number of abortions '  field_type='number'  pos='3'  tt_pageStyleClass='NumbersOnly'  absoluteMin='0'  Max='5;  num_babies = __$("1.1.3").value;'  condition='__$("1.1.1").value > 1' />
 			</td>
 		</tr>
 		<tr>
@@ -53,7 +53,7 @@
 				 Number Of Caesarean Sections 
 			</td>
 			<td>
-<input type='text' id='1.1.5'  name='concept[Caesarean Section]' helpText=' Number Of Caesarean Sections '  tt_pageStyleClass='NumbersOnly'  pos='4'  field_type='number'  tt_OnUnLoad='check("1.1.5")' />
+<input type='text' id='1.1.5'  name='concept[Caesarean Section]' helpText=' Number Of Caesarean Sections '  field_type='number'  pos='4'  tt_OnUnLoad='check("1.1.5")'  tt_pageStyleClass='NumbersOnly' />
 			</td>
 		</tr>
 		<tr>
@@ -61,7 +61,7 @@
 				 Number Of breech Deliveries 
 			</td>
 			<td>
-<input type='text' id='1.1.6'  name='concept[Breech delivery]' helpText=' Number Of breech Deliveries '  tt_pageStyleClass='NumbersOnly'  pos='5'  field_type='number'  tt_OnUnLoad='check("1.1.6")' />
+<input type='text' id='1.1.6'  name='concept[Breech delivery]' helpText=' Number Of breech Deliveries '  field_type='number'  pos='5'  tt_OnUnLoad='check("1.1.6")'  tt_pageStyleClass='NumbersOnly' />
 			</td>
 		</tr>
 		<tr>
@@ -69,7 +69,7 @@
 				 Number Of Vacuum Extraction Deliveries 
 			</td>
 			<td>
-<input type='text' id='1.1.7'  name='concept[Vacuum extraction delivery]' helpText=' Number Of Vacuum Extraction Deliveries '  tt_pageStyleClass='NumbersOnly'  pos='6'  field_type='number'  tt_OnUnLoad='check("1.1.7")' />
+<input type='text' id='1.1.7'  name='concept[Vacuum extraction delivery]' helpText=' Number Of Vacuum Extraction Deliveries '  field_type='number'  pos='6'  tt_OnUnLoad='check("1.1.7")'  tt_pageStyleClass='NumbersOnly' />
 			</td>
 		</tr>
 		<tr>
@@ -77,7 +77,7 @@
 				 Number Of Spontaneous Vaginal Deliveries 
 			</td>
 			<td>
-<input type='text' id='1.1.8'  name='concept[Spontaneous vaginal delivery]' helpText=' Number Of Spontaneous Vaginal Deliveries '  tt_pageStyleClass='NumbersOnly'  pos='7'  field_type='number'  tt_OnUnLoad='check("1.1.8")' />
+<input type='text' id='1.1.8'  name='concept[Spontaneous vaginal delivery]' helpText=' Number Of Spontaneous Vaginal Deliveries '  field_type='number'  pos='7'  tt_OnUnLoad='check("1.1.8")'  tt_pageStyleClass='NumbersOnly' />
 			</td>
 		</tr>
 		<tr>
@@ -85,7 +85,7 @@
 				TTV Status 
 			</td>
 			<td>
-<input type='text' id='1.1.16'  name='concept[TT STATUS]' helpText='TTV Status '  tt_pageStyleClass='NumbersOnly'  pos='14'  field_type='number'  max='5'  absoluteMin='0' />
+<input type='text' id='1.1.16'  name='concept[TT STATUS]' helpText='TTV Status '  max='5'  field_type='number'  pos='14'  tt_pageStyleClass='NumbersOnly'  absoluteMin='0' />
 			</td>
 		</tr>
 		<tr>
@@ -93,7 +93,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.19'   helpText='Next URL '  pos='17'  value='post-natal'  type='hidden'  name='ret' />
+<input  id='1.1.19'   helpText='Next URL '  type='hidden'  value='post-natal'  pos='17'  name='ret' />
 			</td>
 		</tr>
 	</table>
