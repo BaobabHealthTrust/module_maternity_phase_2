@@ -422,19 +422,7 @@ function updateFromVariables(){
     conc = currentConcept.toLowerCase().trim();
     try{
         if (conc == "plan" || conc == "impression" || conc == "clinician notes" || conc == "notes"){
-        /*  $("inputFrame" + tstCurrentPage).style.height = "300px";
-            $("touchscreenInput" + tstCurrentPage).style.height = "300px";
-            $("touchscreenInput" + tstCurrentPage).setAttribute("field_type", "text")
-            $("viewport").style.height = "300px" 
-            if ($("touchscreenInput" + tstCurrentPage).outerHTML.match(/\<textarea/)){
 
-            }else{
-                $("touchscreenInput" + tstCurrentPage).outerHTML = $("touchscreenInput" + tstCurrentPage).outerHTML.replace(/\<input/, "<textarea")
-                $("touchscreenInput" + tstCurrentPage).setAttribute('class','touchscreenTextAreaInput');
-                $("touchscreenInput" + tstCurrentPage).setAttribute("cols", 67);
-                $("touchscreenInput" + tstCurrentPage).setAttribute("rows", 6);
-                $("return").style.display = "block";
-            }*/
         }else{
             try{
 
@@ -493,7 +481,9 @@ function updateFromVariables(){
         setTimeout("updateFromVariables()", 100);
         
     }catch(ex){
-        setTimeout("updateFromVariables()", 100)
+        if (document.location.toString().match(/protocol\_patients/)){         
+            setTimeout("updateFromVariables()", 100)
+        }
     }
    
 }
@@ -547,30 +537,31 @@ function bpAlerts(){
 }
 
 function probeValues(){
-   
-    try{
-        var pageConcept = $("touchscreenInput" + tstCurrentPage).name.replace(/concept\[|]/g, "");
-        if (pageConcept != currentConcept){
-            currentConcept =  pageConcept;
+    if (document.location.toString().match(/protocol\_patients/)){  
+        try{
+            var pageConcept = $("touchscreenInput" + tstCurrentPage).name.replace(/concept\[|]/g, "");
+            if (pageConcept != currentConcept){
+                currentConcept =  pageConcept;
             
-            var user = "";
-            var patient = "";
+                var user = "";
+                var patient = "";
             
-            var inputNodes = document.getElementsByTagName("input")
-            for (var i = 0; i < inputNodes.length; i ++){
-                if (inputNodes[i].name == "patient_id"){
-                    patient = inputNodes[i].value
-                }else if (inputNodes[i].name == "user_id"){
-                    user = inputNodes[i].value
+                var inputNodes = document.getElementsByTagName("input")
+                for (var i = 0; i < inputNodes.length; i ++){
+                    if (inputNodes[i].name == "patient_id"){
+                        patient = inputNodes[i].value
+                    }else if (inputNodes[i].name == "user_id"){
+                        user = inputNodes[i].value
+                    }
                 }
-            }
            
-            ajaxPull(currentConcept, user, patient);
-        }
-    }catch(ex){
+                ajaxPull(currentConcept, user, patient);
+            }
+        }catch(ex){
         
+        }
+        setTimeout("probeValues()", 300);
     }
-    setTimeout("probeValues()", 300);
 }
 
 function ajaxPull(concept, user, patient){

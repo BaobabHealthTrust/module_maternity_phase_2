@@ -12,10 +12,18 @@
 	<table>
 		<tr>
 			<td>
+				Outcome 
+			</td>
+			<td>
+<input  id='1.1.1'   helpText='Outcome '  name='concept[Outcome]'  pos='0'  type='hidden'  value='Discharged' />
+			</td>
+		</tr>
+		<tr>
+			<td>
 				Discharged to Where? 
 			</td>
 			<td>
-<select id='1.1.1' name='concept[DISCHARGED]' helpText='Discharged to Where? ' pos='0'  fieldtype='text' >
+<select id='1.1.2' name='concept[DISCHARGED]' helpText='Discharged to Where? ' field_type='text'  pos='1' >
 <option></option>
 <option value='Home'>Home</option>
  <option value='Home - Waiting'>Home - Waiting</option>
@@ -28,7 +36,7 @@
 				Which Health Facility 
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[HEALTH FACILITY]' helpText='Which Health Facility '  pos='1'  ajaxURL='/encounters/static_locations?search_string='  fieldtype='text'  condition='__$("1.1.1").value.trim().toUpperCase() == "ANOTHER HEALTH FACILITY"'  allowFreeText='true' />
+<input type='text' id='1.1.3'  name='concept[HEALTH FACILITY]' helpText='Which Health Facility '  condition='__$("1.1.2").value.trim().toUpperCase() == "ANOTHER HEALTH FACILITY"'  allowFreeText='true'  pos='2'  ajaxURL='/encounters/static_locations?search_string='  fieldtype='text' />
 			</td>
 		</tr>
 		<tr>
@@ -36,7 +44,7 @@
 				Select Discharge Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.4'   helpText='Select Discharge Diagnosis '  pos='2'  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text'  name='concept[Diagnosis][]'  allowFreeText='true' />
+<input type='text' id='1.1.4'   helpText='Select Discharge Diagnosis '  name='concept[Diagnosis][]'  allowFreeText='true'  pos='3'  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text' />
 			</td>
 		</tr>
 		<tr>
@@ -44,15 +52,7 @@
 				Select Next Discharge Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.5'   helpText='Select Next Discharge Diagnosis '  pos='3'  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text'  name='concept[Diagnosis][]'  condition='__$("1.1.4").value != ""'  allowFreeText='true'  optional='true' />
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Number of babies 
-			</td>
-			<td>
-<input type='text' id='1.1.6'  name='concept[NUMBER OF BABIES]' helpText='Number of babies '  pos='4'  tt_onUnLoad='__$("1.1.7").value = __$("1.1.7").value + __$("touchscreenInput" + tstCurrentPage).value'  condition='false'  absoluteMin='1'  field_type='number'  value='<%= @patient.recent_babies%>'  absoluteMax='10'  tt_pageStyleClass='NumbersOnly'  max='5' />
+<input type='text' id='1.1.5'   helpText='Select Next Discharge Diagnosis '  condition='__$("1.1.4").value != ""'  name='concept[Diagnosis][]'  optional='true'  allowFreeText='true'  pos='4'  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text' />
 			</td>
 		</tr>
 	</table>

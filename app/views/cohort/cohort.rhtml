@@ -98,7 +98,7 @@
     </style>
   </head>
   <body>
-    <% if @extended  && @reportType == 2%>
+    <% if @extended  && @reportType.to_i == 2%>
       <iframe id="main" src="/cohort/diagnoses_report_extended?start_date=<%= @start_date %>+<%= @start_time %>&end_date=<%= @end_date
             %>+<%= @end_time %>&reportType=<%= @reportType %>"></iframe>
             <% else %>

@@ -60,11 +60,11 @@ EOF
         label.font_horizontal_multiplier = 1
         label.font_vertical_multiplier = 1
         label.left_margin = 300
-        label.draw_multi_text("ADMITTED ON: #{self.admission_date}")
-        label.draw_multi_text("DISCHARGED ON: #{self.discharge_date}", :font_reverse => false)
+        label.draw_multi_text("ADMITTED ON: #{self.admission_date rescue nil}")
+        label.draw_multi_text("DISCHARGED ON: #{self.discharge_date rescue nil}", :font_reverse => false)
         label.draw_multi_text("NAME: #{self.patient.name}")
-        label.draw_multi_text("DIAGNOSES: #{self.discharge_summary}", :font_reverse => false)
-        label.draw_multi_text("MANAGEMENT: #{self.discharge_summary}", :font_reverse => false)
+        label.draw_multi_text("DIAGNOSES: #{self.discharge_summary[0] rescue nil}", :font_reverse => false)
+        label.draw_multi_text("MANAGEMENT: #{self.discharge_summary[1] rescue nil}", :font_reverse => false)
         label.draw_multi_text("DISCHARGED BY: #{User.find(self.provider_id).name rescue ''}")
         label.print
       end

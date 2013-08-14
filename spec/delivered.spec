@@ -1,4 +1,4 @@
-P.1. Update Outcome [program: MATERNITY PROGRAM, scope: TODAY, label: Delivered, pos: 5, parent: 5]
+P.1. Update Outcome [program: MATERNITY PROGRAM, scope: TODAY, concept: NUMBER OF BABIES, label: Delivered, pos: 5, parent: 5]
 
 Q.1.1.1. Delivered [pos: 0, name: concept[Outcome], concept: Outcome, type: hidden, value: Delivered]
 

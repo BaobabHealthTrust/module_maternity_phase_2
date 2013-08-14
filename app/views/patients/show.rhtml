@@ -324,6 +324,7 @@ end
               <%
               (@groupings[encounter].blank?? link.keys.sort : @groupings[encounter]).each do |label|
                 path = link[label.titleize]
+                next if path.blank?
               %>
 
                 <option value="<%= path %>">

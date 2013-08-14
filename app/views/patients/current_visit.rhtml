@@ -423,6 +423,8 @@
         ajaxCustomRequest(__$('obs'), '/void?user_id=<%= @user["user_id"] %>&encounter_id=' + id);
 
         __$("encounters").removeChild(__$("tblEncounter" + id));
+
+       // setTimeout("document.location.reload(true)", 1000);
       }
 
       function confirmDeletion(message, id) {

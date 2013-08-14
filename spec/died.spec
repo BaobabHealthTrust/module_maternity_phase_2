@@ -1,4 +1,4 @@
-P.1. Update Outcome [program: MATERNITY PROGRAM, scope: TODAY, label: Patient Died, pos: 20, parent: 5]
+P.1. Update Outcome [program: MATERNITY PROGRAM, scope: EXISTS, label: Patient Died, concept: DATE OF DEATH, pos: 80, parent: 5]
 
 Q.1.1.1. Patient Died [pos: 0, name: concept[Outcome], concept: Outcome, type: hidden, value: Patient Died]
 

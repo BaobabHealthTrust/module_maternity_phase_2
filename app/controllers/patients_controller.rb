@@ -300,7 +300,7 @@ class PatientsController < ApplicationController
      
       end
     end
- 
+    
     @assign_serial_numbers = get_global_property_value("assign_serial_numbers").to_s == "true" rescue false
     
     @pending_birth_reports = BirthReport.pending(@patient)
@@ -376,7 +376,10 @@ class PatientsController < ApplicationController
           patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id,
           (session_date - 6.month), (session_date + 6.month)]) rescue []
 
-    when ""
+    when "EXISTS"
+      available = Encounter.find(:all, :joins => [:observations], :conditions =>
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? ",
+          patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id]) rescue []
 
     end
 

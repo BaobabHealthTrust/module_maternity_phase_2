@@ -565,7 +565,7 @@ class EncountersController < ApplicationController
       key  = encounter + "|" + concept
       @label_encounter_map[key] = label if !label.blank? && !encounter.blank?
     }
-   
+    # raise  @label_encounter_map.to_yaml
     unless program.nil?
       result = program.program_encounter_types.find(:all, :joins => [:encounter],
         :order => ["encounter_datetime DESC"]).collect{|e|
@@ -589,7 +589,9 @@ class EncountersController < ApplicationController
     concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase}
     lbl = ""
     hash.each{|val, label|
-      lbl = label if (concepts.include?(val.split("|")[1].downcase) rescue false) 
+      concept = val.split("|")[1].downcase rescue nil
+      next if ((encounter.type.name.match(/update outcome/i) && concept.match(/diagnosis/i)) rescue false)
+      lbl = label if (concepts.include?(concept) rescue false)
     }
     lbl.gsub(/examination/i , "exam")
   end
