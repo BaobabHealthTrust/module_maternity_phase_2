@@ -50,7 +50,7 @@ class Report
         INNER JOIN #{@delivery_encounters}
         GROUP BY mother HAVING (twin_siblings >= ? AND twin_siblings <= ?)", @program_encounters, min, max])
     
-    p.map(&:mother)
+    p.collect{|t| t.attributes["mother"]}
     
   end
 

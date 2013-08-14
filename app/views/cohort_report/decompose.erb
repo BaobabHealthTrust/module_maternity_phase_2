@@ -2,8 +2,9 @@
   <head>
     <title>Cohort Report Selection</title>
     <%= stylesheet_link_tag "form" %>
-    <%= stylesheet_link_tag fancy_or_high_contrast_touch %>
+    <%#= stylesheet_link_tag fancy_or_high_contrast_touch %>
     <link href="/stylesheets/dashboard.css" media="screen" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" language="javascript" src="/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer></script>
     <script type="text/javascript" language="javascript">
       <!--
       tt_cancel_destination = '/cohort?reportType=1';
@@ -147,10 +148,10 @@
                       </div>
                       <div class="cell" style="vertical-align: top; padding: 0px;">
                         <div class="table">
-                          <div class="row">                            
-                            <div id="<%= "__" + patient.national_id rescue "" %>" 
+                          <div class="row">
+                            <div id="<%= "__" + patient.national_id rescue "" %>"
                                  style="display: block; display: table-cell; vertical-align: middle; text-align: center;">
-                              <%= patient.encounters.length %>
+                                   <%= patient.encounters.length %>
                             </div>
                           </div>
                         </div>

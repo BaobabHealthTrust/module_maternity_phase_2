@@ -1262,5 +1262,10 @@ class ReportController < ApplicationController
 
     render :layout => false
   end
+
+  def matrix_decompose
+		@patients = Patient.find(:all, :conditions => ["patient_id IN (?)", params[:patients].split(",")])
+		render :layout => false
+  end
  
 end

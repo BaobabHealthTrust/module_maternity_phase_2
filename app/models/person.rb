@@ -45,4 +45,13 @@ class Person < ActiveRecord::Base
     end
   end
 
+
+	def mother
+		Relationship.find(:last,
+			:order => ["date_created"],
+			:conditions => ["person_b = ? AND relationship = ?",
+        self.person_id, RelationshipType.find(:last, :conditions => ["a_is_to_b = ? AND b_is_to_a = ?", "Parent", "Child"]).id])
+	end
+
+
 end

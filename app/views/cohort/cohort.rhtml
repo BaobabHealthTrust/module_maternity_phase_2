@@ -4,7 +4,8 @@
 
     <script type="text/javascript">
 
-     tt_cancel_destination = "/clinic?user_id=<%= session[:user]['user_id'] %>&location_id=<%= session[:location_id] %>";
+      tt_cancel_destination = "/clinic?user_id=<%= session[:user]['user_id'] %>&location_id=<%= session[:location_id] %>";
+      tt_cancel_show = "/clinic?user_id=<%= session[:user]['user_id'] %>&location_id=<%= session[:location_id] %>";
 
       function exportTable(table, header){
 
@@ -97,7 +98,7 @@
     </style>
   </head>
   <body>
-    <% if @extended %>
+    <% if @extended  && @reportType == 2%>
       <iframe id="main" src="/cohort/diagnoses_report_extended?start_date=<%= @start_date %>+<%= @start_time %>&end_date=<%= @end_date
             %>+<%= @end_time %>&reportType=<%= @reportType %>"></iframe>
             <% else %>
@@ -113,7 +114,7 @@
               id="cancelButton" style="position: absolute; z-index: 100; margin-top: 10px;"><span>Cancel</span>
       </button>
 
-      <button onclick="window.location = '/people';" class="button navButton green"
+      <button onclick="window.location = tt_cancel_destination;" class="button navButton green"
               id="nextButton" style="margin-top: 10px; margin-right: 20px;" ><span>Finish</span>
       </button>
       <button onclick="window.location = '/cohort_report?reportType=<%= @reportType %>';" class="button navButton blue"

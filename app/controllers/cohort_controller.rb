@@ -12,7 +12,7 @@ class CohortController < ActionController::Base # < ApplicationController
   end
 
   def cohort
-    
+   
     @selSelect = params[:selSelect] rescue nil
     @day =  params[:day] rescue nil
     @selYear = params[:selYear] rescue 
@@ -28,7 +28,7 @@ class CohortController < ActionController::Base # < ApplicationController
 
     @reportType = params[:reportType] rescue ""    
     @extended = get_global_property_value("extended_diagnoses_report").to_s == "true"
-    
+  
     render :layout => "menu"
   end
 
@@ -209,8 +209,8 @@ class CohortController < ActionController::Base # < ApplicationController
   end
     
   def admissions(startdate = Time.now, enddate = Time.now, group = 1, field = "")
-    patients = PatientReport.find(:all, :conditions => ["COALESCE(admission_ward, '') != '' " + 
-          "AND admission_date >= ? AND admission_date <= ?", startdate, enddate]).collect{|p| p.patient_id} #.uniq
+    patients = PatientReport.find(:all,
+      :conditions => ["admission_date >= ? AND admission_date <= ?", startdate, enddate]).collect{|p| p.patient_id}.uniq
     
     render :text => patients.to_json
   end
@@ -605,7 +605,7 @@ class CohortController < ActionController::Base # < ApplicationController
   end
 
   def decompose
-    @patients = Patient.find(:all, :conditions => ["patient_id IN (?)", params[:patients].split(",")]).uniq
+    @patients = Patient.find(:all, :conditions => ["patient_id IN (?)", params[:patients].split(",")])
     
     # raise @patients.to_yaml
     render :layout => false

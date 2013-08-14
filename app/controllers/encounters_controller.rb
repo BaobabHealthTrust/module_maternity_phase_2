@@ -294,12 +294,13 @@ class EncountersController < ApplicationController
 
               end
 
-              if (params[:concept].keys.include?("Admission Section") && params[:encounter_type].downcase.strip == "admit patient")
+              if (concept == ConceptName.find_by_name("ADMISSION SECTION").concept_id && params[:encounter_type].downcase.strip == "admit patient")
                 
-                @last_location = Encounter.find(:last, :order => ["encounter_datetime"],
-                  :conditions => ["patient_id = ? AND encounter_type = ? AND encounter_datetime >= ?", params[:patient_id], EncounterType.find_by_name("ADMIT PATIENT").id, 7.days.ago]).location_id  rescue nil
+                @last_location = Observation.find(:first, :order => ["obs_datetime DESC"],
+                  :conditions => ["person_id = ? AND concept_id = ? AND  obs_datetime >= ?",
+                    params[:patient_id], ConceptName.find_by_name("ADMISSION SECTION").concept_id, 7.days.ago]).location_id  rescue nil
 
-                obs.comments = @last_location if ((@last_location.present? && session[:location_id].to_i != @last_location.to_i) rescue false)
+                obs.comments = @last_location if ((@last_location.present? && session[:location_id].to_i != @last_location.to_i))
 
               end
               
@@ -398,12 +399,13 @@ class EncountersController < ApplicationController
 
                 end
 
-                if (params[:concept].keys.include?("Admission Section") && params[:encounter_type].downcase.strip == "admit patient")
+                if (concept == ConceptName.find_by_name("ADMISSION SECTION").concept_id && params[:encounter_type].downcase.strip == "admit patient")
 
-                  @last_location = Encounter.find(:last, :order => ["encounter_datetime"],
-                    :conditions => ["patient_id = ? AND encounter_type = ? AND encounter_datetime >= ?", params[:patient_id], EncounterType.find_by_name("ADMIT PATIENT").id, 7.days.ago]).location_id  rescue nil
+                  @last_location = Observation.find(:first, :order => ["obs_datetime DESC"],
+                    :conditions => ["person_id = ? AND concept_id = ? AND obs_datetime >= ?",
+                      params[:patient_id], ConceptName.find_by_name("ADMISSION SECTION").concept_id, 7.days.ago]).location_id  rescue nil
 
-                  obs.comments = @last_location if ((@last_location.present? && session[:location_id].to_i != @last_location.to_i) rescue false)
+                  obs.comments = @last_location if ((@last_location.present? && session[:location_id].to_i != @last_location.to_i))
 
                 end
                 

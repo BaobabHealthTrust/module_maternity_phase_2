@@ -73,16 +73,16 @@ EOF
 
   def discharge_summary
     [ (self.patient.encounters.current_pregnancy.find(:all, :order => ["encounter_datetime DESC"]).collect{|e|
-        e.observations.collect{|o|
-          o.answer_string if o.concept.name.name.upcase == "DIAGNOSIS"
-        }.compact.delete_if{|x| x.blank?} if e.type.name.eql?("UPDATE OUTCOME")
-      }.flatten.delete_if{|y| y.blank?}[0 .. 2] rescue nil),
+          e.observations.collect{|o|
+            o.answer_string if o.concept.name.name.upcase == "DIAGNOSIS"
+          }.compact.delete_if{|x| x.blank?} if e.type.name.eql?("UPDATE OUTCOME")
+        }.flatten.delete_if{|y| y.blank?}[0 .. 2] rescue nil),
       
       (self.patient.encounters.current_pregnancy.find(:all, :order => ["encounter_datetime DESC"]).collect{|e|
-        e.observations.collect{|o|
-          o.answer_string if o.concept.name.name.upcase == "PROCEDURE DONE"
-        }.compact.delete_if{|x| x.blank?} if e.type.name.eql?("UPDATE OUTCOME")
-      }.flatten.delete_if{|y| y.blank?}[0 .. 2] rescue nil)
+          e.observations.collect{|o|
+            o.answer_string if o.concept.name.name.upcase == "PROCEDURE DONE"
+          }.compact.delete_if{|x| x.blank?} if e.type.name.eql?("UPDATE OUTCOME")
+        }.flatten.delete_if{|y| y.blank?}[0 .. 2] rescue nil)
     ]
   end
 
@@ -139,7 +139,7 @@ EOF
       observations.each{|observation|
         next if observation.obs_group_id != nil
         observation_string =  observation.answer_string
-        child_ob = observation.child_observation
+        child_ob = observation.child_observation rescue nil
         while child_ob != nil
           observation_string += " #{child_ob.answer_string}"
           child_ob = child_ob.child_observation
