@@ -1,17 +1,17 @@
 # app/models/reports.rb
 
 class Report
-	
+
   def initialize(start_date, end_date)
-   
+
     @startdate = "#{start_date} 00:00:00".to_date
     @enddate = "#{end_date} 23:59:59".to_date
-       
+
     @program_encounter_details =  ProgramEncounterDetail.find(:all, :joins => [:program_encounter],
       :conditions => ["(DATE(date_time) >= ? AND DATE(date_time) <= ?) AND program_encounter.program_id = ?",
         @startdate.strftime("%Y-%m-%d"), @enddate.strftime("%Y-%m-%d"), Program.find_by_name("MATERNITY PROGRAM").program_id]) rescue []
 
-    @report_patients = @program_encounter_details.collect{|ped| 
+    @report_patients = @program_encounter_details.collect{|ped|
       ped.program_encounter.patient_id;
     }.uniq rescue []
 
@@ -19,8 +19,18 @@ class Report
       ped.encounter_id
     }.uniq rescue []
 
+
+    @hiv_tests = Encounter.find_by_sql(["SELECT enc.patient_id AS patient, enc.encounter_id AS encounter, enc.encounter_datetime AS capturedate, MAX(ob.value_datetime) AS testdate
+        FROM encounter enc
+        INNER JOIN obs ob ON ob.encounter_id = enc.encounter_id AND ob.voided = 0 AND enc.voided = 0
+          AND ob.concept_id IN (?)
+          AND enc.encounter_id IN (?)
+         GROUP BY patient",
+        ["HIV TEST DATE", "Confirmatory HIV test date", "Mother HIV test date"].collect{|coc| ConceptName.find_by_name(coc).concept_id rescue "------"},
+        @program_encounters])
+    
   end
-  
+
   def pull(encounter, concept_name, obs_answer)
     data = Encounter.find(:all, :joins => [:observations], :select => ["patient_id"],
       :conditions => ["encounter_type = ? AND concept_id = ? AND encounter.encounter_id IN (?) AND (value_text = ? OR value_coded = ?) AND encounter.voided = 0",
@@ -32,9 +42,9 @@ class Report
   end
 
   def twins_pull(min = 1, max = 1)
-   
+
     @mother_type = RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").relationship_type_id
-   
+
     @twin_siblings = "SELECT COUNT(*) FROM obs observ WHERE observ.person_id IN (SELECT rl.person_b FROM relationship rl WHERE rl.person_a = p.patient_id AND rl.relationship = #{@mother_type}) AND
     concept_id IN (SELECT cn.concept_id FROM concept_name cn WHERE cn.name = 'Date of delivery') AND observ.voided = 0 AND
     observ.obs_datetime >= DATE_ADD(ob.obs_datetime, INTERVAL -30 DAY) AND
@@ -44,21 +54,21 @@ class Report
             AND e.encounter_type = (SELECT encounter_type_id FROM encounter_type WHERE name = 'BABY DELIVERY')
             JOIN obs ob ON e.encounter_id = ob.encounter_id AND
                 concept_id IN (SELECT c.concept_id FROM concept_name c WHERE c.name = 'Date of delivery')"
-    
+
     p = Patient.find_by_sql(["SELECT r.person_a AS mother, (#{@twin_siblings}) AS twin_siblings FROM patient p
         INNER JOIN relationship r ON p.patient_id = r.person_a AND r.relationship = #{@mother_type} AND r.voided = 0
         INNER JOIN #{@delivery_encounters}
         GROUP BY mother HAVING (twin_siblings >= ? AND twin_siblings <= ?)", @program_encounters, min, max])
-    
+
     p.collect{|t| t.attributes["mother"]}
-    
+
   end
 
   def delivery_staff
     result = {}
-   
-    md =  pull("UPDATE OUTCOME", "STAFF CONDUCTING DELIVERY", "Medical Doctor /Clinical Officer /Medical Assistant" ) 
-    pa =  pull("UPDATE OUTCOME", "STAFF CONDUCTING DELIVERY", "Patient Attendant / Ward Attendant /Health Surveillance Assistant") 
+
+    md =  pull("UPDATE OUTCOME", "STAFF CONDUCTING DELIVERY", "Medical Doctor /Clinical Officer /Medical Assistant" )
+    pa =  pull("UPDATE OUTCOME", "STAFF CONDUCTING DELIVERY", "Patient Attendant / Ward Attendant /Health Surveillance Assistant")
     other = pull("UPDATE OUTCOME", "STAFF CONDUCTING DELIVERY", "Other")
 
     result["MD"] = md
@@ -71,32 +81,75 @@ class Report
   def hiv_status_map
     result = {}
 
-    p_negative = pull("ADMIT PATIENT", "Previous HIV Test Status From Before Current Facility Visit", "Non-reactive less than 3 months")      
-    p_positive = pull("ADMIT PATIENT", "Previous HIV Test Status From Before Current Facility Visit", "Reactive")     
+    p_negative = pull("ADMIT PATIENT", "Previous HIV Test Status From Before Current Facility Visit", "Non-reactive less than 3 months")
+    p_positive = pull("ADMIT PATIENT", "Previous HIV Test Status From Before Current Facility Visit", "Reactive")
     n_negative = pull("ADMIT PATIENT", "HIV STATUS", "Non-reactive")
     n_positive =  pull("ADMIT PATIENT", "HIV STATUS", "Reactive")
     not_done =  pull("ADMIT PATIENT", "HIV STATUS", "Not Done")
-   
-    result["P_NEGATIVE"] = p_negative
-    result["P_POSITIVE"] = p_positive
-    result["N_NEGATIVE"] = n_negative
-    result["N_POSITIVE"] = n_positive
-    result["N_DONE"] = not_done
-    result["POSITIVE"] = p_positive + n_positive
-    result["NEGATIVE"] = (n_negative + p_negative + not_done) - (p_positive + n_positive)
-    result["TOTAL"] = p_negative + p_positive + n_negative + n_positive + not_done
+
+    result["P_NEGATIVE"] = (p_negative + self.p_negative).uniq
+    result["P_POSITIVE"] = (p_positive + self.p_positive).uniq
+    result["N_NEGATIVE"] = (n_negative + self.n_negative).uniq
+    result["N_POSITIVE"] = (n_positive + self.n_positive).uniq
+    result["N_DONE"] = (not_done + (@report_patients - (result["P_NEGATIVE"] + result["P_POSITIVE"] + result["N_NEGATIVE"] + result["N_POSITIVE"]))).uniq
+    result["POSITIVE"] = (result["P_POSITIVE"] + result["N_POSITIVE"]).uniq
+    result["NEGATIVE"] = ((result["N_NEGATIVE"] + result["P_NEGATIVE"] + not_done) - (p_positive + n_positive)).uniq
+    result["TOTAL"] = ( result["POSITIVE"] + result["NEGATIVE"] + result["N_DONE"]).uniq
     result
   end
 
+  def p_negative
+   
+    patients = @hiv_tests.collect{|test|
+      patient = Encounter.find(test.encounter).patient
+      status = patient.hiv_status
+      patient.patient_id  if (((test.testdate.to_date < (test.capturedate.to_date - 7.days)) && status.strip.downcase == "negative") rescue false)
+    }.delete_if{|val| val.blank?}
+
+    patients
+  end
+
+  def p_positive
+
+    patients = @hiv_tests.collect{|test|
+      patient = Encounter.find(test.encounter).patient
+      status = patient.hiv_status
+      patient.patient_id if (((test.testdate.to_date < (test.capturedate.to_date - 7.days)) && status.strip.downcase == "positive") rescue false)
+    }.delete_if{|val| val.blank?}
+    patients
+  end
+
+  def n_positive
+
+    patients = @hiv_tests.collect{|test|
+      patient = Encounter.find(test.encounter).patient
+      status = patient.hiv_status
+      patient.patient_id if (((test.testdate.to_date >= (test.capturedate.to_date - 7.days)) && status.strip.downcase == "positive") rescue false)
+    }.delete_if{|val| val.blank?}
+
+    patients
+  end
+
+  def n_negative
+
+    patients = @hiv_tests.collect{|test|
+      patient = Encounter.find(test.encounter).patient
+      status = patient.hiv_status
+      patient.patient_id if (((test.testdate.to_date >= (test.capturedate.to_date - 7.days)) && status.strip.downcase == "negative") rescue false)
+    }.delete_if{|val| val.blank?}
+
+    patients
+  end
+  
   def art_mother
     result = {}
 
     no_art =  pull("ADMIT PATIENT", "ON ART", "NO")
-    startb4preg = pull("ADMIT PATIENT", "Date antiretrovirals started", "On ART before pregnancy")     
-    t1_or_t2 = pull("ADMIT PATIENT", "Date antiretrovirals started",  "On ART since first or second trimester")    
+    startb4preg = pull("ADMIT PATIENT", "Date antiretrovirals started", "On ART before pregnancy")
+    t1_or_t2 = pull("ADMIT PATIENT", "Date antiretrovirals started",  "On ART since first or second trimester")
     t3 = pull("ADMIT PATIENT", "Date antiretrovirals started",  "On ART since third trimester")
     during_labour = pull("ADMIT PATIENT", "Date antiretrovirals started", "On ART during labour")
-    
+
     result["NO_ART"] = no_art
     result["START_B4_PREG"] = startb4preg
     result["T1_OR_T2"] = t1_or_t2
@@ -107,7 +160,7 @@ class Report
 
   def referred
     result = {}
-    
+
     not_referred = pull("UPDATE OUTCOME", "REFER OUT", "NO")
     referred = pull("UPDATE OUTCOME", "REFER OUT", "YES")
 
@@ -116,14 +169,27 @@ class Report
     result
   end
 
+  def deaths
+    
+    patients =  @report_patients.collect{|pa|
+      next if 
+      pa if (["1", 1, "false", true].include?(Person.find(pa).dead) rescue false) && (Patient.find(pa).lmp.present? rescue false)
+    }.delete_if{|val| val.blank?}
+
+    patients
+    
+  end
+
   def maternity_outcome
     result = {}
 
     alive = pull("UPDATE OUTCOME", "MATERNITY OUTCOME", "ALIVE")
-    dead = pull("UPDATE OUTCOME", "MATERNITY OUTCOME", "PATIENT DIED")
-
-    result["ALIVE"] = alive
+    dead = pull("UPDATE OUTCOME", "MATERNITY OUTCOME", "PATIENT DIED") + pull("UPDATE OUTCOME", "OUTCOME", "PATIENT DIED") +
+      self.deaths
+    
     result["DEAD"] = dead
+    result["ALIVE"] = ((alive + @report_patients) - dead).uniq
+    
     result
   end
 
@@ -204,11 +270,11 @@ class Report
     result = {}
 
     blood_tr = pull("UPDATE OUTCOME", "Blood transfusion", "YES")
-    placenta_rm = pull("UPDATE OUTCOME", "Placenta removed manually?", "YES")  
+    placenta_rm = pull("UPDATE OUTCOME", "Placenta removed manually?", "YES")
 
     result["BLOOD_TRANSFUSION"] = blood_tr
     result["PLACENTA_REMOVED"] = placenta_rm
-    
+
     result
   end
 
@@ -258,5 +324,33 @@ class Report
   def clients_served?
     @program_encounters.present?
   end
+
+  def premature
   
+    @prematures =  Encounter.find_by_sql(["SELECT enc.patient_id AS mother, ob.value_datetime AS lmp, rel.person_b AS child FROM encounter enc
+          INNER JOIN obs ob ON ob.encounter_id = enc.encounter_id AND enc.voided = 0
+          INNER JOIN relationship rel ON rel.person_a = enc.patient_id AND rel.voided = 0
+                AND rel.relationship = (SELECT relationship_type_id FROM relationship_type WHERE a_is_to_b = 'Parent' AND b_is_to_a = 'Child' LIMIT 1)
+          WHERE enc.encounter_id IN (?)
+              AND ob.concept_id = (SELECT concept_id FROM concept_name cn WHERE name = 'DATE OF LAST MENSTRUAL PERIOD' LIMIT 1)
+           GROUP BY mother HAVING DATE_ADD(lmp, INTERVAL + 7 MONTH) >= (SELECT observ.value_datetime FROM obs observ
+            WHERE observ.voided = 0 AND observ.concept_id = (SELECT conc.concept_id FROM concept_name conc WHERE conc.name = 'Date of delivery' LIMIT 1) ORDER BY observ.obs_datetime ASC LIMIT 1)
+        ",
+        @program_encounters])
+    
+    @prematures.collect{|t| t.attributes["child"]} rescue []
+  
+  end
+
+  def w2500
+    @lowweight =  Encounter.find_by_sql(["SELECT enc.patient_id AS child, ob.value_numeric AS number, ob.value_text AS text FROM encounter enc
+          INNER JOIN obs ob ON ob.encounter_id = enc.encounter_id AND enc.voided = 0
+            AND ob.concept_id = (SELECT conc.concept_id FROM concept_name conc WHERE conc.name = 'Birth weight' LIMIT 1)
+          GROUP BY child HAVING COALESCE(number, text, 100000000000) < 2500",
+        @program_encounters])
+
+    @lowweight.collect{|t| t.attributes["child"]} rescue []
+    
+  end
+
 end

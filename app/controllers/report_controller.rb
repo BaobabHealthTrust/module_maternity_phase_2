@@ -40,6 +40,9 @@ class ReportController < ApplicationController
     @mother_outcome = report.maternity_outcome
 
     @newborn_complications = report.newborn_complications
+    
+    @newborn_complications["PREMATURITY"] = (@newborn_complications["PREMATURITY"] || []).concat(report.premature).uniq
+    @newborn_complications["W2500"] = (@newborn_complications["W2500"] || []).concat(report.w2500).uniq
 
     @complications = report.complications
 
