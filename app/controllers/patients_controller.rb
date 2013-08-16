@@ -49,7 +49,7 @@ class PatientsController < ApplicationController
       redirect_to "/two_protocol_patients/referral?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
     end
     
-    @task = TaskFlow.new(params[:user_id], @patient.id)
+    @task = TaskFlow.new(params[:user_id], @patient.id, session_date.to_date)
 
     @undischarged_baby = @patient.next_undischarged_baby rescue nil
  
@@ -415,6 +415,7 @@ class PatientsController < ApplicationController
       ]
     } if !@patient.blank?
 
+    @programs.delete_if{|prg| prg[2].blank? || (prg[2].first.blank? rescue false)}
     render :layout => false
   end
 
@@ -457,7 +458,7 @@ class PatientsController < ApplicationController
       ]
     } if !@patient.nil?
 
-
+    @programs.delete_if{|prg| prg[2].blank? || (prg[2].first.blank? rescue false)}
     render :layout => false
   end
 

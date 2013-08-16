@@ -294,7 +294,8 @@ end
       </span>
       <span id='patient_id'><%= "#{@patient.national_id}" %></span>
       <span id='patient_residence'><%= "#{@patient.address}" %></span>
-      <span id='patient_age'><%= "#{(@patient.age > 0 ? @patient.age : "#{@patient.age_in_months} months")}" %></span>
+      <%session_date = session[:datetime].to_date rescue Date.today%>
+      <span id='patient_age'><%= "#{(@patient.age(session_date) > 0 ? @patient.age(session_date) : "#{@patient.age_in_months(session_date)} months")}" %></span>
       <span id='patient_gender'><%= "#{@patient.gender}" %></span>
       <select id="tabs">
         <option value='/patients/current_visit/<%= @patient.id %>?user_id=<%= @user.id %>'>Current Visit</option>
@@ -341,8 +342,7 @@ end
 
       </select>
 
-      <%
-      session_date = session[:datetime].to_date rescue Date.today
+      <%     
       unless (@patient.age(session_date) < 10 || !@patient.gender.match(/f/i)) %>
         <select id="navigation_links">
           <% id = params[:patient_id].blank?? params[:id] : params[:patient_id] %>

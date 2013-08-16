@@ -72,7 +72,7 @@ class EncountersController < ApplicationController
     #create baby given condition
     if (my_baby.first.patient.patient_id.blank? rescue true) and params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].nil?
       
-      baby = Baby.new(params[:user_id], params[:patient_id], session[:location_id], (session[:datetime] || Date.today))
+      baby = Baby.new(params[:user_id], params[:patient_id], session[:location_id], session_date)
 
       mother = Person.find(params[:patient_id]) rescue nil
 
@@ -87,10 +87,10 @@ class EncountersController < ApplicationController
         name.given_name rescue nil}.uniq
 
       if child_names.include?(first_name)
-        first_name = first_name +"_"+ Date.today.year.to_s + "/"
+        first_name = first_name +"_"+ (session_date.to_date).year.to_s + "/"
       end
       
-      birth_date = params["concept"]["Date of delivery"].to_date rescue Date.today
+      birth_date = params["concept"]["Date of delivery"].to_date rescue session_date.to_date
 
       baby_id = baby.associate_with_mother("#{link}", first_name,
         "#{(!mother.nil? ? (mother.names.first.family_name rescue "Unknown") :
@@ -123,7 +123,7 @@ class EncountersController < ApplicationController
           ) if serial_num.present? && id_type.present?
 
           serial_num.national_id = patient.national_id
-          serial_num.date_assigned = session[:datetime].to_date rescue Date.today
+          serial_num.date_assigned = session_date.to_date rescue Date.today
           serial_num.save
 
         end
@@ -271,7 +271,7 @@ class EncountersController < ApplicationController
 
               when "time"
 
-                obs.value_datetime = "#{Date.today.strftime("%Y-%m-%d")} " + value
+                obs.value_datetime = "#{session_date.strftime("%Y-%m-%d")} " + value
 
               when "number"
 
@@ -376,7 +376,7 @@ class EncountersController < ApplicationController
 
                 when "time"
 
-                  obs.value_datetime = "#{Date.today.strftime("%Y-%m-%d")} " + item
+                  obs.value_datetime = "#{session_date.strftime("%Y-%m-%d")} " + item
 
                 when "number"
 
@@ -462,7 +462,7 @@ class EncountersController < ApplicationController
         
       end
       
-      @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id])
+      @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id], session_date)
       
       unless ((params[:patient_id] != patient.patient_id && params["encounter_type"].to_s.downcase.strip == "baby delivery") rescue false)
         
@@ -853,6 +853,10 @@ class EncountersController < ApplicationController
 
   def create_prescription
 
+    d = (session[:datetime].to_date rescue Date.today)
+    t = Time.now
+    session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
+    
     User.current = User.find(session[:user]["user_id"])
     redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}" and return if params[:prescription].blank?
     
@@ -872,6 +876,7 @@ class EncountersController < ApplicationController
             :patient_id => @patient.id,
             :provider_id => (User.current.user_id),
             :encounter_type => type,
+            :encounter_datetime => session_date,
             :location_id => (session[:location_id] || params[:location_id])
           )
         end
@@ -887,7 +892,7 @@ class EncountersController < ApplicationController
 
               @program_encounter = ProgramEncounter.find_by_program_id(@program.id,
                 :conditions => ["patient_id = ? AND DATE(date_time) = ?",
-                  @patient.id, Date.today.strftime("%Y-%m-%d")])
+                  @patient.id, session_date.strftime("%Y-%m-%d")])
 
               if @program_encounter.blank?
 
