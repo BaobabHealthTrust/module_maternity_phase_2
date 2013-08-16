@@ -586,13 +586,19 @@ class EncountersController < ApplicationController
 
   def labell(encounter_id, hash)
     encounter = Encounter.find(encounter_id)
-    concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase}
+    concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase} 
+    
     lbl = ""
     hash.each{|val, label|
       concept = val.split("|")[1].downcase rescue nil
       next if ((encounter.type.name.match(/update outcome/i) && concept.match(/diagnosis/i)) rescue false)
       lbl = label if (concepts.include?(concept) rescue false)
     }
+
+    ret = encounter.observations.collect{|ob| ob.comments }.delete_if{|ret| ret.blank?}.first.titleize rescue ""
+    lbl = lbl.titleize.gsub("Post Natal", "Ante Natal") if ret.match(/ante/i)
+    lbl = lbl.titleize.gsub("Ante Natal", "Post Natal") if ret.match(/post/i)
+   
     lbl.gsub(/examination/i , "exam")
   end
   
