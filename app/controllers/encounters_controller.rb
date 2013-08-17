@@ -570,7 +570,8 @@ class EncountersController < ApplicationController
       result = program.program_encounter_types.find(:all, :joins => [:encounter],
         :order => ["encounter_datetime DESC"]).collect{|e|
         next if e.encounter.blank?
-        labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil
+        labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil if params[:baby].blank?
+        labl = label2_4baby(e.encounter_id, @label_encounter_map).titleize rescue nil if !params[:baby].blank?
         labl = e.encounter.type.name.titleize if labl.blank?
         [
           e.encounter_id, labl,
@@ -583,7 +584,20 @@ class EncountersController < ApplicationController
 
     render :text => result.to_json
   end
+  def label2_4baby(encounter_id, hash)
+    encounter = Encounter.find(encounter_id)
+    concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase}
 
+    lbl = ""
+    hash.each{|val, label|
+      concept = val.split("|")[1].downcase rescue nil
+      next if ((encounter.type.name.match(/update outcome/i) && concept.match(/diagnosis/i)) rescue false)
+      lbl = label if (concepts.include?(concept) rescue false)
+    }
+
+    lbl.gsub(/examination/i , "exam").gsub(/ante natal|post natal/i, "")
+  end
+  
   def labell(encounter_id, hash)
     encounter = Encounter.find(encounter_id)
     concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase} 

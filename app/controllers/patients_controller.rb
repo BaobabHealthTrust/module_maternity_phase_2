@@ -507,7 +507,7 @@ class PatientsController < ApplicationController
             p.date_time.strftime("%d-%b-%Y")
           ]
         }
-        
+        @programs.delete_if{|prg| prg[2].blank? || (prg[2].first.blank? rescue false)}
         @baby_programs["#{@baby.name}"] = @programs if !@programs.blank?
        
       }
