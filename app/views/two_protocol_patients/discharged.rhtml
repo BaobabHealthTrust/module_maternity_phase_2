@@ -15,7 +15,7 @@
 				Outcome 
 			</td>
 			<td>
-<input  id='1.1.1'   helpText='Outcome '  name='concept[Outcome]'  value='Discharged'  type='hidden'  pos='0' />
+<input  id='1.1.1'   helpText='Outcome '  value='Discharged'  type='hidden'  name='concept[Outcome]'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -36,7 +36,7 @@
 				Which Health Facility 
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[HEALTH FACILITY]' helpText='Which Health Facility '  ajaxURL='/encounters/static_locations?search_string='  allowFreeText='true'  fieldtype='text'  pos='2'  condition='__$("1.1.2").value.trim().toUpperCase() == "ANOTHER HEALTH FACILITY"' />
+<input type='text' id='1.1.3'  name='concept[HEALTH FACILITY]' helpText='Which Health Facility '  ajaxURL='/encounters/static_locations?search_string='  fieldtype='text'  allowFreeText='true'  condition='__$("1.1.2").value.trim().toUpperCase() == "ANOTHER HEALTH FACILITY"'  pos='2' />
 			</td>
 		</tr>
 		<tr>
@@ -44,7 +44,7 @@
 				Select Discharge Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.4'   helpText='Select Discharge Diagnosis '  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  allowFreeText='true'  fieldtype='text'  pos='3' />
+<input type='text' id='1.1.4'   helpText='Select Discharge Diagnosis '  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text'  allowFreeText='true'  name='concept[Diagnosis][]'  pos='3' />
 			</td>
 		</tr>
 		<tr>
@@ -52,7 +52,7 @@
 				Select Next Discharge Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.5'   helpText='Select Next Discharge Diagnosis '  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  optional='true'  allowFreeText='true'  fieldtype='text'  pos='4'  condition='__$("1.1.4").value != ""' />
+<input type='text' id='1.1.5'   helpText='Select Next Discharge Diagnosis '  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text'  allowFreeText='true'  condition='__$("1.1.4").value != ""'  optional='true'  name='concept[Diagnosis][]'  pos='4' />
 			</td>
 		</tr>
 	</table>

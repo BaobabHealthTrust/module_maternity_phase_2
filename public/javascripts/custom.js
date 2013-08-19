@@ -68,6 +68,19 @@ function checkDeliveriesLimits(cat){
     }
 }
 
+function checkWeightSize(id){
+    try{
+        if(parseInt($(id).value) < 2500){
+
+            showMessage("Admit Baby to Nursery Ward!", true);
+            return true;
+        }
+        return false;
+    }catch(ex){
+        
+    }
+}
+
 function checkAbortionsLimits(cat){
     var gravida = parseInt($("1.1.1").value);
     var deliveries = parseInt($("1.1.3").value);

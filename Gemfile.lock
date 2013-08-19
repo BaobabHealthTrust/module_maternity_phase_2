@@ -1,0 +1,70 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    actionmailer (2.3.5)
+      actionpack (= 2.3.5)
+    actionpack (2.3.5)
+      activesupport (= 2.3.5)
+      rack (~> 1.0.0)
+    activerecord (2.3.5)
+      activesupport (= 2.3.5)
+    activeresource (2.3.5)
+      activesupport (= 2.3.5)
+    activesupport (2.3.5)
+    barby (0.5.0)
+    composite_primary_keys (2.3.5.1)
+      activerecord (>= 2.3.5)
+    daemon_controller (1.1.1)
+    devise (1.0.11)
+      warden (~> 0.10.3)
+    fastercsv (1.5.5)
+    fastthread (1.0.7)
+    json (1.7.7)
+    mechanize (1.0.0)
+      nokogiri (>= 1.2.1)
+    mime-types (1.23)
+    nokogiri (1.5.6)
+    passenger (3.0.19)
+      daemon_controller (>= 1.0.0)
+      fastthread (>= 1.0.1)
+      rack
+      rake (>= 0.8.1)
+    rack (1.0.1)
+    rails (2.3.5)
+      actionmailer (= 2.3.5)
+      actionpack (= 2.3.5)
+      activerecord (= 2.3.5)
+      activeresource (= 2.3.5)
+      activesupport (= 2.3.5)
+      rake (>= 0.8.3)
+    rake (10.0.4)
+    rcov (1.0.0)
+    rdoc (3.8)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    rmagick (2.13.2)
+    rqrcode (0.4.2)
+    settingslogic (2.0.9)
+    warden (0.10.7)
+      rack (>= 1.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  barby
+  composite_primary_keys
+  devise (= 1.0.11)
+  fastercsv
+  json
+  mechanize (= 1.0.0)
+  passenger
+  rails (= 2.3.5)
+  rake
+  rcov
+  rdoc (= 3.8)
+  rest-client
+  rmagick
+  rqrcode
+  settingslogic
+  warden (= 0.10.7)

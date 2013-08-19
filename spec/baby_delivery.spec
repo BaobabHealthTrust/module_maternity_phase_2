@@ -25,7 +25,7 @@ Q.1.1.8. Baby on NVP? [pos: 7, name: concept[Baby on NVP?], tt_BeforeUnload: che
 O.1.1.8.1. No
 O.1.1.8.2. Yes
 
-Q.1.1.9. Birth weight [pos: 8, name: concept[Birth weight], min: 2500, max: 4500, absoluteMin: 100, absoluteMax: 8000, field_type: number, tt_pageStyleclass: NumbersOnlyWithDecimal, concept: Birth weight, helpText: <%= params["prefix"] %> Birth Weight (grams)]
+Q.1.1.9. Birth weight [pos: 8, name: concept[Birth weight], min: 2500, max: 4500, absoluteMin: 100, tt_onUnLoad: checkWeightSize("1.1.9"), absoluteMax: 8000, field_type: number, tt_pageStyleclass: NumbersOnlyWithDecimal, concept: Birth weight, helpText: <%= params["prefix"] %> Birth Weight (grams)]
 
 Q.1.1.10. Height (CM) [concept: Birth Length, field_type: number, condition: __$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive", min: 15.0, max: 60.0, tt_pageStyleClass: NumbersOnlyWithUnknown, pos: 9, absoluteMin: 0, absoluteMax: 100, helpText: <%= params["prefix"] %> Birth Length (cm)]
 

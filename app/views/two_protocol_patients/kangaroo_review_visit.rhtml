@@ -23,7 +23,7 @@
 				Weight (grams) 
 			</td>
 			<td>
-<input type='text' id='1.2'  name='concept[Weight]' helpText='Weight (grams) '  tt_onLoad='try{__$("category").style.display = "none"}catch(ex){}'  max='5000'  absoluteMin='100'  tt_pageStyleClass='NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='10000'  min='500'  pos='1'  condition='try{wards_map[$("1.1").value].toLowerCase().trim() == "kangaroo"}catch(ex){false}' />
+<input type='text' id='1.2'  name='concept[Weight]' helpText='Weight (grams) '  tt_pageStyleClass='NumbersOnlyWithDecimal'  max='5000'  tt_onLoad='try{__$("category").style.display = "none"}catch(ex){}'  condition='try{wards_map[$("1.1").value].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  absoluteMin='100'  field_type='number'  min='500'  pos='1'  absoluteMax='10000' />
 			</td>
 		</tr>
 		<tr>
@@ -31,7 +31,7 @@
 				Return visit date 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Return visit date ]' helpText='Return visit date '  tt_onLoad='showCategory("Return visit date")'  field_type='calendar'  value='<%= Date.today.strftime("%Y-%m-%d") %>'  ajaxCalendarUrl='/patients/number_of_booked_patients?date='  tt_onUnLoad='if (wards_map[$("1.1").value].toLowerCase().trim() != "kangaroo"){__$("1.3").value = ""}'  pos='2'  condition='try{wards_map[$("1.1").value].toLowerCase().trim() == "kangaroo"}catch(ex){false}' />
+<input type='text' id='1.3'  name='concept[Return visit date ]' helpText='Return visit date '  value='<%= Date.today.strftime("%Y-%m-%d") %>'  ajaxCalendarUrl='/patients/number_of_booked_patients?date='  tt_onUnLoad='if (wards_map[$("1.1").value].toLowerCase().trim() != "kangaroo"){__$("1.3").value = ""}'  tt_onLoad='showCategory("Return visit date")'  condition='try{wards_map[$("1.1").value].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  field_type='calendar'  pos='2' />
 			</td>
 		</tr>
 	</table>
