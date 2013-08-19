@@ -305,7 +305,7 @@ class PatientsController < ApplicationController
     
     @pending_birth_reports = BirthReport.pending(@patient)
     @user_unsent_birth_reports = BirthReport.unsent_babies(session[:user_id], @patient.id).map(& :person_b) if session[:user_id].present?
-    
+ 
     @groupings.delete_if{|key, links|
       @groupings[key].blank?
     }
@@ -770,7 +770,7 @@ class PatientsController < ApplicationController
       else
         BirthReport.create(:person_id => params[:id],
           :created_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
-          :sent_by => ssession[:user_id] || session[:user]["user_id"] || params[:user_id],
+          :sent_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
           :date_created => Time.now,
           :acknowledged => Time.now)
       end
@@ -802,7 +802,7 @@ class PatientsController < ApplicationController
     elsif ((result.downcase rescue "") == "baby not added") and params[:update].present?
       flash[:error] = "Remote System Could Not Update Birth Report"
       BirthReport.create(:person_id => params[:id],
-        :created_by => ssession[:user_id] || session[:user]["user_id"] || params[:user_id],
+        :created_by => session[:user_id] || session[:user]["user_id"] || params[:user_id],
         :date_created => Time.now)  if birth_report.blank?
     else
       flash[:error] = "Sending failed"
