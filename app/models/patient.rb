@@ -214,7 +214,7 @@ class Patient < ActiveRecord::Base
     }.compact.flatten.last.strip rescue ""
 
     status = "unknown" if status.blank?
-    status = "positive" if ["reactive"].include?(status.downcase)
+    status = "positive" if ["reactive", "hiv infected"].include?(status.downcase)
     status = "negative" if ["non reactive", "non-reactive", "non-reactive less than 3 months"].include?(status.downcase)
     status
   end

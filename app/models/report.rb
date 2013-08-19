@@ -161,11 +161,12 @@ class Report
   def referred
     result = {}
 
-    not_referred = pull("UPDATE OUTCOME", "REFER OUT", "NO")
-    referred = pull("UPDATE OUTCOME", "REFER OUT", "YES")
+    # not_referred = pull("UPDATE OUTCOME", "OUTCOME", "NO")
+    referred = pull("UPDATE OUTCOME", "OUTCOME", "REFERRED OUT")
 
-    result["NO"] = not_referred
     result["YES"] = referred
+    result["NO"] = (@report_patients - referred).uniq
+   
     result
   end
 
@@ -297,9 +298,9 @@ class Report
     alive_exposed_noNVP = pull("UPDATE BABY OUTCOME", "baby outcome", "Alive, exposed – not on NVP")
     alive_exposed_NVP = pull("UPDATE BABY OUTCOME", "baby outcome", "Alive, exposed - on NVP")
     alive_unknown_exp = pull("UPDATE BABY OUTCOME", "baby outcome", "Alive – unknown exposure")
-    still_fresh = pull("UPDATE BABY OUTCOME", "baby outcome", "Fresh stillbirth")
-    still_macerated = pull("UPDATE BABY OUTCOME", "baby outcome", "Macerated stillbirth")
-    neonatal_death = pull("UPDATE BABY OUTCOME", "baby outcome", "Neonatal death")
+    still_fresh = pull("BABY DELIVERY", "baby outcome", "Fresh still birth")
+    still_macerated = pull("BABY DELIVERY", "baby outcome", "Macerated still birth")
+    neonatal_death = pull("BABY DELIVERY", "baby outcome", "Neonatal death")
 
     result["NO_EXP"] = alive_no_exposure
     result["EXP_NONVP"] = alive_exposed_noNVP
