@@ -108,7 +108,7 @@
 				Membranes Rupture Time 
 			</td>
 			<td>
-<input type='text' id='1.1.7'  name='concept[RUPTURE TIME]' helpText='Membranes Rupture Time '  pos='6'  condition='__$("1.1.6").value.trim().toUpperCase() == "RUPTURED"'  field_type='advancedTime' />
+<input type='text' id='1.1.7'  name='concept[RUPTURE TIME]' helpText='Membranes Rupture Time '  condition='__$("1.1.6").value.trim().toUpperCase() == "RUPTURED"'  pos='6'  field_type='advancedTime' />
 			</td>
 		</tr>
 		<tr>
@@ -116,7 +116,7 @@
 				Membranes Rupture Date 
 			</td>
 			<td>
-<input type='text' id='1.1.8'  name='concept[RUPTURE DATE]' helpText='Membranes Rupture Date '  pos='7'  condition='__$("1.1.6").value.trim().toUpperCase() == "RUPTURED"'  field_type='date' />
+<input type='text' id='1.1.8'  name='concept[RUPTURE DATE]' helpText='Membranes Rupture Date '  condition='__$("1.1.6").value.trim().toUpperCase() == "RUPTURED"'  pos='7'  field_type='date' />
 			</td>
 		</tr>
 		<tr>
@@ -124,7 +124,7 @@
 				Colour of Liqour 
 			</td>
 			<td>
-<select id='1.1.9' name='concept[COLOUR OF LIQOUR]' helpText='Colour of Liqour ' tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"'  pos='8'  condition='__$("1.1.6").value.trim().toUpperCase() == "RUPTURED"'  field_type='text' >
+<select id='1.1.9' name='concept[COLOUR OF LIQOUR]' helpText='Colour of Liqour ' tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"'  condition='__$("1.1.6").value.trim().toUpperCase() == "RUPTURED"'  pos='8'  field_type='text' >
 <option></option>
 <option value='Clear'>Clear</option>
  <option value='Meconium Grade 1'>Meconium Grade 1</option>
@@ -159,7 +159,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.11'   helpText='Next URL '  pos='10'  type='hidden'  name='ret'  value='ante-natal' />
+<input  id='1.1.11'   helpText='Next URL '  name='ret'  type='hidden'  pos='10'  value='ante-natal' />
 			</td>
 		</tr>
 	</table>
