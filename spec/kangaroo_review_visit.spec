@@ -1,4 +1,4 @@
-P.1. Kangaroo review visit [program: MATERNITY PROGRAM, pos: 9, parent: 2]
+P.1. Kangaroo review visit [program: UNDER 5 PROGRAM, pos: 9, parent: 2]
 C.1. Given a baby that passed through Kangaroo ward, when they come for a review visit:
 
 Q.1.1. Scan baby barcode [pos: 0, concept: Baby identifier, tt_onLoad: __$("keyboard").style.display = "none"; checkBarcodeInput(); wards_map = {}; wards_map = wardsHash("<%= @patient.wards_hash%>"); ]

@@ -1,4 +1,4 @@
-P.1. PHYSICAL EXAMINATION BABY [program: MATERNITY PROGRAM, label: Baby Examination, pos: 17, parent: 2]
+P.1. PHYSICAL EXAMINATION BABY [program: UNDER 5 PROGRAM, label: Baby Examination, pos: 17, parent: 2]
 C.1.1. Given a registered patient, capture each babies physical examination
 
 Q.1.1.1. Scan baby barcode [pos: 0, concept: Baby identifier, tt_onLoad: __$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}]

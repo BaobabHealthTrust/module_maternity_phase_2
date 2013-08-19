@@ -5,7 +5,7 @@
 	</script>
 
 <form method='post' action='/encounters/create'>
-	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='program' value='UNDER 5 PROGRAM' />
 	<input type='hidden' name='encounter_type' value='REFERRAL ' />
 	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
 	<input type='hidden' name='user_id' value='<%= session[:user_id] %>' />
@@ -23,7 +23,7 @@
 				Referral Type 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[Referral Type ]' helpText='Referral Type ' condition='id_string.match(__$("1.1.1").value)'  pos='1'  disabled='disabled' >
+<select id='1.1.2' name='concept[Referral Type ]' helpText='Referral Type ' pos='1'  disabled='disabled'  condition='id_string.match(__$("1.1.1").value)' >
 <option></option>
 <option value='Internal Referral'>Internal Referral</option>
  <option value='Other Health Facility'>Other Health Facility</option>
@@ -35,7 +35,7 @@
 				Ward 
 			</td>
 			<td>
-<select id='1.1.3' name='concept[Ward ]'  helpText='Ward referred to?'  condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value.toLowerCase().trim() == "internal referral"'  pos='2' >
+<select id='1.1.3' name='concept[Ward ]'  helpText='Ward referred to?'  pos='2'  condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value.toLowerCase().trim() == "internal referral"' >
 <option></option>
 <option value='Check Up'>Check Up</option>
  <option value='Immunization'>Immunization</option>
@@ -50,7 +50,7 @@
 				Facility Referred To? 
 			</td>
 			<td>
-<input type='text' id='1.1.4'   helpText='Facility Referred To? '  fieldtype='text'  name='concept[CLINIC PATIENT WAS REFERRRED]'  condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value.toLowerCase().trim() == "other health facility"'  pos='3'  allowFreeText='true'  ajaxURL='/encounters/static_locations?search_string=' />
+<input type='text' id='1.1.4'   helpText='Facility Referred To? '  name='concept[CLINIC PATIENT WAS REFERRRED]'  ajaxURL='/encounters/static_locations?search_string='  allowFreeText='true'  fieldtype='text'  pos='3'  condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value.toLowerCase().trim() == "other health facility"' />
 			</td>
 		</tr>
 		<tr>
@@ -58,7 +58,7 @@
 				Referral Out Date 
 			</td>
 			<td>
-<input type='text' id='1.1.5'  name='concept[Referral Out Date ]'   helpText='Date referred'  condition='id_string.match(__$("1.1.1").value)'  pos='4'  field_type='date' />
+<input type='text' id='1.1.5'  name='concept[Referral Out Date ]'   field_type='date'  helpText='Date referred'  pos='4'  condition='id_string.match(__$("1.1.1").value)' />
 			</td>
 		</tr>
 		<tr>
@@ -66,7 +66,7 @@
 				Referral Out Time 
 			</td>
 			<td>
-<input type='text' id='1.1.6'  name='concept[Referral Out Time ]'   helpText='Time referred'  condition='id_string.match(__$("1.1.1").value)'  pos='5'  field_type='advancedTime' />
+<input type='text' id='1.1.6'  name='concept[Referral Out Time ]'   field_type='advancedTime'  helpText='Time referred'  pos='5'  condition='id_string.match(__$("1.1.1").value)' />
 			</td>
 		</tr>
 		<tr>
@@ -74,7 +74,7 @@
 				Reason for referral 
 			</td>
 			<td>
-<input type='text' id='1.1.7'  name='concept[Reason for referral ]' helpText='Reason for referral '  condition='id_string.match(__$("1.1.1").value)'  pos='6'  ajaxURL='/encounters/diagnoses?search_string=' />
+<input type='text' id='1.1.7'  name='concept[Reason for referral ]' helpText='Reason for referral '  ajaxURL='/encounters/diagnoses?search_string='  pos='6'  condition='id_string.match(__$("1.1.1").value)' />
 			</td>
 		</tr>
 	</table>

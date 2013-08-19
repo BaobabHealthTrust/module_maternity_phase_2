@@ -17,7 +17,7 @@
 				Systolic Blood Pressure 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[SYSTOLIC BLOOD PRESSURE]' helpText='Systolic Blood Pressure '  tt_onLoad='bpOn = 1; bpAlerts(); calculateBP("1.1.1*1.1.2*1"); attribute("1.1.1*validationRule*([0-9]+\\.[0-9])|Unknown$"); attribute("1.1.1*validationMessage*You must enter a decimal between 0 and 9 (for example 36<b>.6</b>)")'  absoluteMax='250'  pos='0'  units='mm Hg'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""; bpOn = false;'  allowFreeText='true'  absoluteMin='20'  max='140'  min='90'  field_type='number' />
+<input type='text' id='1.1.1'  name='concept[SYSTOLIC BLOOD PRESSURE]' helpText='Systolic Blood Pressure '  max='140'  tt_onLoad='bpOn = 1; bpAlerts(); calculateBP("1.1.1*1.1.2*1"); attribute("1.1.1*validationRule*([0-9]+\\.[0-9])|Unknown$"); attribute("1.1.1*validationMessage*You must enter a decimal between 0 and 9 (for example 36<b>.6</b>)")'  absoluteMin='20'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='250'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""; bpOn = false;'  allowFreeText='true'  min='90'  pos='0'  units='mm Hg' />
 			</td>
 		</tr>
 		<tr>
@@ -25,7 +25,7 @@
 				Diastolic Blood Pressure 
 			</td>
 			<td>
-<input type='text' id='1.1.2'  name='concept[DIASTOLIC BLOOD PRESSURE]' helpText='Diastolic Blood Pressure '  tt_onLoad='bpOn = 2; bpAlerts(); calculateBP("1.1.1*1.1.2*2"); attribute("1.1.2*validationRule*^([0-9]+)|Unknown$")'  absoluteMax='135'  pos='1'  units='mm Hg'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""; bpOn = false;'  allowFreeText='true'  absoluteMin='35'  max='90'  min='60'  field_type='number' />
+<input type='text' id='1.1.2'  name='concept[DIASTOLIC BLOOD PRESSURE]' helpText='Diastolic Blood Pressure '  max='90'  tt_onLoad='bpOn = 2; bpAlerts(); calculateBP("1.1.1*1.1.2*2"); attribute("1.1.2*validationRule*^([0-9]+)|Unknown$")'  absoluteMin='35'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='135'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""; bpOn = false;'  allowFreeText='true'  min='60'  pos='1'  units='mm Hg' />
 			</td>
 		</tr>
 		<tr>
@@ -33,7 +33,7 @@
 				Pulse (Beats Per Minute)
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[PULSE]' helpText='Pulse (Beats Per Minute)'  tt_onLoad='attribute("1.1.3*validationRule*([0-9]+)|Unknown$")'  absoluteMax='160'  pos='3'  units='bpm'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  absoluteMin='0'  max='120'  min='50'  field_type='number' />
+<input type='text' id='1.1.3'  name='concept[PULSE]' helpText='Pulse (Beats Per Minute)'  max='120'  tt_onLoad='attribute("1.1.3*validationRule*([0-9]+)|Unknown$")'  absoluteMin='0'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='160'  min='50'  pos='3'  units='bpm' />
 			</td>
 		</tr>
 		<tr>
@@ -41,7 +41,7 @@
 				Respiration (Breaths Per Minute) 
 			</td>
 			<td>
-<input type='text' id='1.1.4'  name='concept[RESPIRATION]' helpText='Respiration (Breaths Per Minute) '  tt_onLoad='attribute("1.1.4*validationRule*([0-9]+)|Unknown$")'  absoluteMax='200'  pos='4'  units='bpm'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  absoluteMin='0'  max='20'  min='12'  field_type='number' />
+<input type='text' id='1.1.4'  name='concept[RESPIRATION]' helpText='Respiration (Breaths Per Minute) '  max='20'  tt_onLoad='attribute("1.1.4*validationRule*([0-9]+)|Unknown$")'  absoluteMin='0'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='200'  min='12'  pos='4'  units='bpm' />
 			</td>
 		</tr>
 		<tr>
@@ -49,7 +49,7 @@
 				Temperature 
 			</td>
 			<td>
-<input type='text' id='1.1.5'  name='concept[TEMPERATURE]'   tt_onLoad='attribute("1.1.5*validationRule*([0-9]+)|Unknown$")'  absoluteMax='100'  helpText='Temperature (<sup>o</sup>C)'  pos='5'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  absoluteMin='0'  max='37.5'  min='36.5'  field_type='number' />
+<input type='text' id='1.1.5'  name='concept[TEMPERATURE]'   max='37.5'  tt_onLoad='attribute("1.1.5*validationRule*([0-9]+)|Unknown$")'  absoluteMin='0'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  absoluteMax='100'  helpText='Temperature (<sup>o</sup>C)'  min='36.5'  pos='5' />
 			</td>
 		</tr>
 		<tr>
@@ -57,7 +57,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.6'   helpText='Next URL '  name='ret'  type='hidden'  pos='6'  value='post-natal' />
+<input  id='1.1.6'   helpText='Next URL '  name='ret'  value='post-natal'  type='hidden'  pos='6' />
 			</td>
 		</tr>
 	</table>

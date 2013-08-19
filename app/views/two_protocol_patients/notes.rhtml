@@ -5,7 +5,7 @@
 	</script>
 
 <form method='post' action='/encounters/create'>
-	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='program' value='UNDER 5 PROGRAM' />
 	<input type='hidden' name='encounter_type' value='Observations ' />
 	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
 	<input type='hidden' name='user_id' value='<%= session[:user_id] %>' />
@@ -23,7 +23,7 @@
 				Notes 
 			</td>
 			<td>
-<input type='text' id='1.1.2'  name='concept[CLINICIAN NOTES]' helpText='Notes '  optional='true'  condition='id_string.match(__$("1.1.1").value)'  pos='1'  allowFreeText='true'  field_type='text' />
+<input type='text' id='1.1.2'  name='concept[CLINICIAN NOTES]' helpText='Notes '  field_type='text'  optional='true'  allowFreeText='true'  pos='1'  condition='id_string.match(__$("1.1.1").value)' />
 			</td>
 		</tr>
 	</table>

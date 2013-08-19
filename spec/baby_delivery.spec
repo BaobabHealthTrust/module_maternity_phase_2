@@ -1,4 +1,4 @@
-P.1. Baby delivery [program: MATERNITY PROGRAM,  ignore: true, includejs: apgar, scope: RECENT, concept: Date of delivery, includecss: apgar, label: Baby Delivery, pos: 6, parent: 2]
+P.1. Baby delivery [program: UNDER 5 PROGRAM,  ignore: true, includejs: apgar, scope: RECENT, concept: Date of delivery, includecss: apgar, label: Baby Delivery, pos: 6, parent: 2]
 C.1.1. Given a mother that has delivered, for each selected baby
 
 Q.1.1.1. Scan baby barcode (Optional) [pos: 0, optional: true, concept: Baby identifier, condition: false, tt_onLoad: __$("keyboard").style.display = "none"; checkBarcodeInput();]
