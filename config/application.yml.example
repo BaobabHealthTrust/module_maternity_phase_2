@@ -1,33 +1,36 @@
 ---
 production:
-  facility.name: Bwaila Maternity Wing
-  birth_registration_url: http://localhost:4002/people/import_baby
-  assign_serial_numbers: true
   user.management.url: http://localhost:3004
-  report.zoom.percentage: 100
-  patient.registration.url: http://localhost:3005
-  extended_diagnoses_report: true
   project.name: Maternity
-  district.name: Lilongwe
-development:
-  facility.name: Bwaila Maternity Wing
-  birth_registration_url: http://localhost:4002/people/import_baby
   assign_serial_numbers: true
-  user.management.url: http://localhost:3004
-  report.zoom.percentage: 100
-  patient.registration.url: http://localhost:3005
-  demographic.fields: Maiden Name,Landmark or Plot,Cell Phone Number,Current T/A,Current District,Nationality,Current Village,Current T/A,Current District,Nationality
   extended_diagnoses_report: true
-  project.name: Maternity
-  district.name: Lilongwe
   art.link: localhost:4000
-test:
-  facility.name: Test Centre
   birth_registration_url: http://localhost:4002/people/import_baby
-  assign_serial_numbers: true
+  facility.name: Bwaila Maternity Wing
+  demographic.fields: Maiden Name,Landmark or Plot,Cell Phone Number,Current T/A,Current District,Nationality,Current Village,Current T/A,Current District,Nationality,Office Phone Number,Occupation,Home of Origin,Nationality,Middle Name,Home Phone Number
+  district.name: Lilongwe
+  report.zoom.percentage: 100
+  patient.registration.url: http://localhost:3005
+test:
   user.management.url: http://localhost:3004
+  project.name: Maternity
+  assign_serial_numbers: true
+  extended_diagnoses_report: false
+  birth_registration_url: http://localhost:4002/people/import_baby
+  facility.name: Test Centre
+  district.name: Lilongwe
+  demographic.fields: Maiden Name,Landmark or Plot,Cell Phone Number,Current T/A,Current District,Nationality,Current Village,Current T/A,Current District,Nationality
   report.zoom.percentage: 80
   patient.registration.url: http://localhost:3005
-  extended_diagnoses_report: false
+development:
+  user.management.url: http://localhost:3004
   project.name: Maternity
+  assign_serial_numbers: true
+  extended_diagnoses_report: true
+  art.link: localhost:4000
+  birth_registration_url: http://localhost:4002/people/import_baby
+  facility.name: Bwaila Maternity Wing
+  demographic.fields: Maiden Name,Landmark or Plot,Cell Phone Number,Current T/A,Current District,Nationality,Current Village,Current T/A,Current District,Nationality,Office Phone Number,Occupation,Home of Origin,Nationality,Middle Name,Home Phone Number
   district.name: Lilongwe
+  report.zoom.percentage: 100
+  patient.registration.url: http://localhost:3005
