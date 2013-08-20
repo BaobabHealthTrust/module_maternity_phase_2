@@ -891,7 +891,7 @@ class PatientsController < ApplicationController
     @gravida = 0
     @abortions = 0
 
-    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type = ?",
+    @patient.encounters.find(:all, :conditions => ["encounter_type = ?",
         EncounterType.find_by_name("IS PATIENT REFERRED?").encounter_type_id]).each{|e|
       e.observations.each{|o|
         if o.concept.name.name == "IS PATIENT REFERRED?"
@@ -908,7 +908,7 @@ class PatientsController < ApplicationController
       }
     }
 
-    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type = ? OR encounter_type = ?",
+    @patient.encounters.find(:all, :conditions => ["encounter_type = ? OR encounter_type = ?",
         EncounterType.find_by_name("DIAGNOSIS").encounter_type_id,
         EncounterType.find_by_name("OBSERVATIONS").encounter_type_id]).each{|e|
       e.observations.each{|o|
@@ -925,7 +925,7 @@ class PatientsController < ApplicationController
     @enc_ids  = ["ABDOMINAL EXAMINATION", "OBSERVATIONS", "VITALS"].collect{|enc|
       EncounterType.find_by_name(enc).encounter_type_id rescue nil}
 
-    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type IN (?) ",
+    @patient.encounters.find(:all, :conditions => ["encounter_type IN (?) ",
         @enc_ids]).each{|e|
       e.observations.each{|o|
         if o.concept.name.name.upcase == "DELIVERY MODE"
@@ -948,7 +948,7 @@ class PatientsController < ApplicationController
     }
 
    
-    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type = ? ",
+    @patient.encounters.find(:all, :conditions => ["encounter_type = ? ",
         EncounterType.find_by_name("CURRENT BBA DELIVERY").encounter_type_id]).each{|e|
       e.observations.each{|o|
         if o.concept.name.name.upcase == "DELIVERY MODE"
@@ -965,7 +965,7 @@ class PatientsController < ApplicationController
       }
     }
 
-    @patient.encounters.current_pregnancy.find(:all, :conditions => ["encounter_type = ?",
+    @patient.encounters.find(:all, :conditions => ["encounter_type = ?",
         EncounterType.find_by_name("PHYSICAL EXAMINATION BABY").encounter_type_id]).each{|e|
       e.observations.each{|o|
         if o.concept.name.name.upcase == "CONDITION OF BABY AT ADMISSION" ||
