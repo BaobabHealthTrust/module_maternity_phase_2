@@ -117,9 +117,7 @@
       <button onclick="window.location = tt_cancel_destination;" class="button navButton green"
               id="nextButton" style="margin-top: 10px; margin-right: 20px;" ><span>Finish</span>
       </button>
-      <button onclick="window.location = '/cohort_report?reportType=<%= @reportType %>';" class="button navButton blue"
-              id="backButton" style="margin-top: 10px;" ><span>Back</span>
-      </button>
+      
       <button class="button navButton blue" style="margin-top: 10px;"
               onclick="window.location = '/cohort_report/print_cohort?start_date=<%= @start_date %>+<%= @start_time
             %>&end_date=<%= @end_date %>+<%= @end_time %>&reportType=<%= @reportType %>'" style="float: right; ">
