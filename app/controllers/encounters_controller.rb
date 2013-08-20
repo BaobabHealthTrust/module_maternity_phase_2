@@ -621,6 +621,8 @@ class EncountersController < ApplicationController
     lbl = lbl.titleize.gsub("Ante Natal", "Post Natal") if ret.match(/post/i)
    
     lbl.gsub(/examination/i , "exam")
+    lbl = nil if lbl.match(/notes/i)
+    lbl
   end
 
   def static_locations
