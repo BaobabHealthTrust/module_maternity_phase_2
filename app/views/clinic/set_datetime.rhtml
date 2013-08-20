@@ -1,5 +1,6 @@
 <script>
-  var tt_cancel_destination = "/clinic"
+  tt_cancel_destination = "/clinic?user_id=<%= session[:user]['user_id'] %>&location_id=<%= session[:location_id] %>";
+  tt_cancel_show = "/clinic?user_id=<%= session[:user]['user_id'] %>&location_id=<%= session[:location_id] %>";
 </script>
 
 <%#= stylesheet_link_tag "patient_set_datetime_for_retrospective_data_entry" %>
