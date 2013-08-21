@@ -607,7 +607,7 @@ class EncountersController < ApplicationController
   
   def labell(encounter_id, hash)
     encounter = Encounter.find(encounter_id)
-    concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase}
+    concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase}.delete_if{|conc| conc.match(/clinician notes/i)}
     
     lbl = ""
     hash.each{|val, label|
@@ -620,8 +620,7 @@ class EncountersController < ApplicationController
     lbl = lbl.titleize.gsub("Post Natal", "Ante Natal") if ret.match(/ante/i)
     lbl = lbl.titleize.gsub("Ante Natal", "Post Natal") if ret.match(/post/i)
    
-    lbl.gsub(/examination/i , "exam")
-    lbl = nil if lbl.match(/notes/i)
+    lbl.gsub(/examination/i , "exam")   
     lbl
   end
 
