@@ -1,7 +1,7 @@
 P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: Lie, label: Physical Exam, pos: 8, parent: 4]
 C.1.1. Given a registered patient, capture their Physical Examination
 
-Q.1.1.1. Fundus (weeks) [concept: FUNDUS, min: <%= (@patient.fundus_by_lmp - 1) rescue 42%>, max: <%= (@patient.fundus_by_lmp + 1) rescue 42%>, field_type: number, pos: 0, tt_pageStyleClass: NumbersOnly na]
+Q.1.1.1. Fundus (weeks) [concept: FUNDUS, value: <%= @patient.fundus_by_lmp - 1 rescue nil%>, min: <%= (@patient.fundus_by_lmp - 2) rescue 42%>, max: <%= (@patient.fundus_by_lmp) rescue 42%>, field_type: number, pos: 0, tt_pageStyleClass: NumbersOnly na]
 
 Q.1.1.2. Lie [concept: LIE, field_type: text, pos: 1, condition: __$("1.1.1").value != "N/A"]
 O.1.1.2.1. Undefined

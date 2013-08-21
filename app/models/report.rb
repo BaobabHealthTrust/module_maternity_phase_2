@@ -11,6 +11,10 @@ class Report
       :conditions => ["(DATE(date_time) >= ? AND DATE(date_time) <= ?) AND program_encounter.program_id = ?",
         @startdate.strftime("%Y-%m-%d"), @enddate.strftime("%Y-%m-%d"), Program.find_by_name("MATERNITY PROGRAM").program_id]) rescue []
 
+    @program_encounter_details_baby =  ProgramEncounterDetail.find(:all, :joins => [:program_encounter],
+      :conditions => ["(DATE(date_time) >= ? AND DATE(date_time) <= ?) AND program_encounter.program_id = ?",
+        @startdate.strftime("%Y-%m-%d"), @enddate.strftime("%Y-%m-%d"), Program.find_by_name("UNDER 5 PROGRAM").program_id]) rescue []
+
     @report_patients = @program_encounter_details.collect{|ped|
       ped.program_encounter.patient_id;
     }.uniq rescue []
@@ -19,6 +23,14 @@ class Report
       ped.encounter_id
     }.uniq rescue []
 
+
+    @report_patients_baby = @program_encounter_details_baby.collect{|ped|
+      ped.program_encounter.patient_id;
+    }.uniq rescue []
+
+    @program_encounters_baby = @program_encounter_details_baby.collect{|ped|
+      ped.encounter_id
+    }.uniq rescue []
 
     @hiv_tests = Encounter.find_by_sql(["SELECT enc.patient_id AS patient, enc.encounter_id AS encounter, enc.encounter_datetime AS capturedate, MAX(ob.value_datetime) AS testdate
         FROM encounter enc
@@ -37,6 +49,16 @@ class Report
         EncounterType.find_by_name(encounter).id,
         ConceptName.find_by_name(concept_name).concept_id,
         @program_encounters, obs_answer,
+        (ConceptName.find_by_name(obs_answer).concept_id rescue nil)]).collect{|e| e.patient_id}.uniq rescue []
+    data
+  end
+
+   def pull_baby(encounter, concept_name, obs_answer)
+    data = Encounter.find(:all, :joins => [:observations], :select => ["patient_id"],
+      :conditions => ["encounter_type = ? AND concept_id = ? AND encounter.encounter_id IN (?) AND (value_text = ? OR value_coded = ?) AND encounter.voided = 0",
+        EncounterType.find_by_name(encounter).id,
+        ConceptName.find_by_name(concept_name).concept_id,
+        @program_encounters_baby, obs_answer,
         (ConceptName.find_by_name(obs_answer).concept_id rescue nil)]).collect{|e| e.patient_id}.uniq rescue []
     data
   end
@@ -227,12 +249,12 @@ class Report
   def newborn_complications
     result = {}
 
-    none = pull("BABY DELIVERY", "Newborn baby complications", "none")
-    w2500 = pull("BABY DELIVERY", "Newborn baby complications", "Weight less than 2500g")
-    sepsis = pull("BABY DELIVERY", "Newborn baby complications", "sepsis")
-    asphyxia = pull("BABY DELIVERY", "Newborn baby complications", "Asphyxia")
-    prematurity = pull("BABY DELIVERY", "Newborn baby complications", "Prematurity")
-    other = pull("BABY DELIVERY", "Newborn baby complications", "Other")
+    none = pull_baby("BABY DELIVERY", "Newborn baby complications", "none")
+    w2500 = pull_baby("BABY DELIVERY", "Newborn baby complications", "Weight less than 2500g")
+    sepsis = pull_baby("BABY DELIVERY", "Newborn baby complications", "sepsis")
+    asphyxia = pull_baby("BABY DELIVERY", "Newborn baby complications", "Asphyxia")
+    prematurity = pull_baby("BABY DELIVERY", "Newborn baby complications", "Prematurity")
+    other = pull_baby("BABY DELIVERY", "Newborn baby complications", "Other")
 
     result["NONE"] = none
     result["W2500"] = w2500
@@ -294,13 +316,13 @@ class Report
   def pmtct_survival
     result = {}
 
-    alive_no_exposure = pull("UPDATE BABY OUTCOME", "baby outcome", "Alive and not exposed")
-    alive_exposed_noNVP = pull("UPDATE BABY OUTCOME", "baby outcome", "Alive, exposed – not on NVP")
-    alive_exposed_NVP = pull("UPDATE BABY OUTCOME", "baby outcome", "Alive, exposed - on NVP")
-    alive_unknown_exp = pull("UPDATE BABY OUTCOME", "baby outcome", "Alive – unknown exposure")
-    still_fresh = pull("BABY DELIVERY", "baby outcome", "Fresh still birth")
-    still_macerated = pull("BABY DELIVERY", "baby outcome", "Macerated still birth")
-    neonatal_death = pull("BABY DELIVERY", "baby outcome", "Neonatal death")
+    alive_no_exposure = pull_baby("UPDATE BABY OUTCOME", "baby outcome", "Alive and not exposed")
+    alive_exposed_noNVP = pull_baby("UPDATE BABY OUTCOME", "baby outcome", "Alive, exposed – not on NVP")
+    alive_exposed_NVP = pull_baby("UPDATE BABY OUTCOME", "baby outcome", "Alive, exposed - on NVP")
+    alive_unknown_exp = pull_baby("UPDATE BABY OUTCOME", "baby outcome", "Alive – unknown exposure")
+    still_fresh = pull_baby("BABY DELIVERY", "baby outcome", "Fresh still birth")
+    still_macerated = pull_baby("BABY DELIVERY", "baby outcome", "Macerated still birth")
+    neonatal_death = pull_baby("BABY DELIVERY", "baby outcome", "Neonatal death")
 
     result["NO_EXP"] = alive_no_exposure
     result["EXP_NONVP"] = alive_exposed_noNVP
@@ -312,6 +334,10 @@ class Report
 
 
     result
+  end
+
+  def alive_no_exposure
+    
   end
 
   def twins

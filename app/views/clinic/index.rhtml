@@ -66,7 +66,7 @@
             ttSize="100px"><%= (!session[:datetime].nil? ? "Reset Date" : "Set Date") %></option>
   </select>
 
-  <form id="register" action="<%= @patient_registration %>/search?search_by=name&user_id=<%= params[:user_id]
+  <form id="register" action="<%= @patient_registration %>/search?search_by=name&user_id=<%= (params[:user_id] || session[:user]["user_id"])
       %>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>" method="post">
 
     <% @selected.each do |item| %>

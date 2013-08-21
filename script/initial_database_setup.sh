@@ -41,6 +41,7 @@ echo "CREATE DATABASE $DATABASE;" | mysql --host=$HOST --user=$USERNAME --passwo
 
 mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/core_dump.sql
 mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/custom.sql
+mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/openmrs_metadata_1_7.sql
 mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/serial_number.sql
 mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/birth_report.sql
 mysql --host=$HOST --user=$USERNAME --password=$PASSWORD $DATABASE < db/create_dde_server_connection.sql
