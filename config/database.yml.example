@@ -46,6 +46,6 @@ production:
   database: core_patient_registration_development
   pool: 5
   username: root
-  password: admin
+  password: password
   host: localhost
   socket: /var/run/mysqld/mysqld.sock

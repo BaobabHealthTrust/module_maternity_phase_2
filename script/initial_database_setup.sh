@@ -26,11 +26,6 @@ set -x # turns on stacktrace mode which gives useful debug information
    cp  config/application.yml.example  config/application.yml
  fi
  
- if [ ! -x config/protocol_task_flow.yml ] ; then
-   cp config/protocol_task_flow.yml.example config/protocol_task_flow.yml
- fi
- 
-
 USERNAME=`ruby -ryaml -e "puts YAML::load_file('config/database.yml')['${ENV}']['username']"`
 PASSWORD=`ruby -ryaml -e "puts YAML::load_file('config/database.yml')['${ENV}']['password']"`
 DATABASE=`ruby -ryaml -e "puts YAML::load_file('config/database.yml')['${ENV}']['database']"`
