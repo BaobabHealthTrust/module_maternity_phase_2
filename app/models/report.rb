@@ -32,6 +32,8 @@ class Report
       ped.encounter_id
     }.uniq rescue []
 
+    @mother_type = RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id rescue nil
+
     @hiv_tests = Encounter.find_by_sql(["SELECT enc.patient_id AS patient, enc.encounter_id AS encounter, enc.encounter_datetime AS capturedate, MAX(ob.value_datetime) AS testdate
         FROM encounter enc
         INNER JOIN obs ob ON ob.encounter_id = enc.encounter_id AND ob.voided = 0 AND enc.voided = 0
@@ -53,7 +55,7 @@ class Report
     data
   end
 
-   def pull_baby(encounter, concept_name, obs_answer)
+  def pull_baby(encounter, concept_name, obs_answer)
     data = Encounter.find(:all, :joins => [:observations], :select => ["patient_id"],
       :conditions => ["encounter_type = ? AND concept_id = ? AND encounter.encounter_id IN (?) AND (value_text = ? OR value_coded = ?) AND encounter.voided = 0",
         EncounterType.find_by_name(encounter).id,
@@ -80,7 +82,7 @@ class Report
     p = Patient.find_by_sql(["SELECT r.person_a AS mother, (#{@twin_siblings}) AS twin_siblings FROM patient p
         INNER JOIN relationship r ON p.patient_id = r.person_a AND r.relationship = #{@mother_type} AND r.voided = 0
         INNER JOIN #{@delivery_encounters}
-        GROUP BY mother HAVING (twin_siblings >= ? AND twin_siblings <= ?)", @program_encounters, min, max])
+        GROUP BY mother HAVING (twin_siblings >= ? AND twin_siblings <= ?)", @program_encounters_baby, min, max])
 
     p.collect{|t| t.attributes["mother"]}
 
@@ -172,11 +174,128 @@ class Report
     t3 = pull("ADMIT PATIENT", "Date antiretrovirals started",  "On ART since third trimester")
     during_labour = pull("ADMIT PATIENT", "Date antiretrovirals started", "On ART during labour")
 
-    result["NO_ART"] = no_art
-    result["START_B4_PREG"] = startb4preg
-    result["T1_OR_T2"] = t1_or_t2
-    result["T3"] = t3
-    result["DURING_LABOUR"] = during_labour
+    result["NO_ART"] = no_art + no_art_mother
+    result["START_B4_PREG"] = startb4preg + start_b4_preg
+    result["T1_OR_T2"] = t1_or_t2 + trimester_start_date(0, 190) #first and second trimester ie, 0 week - 28 week
+    result["T3"] = t3 + trimester_t3_start #first and second trimester ie, 0 week - 28 week
+    result["DURING_LABOUR"] = during_labour + start_during_labour # after a day before delivery
+    result
+  end
+
+  def no_art_mother
+    
+    @start_date_concept = "(SELECT copt.concept_id FROM concept_name copt WHERE copt.name = 'ART START DATE' LIMIT 1)"
+    
+    @start_date = "(SELECT observ.value_datetime FROM obs observ WHERE observ.concept_id = #{@start_date_concept}
+     AND observ.person_id = enc.patient_id ORDER BY observ.obs_datetime DESC LIMIT 1)"
+    
+    @encs =  Encounter.find_by_sql(["SELECT enc.patient_id AS mother, ob.value_datetime AS lmp,
+           #{@start_date} AS start_date
+        FROM encounter enc
+        INNER JOIN obs ob ON enc.encounter_id = ob.encounter_id AND enc.voided = 0
+        AND enc.encounter_type = (SELECT encounter_type_id FROM  encounter_type WHERE name = 'OBSERVATIONS' LIMIT 1)
+        AND enc.encounter_id IN (?) AND ob.concept_id = (SELECT cn.concept_id FROM concept_name cn WHERE cn.name = 'DATE OF LAST MENSTRUAL PERIOD' )
+        HAVING DATE(start_date) BETWEEN DATE_ADD(lmp, INTERVAL -1 DAY) AND DATE_ADD(lmp, INTERVAL + 91 DAY)",
+        @program_encounters])
+
+    result = @encs.collect{|enc| enc.mother.to_i rescue nil}.delete_if{|mother| mother.blank?}
+
+    result
+    
+  end
+
+  def trimester_start_date(min = -999999999999, max = 45*7)
+    
+    @start_date_concept = "(SELECT copt.concept_id FROM concept_name copt WHERE copt.name = 'ART START DATE' LIMIT 1)"
+
+    @start_date = "(SELECT observ.value_datetime FROM obs observ WHERE observ.concept_id = #{@start_date_concept}
+     AND observ.person_id = enc.patient_id ORDER BY observ.obs_datetime DESC LIMIT 1)"
+
+    @encs =  Encounter.find_by_sql(["SELECT enc.patient_id AS mother, ob.value_datetime AS lmp,
+           #{@start_date} AS start_date
+        FROM encounter enc
+        INNER JOIN obs ob ON enc.encounter_id = ob.encounter_id AND enc.voided = 0
+        AND enc.encounter_type = (SELECT encounter_type_id FROM  encounter_type WHERE name = 'OBSERVATIONS' LIMIT 1)
+        AND enc.encounter_id IN (?) AND ob.concept_id = (SELECT cn.concept_id FROM concept_name cn WHERE cn.name = 'DATE OF LAST MENSTRUAL PERIOD' )
+        HAVING DATE(start_date) BETWEEN DATE_ADD(lmp, INTERVAL #{min} DAY) AND DATE_ADD(lmp, INTERVAL + #{max} DAY)",
+        @program_encounters])
+
+    result = @encs.collect{|enc| enc.mother.to_i rescue nil}.delete_if{|mother| mother.blank?}
+
+  end
+
+  def start_b4_preg
+
+    @start_date_concept = "(SELECT copt.concept_id FROM concept_name copt WHERE copt.name = 'ART START DATE' LIMIT 1)"
+
+    @start_date = "(SELECT observ.value_datetime FROM obs observ WHERE observ.concept_id = #{@start_date_concept}
+     AND observ.person_id = enc.patient_id ORDER BY observ.obs_datetime DESC LIMIT 1)"
+
+    @encs =  Encounter.find_by_sql(["SELECT enc.patient_id AS mother, ob.value_datetime AS lmp,
+           #{@start_date} AS start_date
+        FROM encounter enc
+        INNER JOIN obs ob ON enc.encounter_id = ob.encounter_id AND enc.voided = 0
+        AND enc.encounter_type = (SELECT encounter_type_id FROM  encounter_type WHERE name = 'OBSERVATIONS' LIMIT 1)
+        AND enc.encounter_id IN (?) AND ob.concept_id = (SELECT cn.concept_id FROM concept_name cn WHERE cn.name = 'DATE OF LAST MENSTRUAL PERIOD' )
+        HAVING DATE(start_date) BETWEEN DATE_ADD(lmp, INTERVAL -100 YEAR) AND DATE_ADD(lmp, INTERVAL -1 DAY)",
+        @program_encounters])
+
+    result = @encs.collect{|enc| enc.mother.to_i rescue nil}.delete_if{|mother| mother.blank?}
+
+    result
+
+  end
+
+  def trimester_t3_start
+
+    @start_date_concept = "(SELECT copt.concept_id FROM concept_name copt WHERE copt.name = 'ART START DATE' LIMIT 1)"
+    @dod_concept = "(SELECT copt.concept_id FROM concept_name copt WHERE copt.name = 'DATE OF DELIVERY' LIMIT 1)"
+
+    @start_date = "(SELECT observ.value_datetime FROM obs observ WHERE observ.concept_id = #{@start_date_concept}
+     AND observ.person_id = enc.patient_id ORDER BY observ.obs_datetime DESC LIMIT 1)"
+   
+    @last_delivery_date = "(SELECT MAX(obser.value_datetime) FROM obs obser
+                              INNER JOIN relationship rel ON rel.relationship = #{@mother_type}
+                            WHERE obser.concept_id = #{@dod_concept} AND obser.person_id = rel.person_b AND rel.person_a = enc.patient_id
+                               ORDER BY obser.obs_datetime DESC)"
+
+    @encs =  Encounter.find_by_sql(["SELECT enc.patient_id AS mother, ob.value_datetime AS lmp,
+           #{@start_date} AS start_date, #{@last_delivery_date} AS dod
+        FROM encounter enc
+        INNER JOIN obs ob ON enc.encounter_id = ob.encounter_id AND enc.voided = 0
+        AND enc.encounter_type = (SELECT encounter_type_id FROM  encounter_type WHERE name = 'OBSERVATIONS' LIMIT 1)
+        AND enc.encounter_id IN (?) AND ob.concept_id = (SELECT cn.concept_id FROM concept_name cn WHERE cn.name = 'DATE OF LAST MENSTRUAL PERIOD' )
+        HAVING DATE(start_date) BETWEEN DATE_ADD(lmp, INTERVAL 28 WEEK) AND DATE_ADD(dod, INTERVAL -1 DAY)",
+        @program_encounters])
+
+    result = @encs.collect{|enc| enc.mother.to_i rescue nil}.delete_if{|mother| mother.blank?} 
+    result
+  end
+
+  def start_during_labour
+
+    @start_date_concept = "(SELECT copt.concept_id FROM concept_name copt WHERE copt.name = 'ART START DATE' LIMIT 1)"
+    @dod_concept = "(SELECT copt.concept_id FROM concept_name copt WHERE copt.name = 'DATE OF DELIVERY' LIMIT 1)"
+
+    @start_date = "(SELECT observ.value_datetime FROM obs observ WHERE observ.concept_id = #{@start_date_concept}
+     AND observ.person_id = enc.patient_id ORDER BY observ.obs_datetime DESC LIMIT 1)"
+
+    @last_delivery_date = "(SELECT MAX(obser.value_datetime) FROM obs obser
+                              INNER JOIN relationship rel ON rel.relationship = #{@mother_type}
+                            WHERE obser.concept_id = #{@dod_concept} AND obser.person_id = rel.person_b AND rel.person_a = enc.patient_id
+                               ORDER BY obser.obs_datetime DESC)"
+
+    @encs =  Encounter.find_by_sql(["SELECT enc.patient_id AS mother, ob.value_datetime AS lmp,
+           #{@start_date} AS start_date, #{@last_delivery_date} AS dod
+        FROM encounter enc
+        INNER JOIN obs ob ON enc.encounter_id = ob.encounter_id AND enc.voided = 0
+        AND enc.encounter_type = (SELECT encounter_type_id FROM  encounter_type WHERE name = 'OBSERVATIONS' LIMIT 1)
+        AND enc.encounter_id IN (?) AND ob.concept_id = (SELECT cn.concept_id FROM concept_name cn WHERE cn.name = 'DATE OF LAST MENSTRUAL PERIOD' )
+        HAVING DATE(start_date) > DATE_ADD(dod, INTERVAL -1 DAY)",
+        @program_encounters])
+
+    result = @encs.collect{|enc| enc.mother.to_i rescue nil}.delete_if{|mother| mother.blank?}
+
     result
   end
 
@@ -219,10 +338,10 @@ class Report
   def delivery_place
     result = {}
 
-    here = pull("BABY DELIVERY", "PLACE OF DELIVERY", "THIS FACILITY")
-    in_transit = pull("BABY DELIVERY", "PLACE OF DELIVERY", "IN TRANSIT")
-    other_facility = pull("BABY DELIVERY", "PLACE OF DELIVERY", "OTHER FACILITY")
-    home_or_tba = pull("BABY DELIVERY", "PLACE OF DELIVERY", "HOME/TBA")
+    here = pull_baby("BABY DELIVERY", "PLACE OF DELIVERY", "THIS FACILITY")
+    in_transit = pull_baby("BABY DELIVERY", "PLACE OF DELIVERY", "IN TRANSIT")
+    other_facility = pull_baby("BABY DELIVERY", "PLACE OF DELIVERY", "OTHER FACILITY")
+    home_or_tba = pull_baby("BABY DELIVERY", "PLACE OF DELIVERY", "HOME/TBA")
 
     result["HERE"] = here
     result["IN_TRANSIT"] = in_transit
@@ -234,10 +353,10 @@ class Report
   def delivery_mode
     result = {}
 
-    spontaneous = pull("BABY DELIVERY", "DELIVERY MODE", "Spontaneous vaginal delivery")
-    vacuum = pull("BABY DELIVERY", "DELIVERY MODE", "Vacuum extraction delivery")
-    breech = pull("BABY DELIVERY", "DELIVERY MODE", "Breech delivery")
-    caesarean = pull("BABY DELIVERY", "DELIVERY MODE", "Caesarean section")
+    spontaneous = pull_baby("BABY DELIVERY", "DELIVERY MODE", "Spontaneous vaginal delivery")
+    vacuum = pull_baby("BABY DELIVERY", "DELIVERY MODE", "Vacuum extraction delivery")
+    breech = pull_baby("BABY DELIVERY", "DELIVERY MODE", "Breech delivery")
+    caesarean = pull_baby("BABY DELIVERY", "DELIVERY MODE", "Caesarean section")
 
     result["SPONTANEOUS"] = spontaneous
     result["VACUUM"] = vacuum
@@ -323,11 +442,12 @@ class Report
     still_fresh = pull_baby("BABY DELIVERY", "baby outcome", "Fresh still birth")
     still_macerated = pull_baby("BABY DELIVERY", "baby outcome", "Macerated still birth")
     neonatal_death = pull_baby("BABY DELIVERY", "baby outcome", "Neonatal death")
-
-    result["NO_EXP"] = alive_no_exposure
-    result["EXP_NONVP"] = alive_exposed_noNVP
-    result["EXP_NVP"] = alive_exposed_NVP
-    result["UNKNOWN_EXP"] = alive_unknown_exp
+    #raise alive_no_exp.to_yaml
+    
+    result["EXP_NONVP"] = alive_exposed_noNVP + alive_exp_no_nvp
+    result["EXP_NVP"] = alive_exposed_NVP + alive_exp_nvp
+    result["NO_EXP"] = alive_no_exposure + alive_no_exp
+    result["UNKNOWN_EXP"] = alive_unknown_exp  + unknown_exposure
     result["FRESH"] = still_fresh
     result["MACERATED"] = still_macerated
     result["NEONATAL"] = neonatal_death
@@ -336,8 +456,47 @@ class Report
     result
   end
 
-  def alive_no_exposure
+  def alive_no_exp
+
+    encs = ((Encounter.find_by_sql(["SELECT enc.patient_id FROM encounter enc
+        INNER JOIN relationship rel ON enc.patient_id = rel.person_b AND rel.voided = 0
+        INNER JOIN person p ON p.dead = 0 AND p.person_id = rel.person_b
+        AND enc.encounter_id IN (?)",
+            @program_encounters_baby]).collect{|enc| enc.patient_id}.uniq rescue []) - (alive_exp_no_nvp + alive_exp_nvp)).uniq.delete_if{|baby|
+      (Patient.find(Patient.find(baby).mother.person_a).hiv_status.match(/positive|unknown/i) rescue true)
+    }
+
+    encs
+  end
+
+  def unknown_exposure
+    encs = ((Encounter.find_by_sql(["SELECT enc.patient_id FROM encounter enc
+        INNER JOIN relationship rel ON enc.patient_id = rel.person_b AND rel.voided = 0
+        INNER JOIN person p ON p.dead = 0 AND p.person_id = rel.person_b
+        AND enc.encounter_id IN (?)",
+            @program_encounters_baby]).collect{|enc| enc.patient_id}.uniq rescue []) - (alive_no_exp + alive_exp_no_nvp + alive_exp_nvp)).uniq
     
+    encs
+  end
+
+  def alive_exp_no_nvp
+    Encounter.find_by_sql(["SELECT enc.patient_id FROM encounter enc
+        INNER JOIN relationship rel ON enc.patient_id = rel.person_b AND rel.voided = 0
+        INNER JOIN person p ON p.dead = 0 AND p.person_id = rel.person_b
+        INNER JOIN obs observ ON ( observ.voided = 0 AND rel.person_b = observ.person_id AND observ.concept_id = ? AND observ.encounter_id IN (?)
+        AND (observ.value_coded = ? OR observ.value_text = 'No'))",
+        ConceptName.find_by_name("BABY ON NVP?").concept_id,  @program_encounters_baby,
+        ConceptName.find_by_name("No").concept_id]).collect{|enc| enc.patient_id}.uniq rescue []
+  end
+
+  def alive_exp_nvp
+    Encounter.find_by_sql(["SELECT enc.patient_id FROM encounter enc
+        INNER JOIN relationship rel ON enc.patient_id = rel.person_b AND rel.voided = 0
+        INNER JOIN person p ON p.dead = 0 AND p.person_id = rel.person_b
+        INNER JOIN obs observ ON ( observ.voided = 0 AND  rel.person_b = observ.person_id AND observ.concept_id = ? AND observ.encounter_id IN (?)
+        AND (observ.value_coded = ? OR observ.value_text = 'Yes'))",
+        ConceptName.find_by_name("BABY ON NVP?").concept_id,  @program_encounters_baby,
+        ConceptName.find_by_name("Yes").concept_id]).collect{|enc| enc.patient_id}.uniq rescue []
   end
 
   def twins
@@ -354,29 +513,30 @@ class Report
 
   def premature
   
-    @prematures =  Encounter.find_by_sql(["SELECT enc.patient_id AS mother, ob.value_datetime AS lmp, rel.person_b AS child FROM encounter enc
+    @prematures =  Encounter.find_by_sql(["SELECT enc.patient_id AS mother, ob.value_datetime AS lmp, rel.person_b AS child 
+          FROM encounter enc
           INNER JOIN obs ob ON ob.encounter_id = enc.encounter_id AND enc.voided = 0
           INNER JOIN relationship rel ON rel.person_a = enc.patient_id AND rel.voided = 0
                 AND rel.relationship = (SELECT relationship_type_id FROM relationship_type WHERE a_is_to_b = 'Parent' AND b_is_to_a = 'Child' LIMIT 1)
           WHERE enc.encounter_id IN (?)
               AND ob.concept_id = (SELECT concept_id FROM concept_name cn WHERE name = 'DATE OF LAST MENSTRUAL PERIOD' LIMIT 1)
-           GROUP BY mother HAVING DATE_ADD(lmp, INTERVAL + 7 MONTH) >= (SELECT observ.value_datetime FROM obs observ
-            WHERE observ.voided = 0 AND observ.concept_id = (SELECT conc.concept_id FROM concept_name conc WHERE conc.name = 'Date of delivery' LIMIT 1) ORDER BY observ.obs_datetime ASC LIMIT 1)
+           GROUP BY child HAVING DATE_ADD(lmp, INTERVAL + 8 MONTH) >= (SELECT observ.value_datetime FROM obs observ
+            WHERE observ.voided = 0 AND observ.person_id = child AND observ.encounter_id IN (?) AND observ.concept_id = (SELECT conc.concept_id FROM concept_name conc WHERE conc.name = 'Date of delivery' LIMIT 1) ORDER BY observ.obs_datetime DESC LIMIT 1)
         ",
-        @program_encounters])
+        @program_encounters, @program_encounters_baby])
     
-    @prematures.collect{|t| t.attributes["child"]} rescue []
+    @prematures.collect{|t| t.attributes["child"].to_i} rescue []
   
   end
 
   def w2500
     @lowweight =  Encounter.find_by_sql(["SELECT enc.patient_id AS child, ob.value_numeric AS number, ob.value_text AS text FROM encounter enc
-          INNER JOIN obs ob ON ob.encounter_id = enc.encounter_id AND enc.voided = 0
+          INNER JOIN obs ob ON ob.encounter_id = enc.encounter_id AND enc.voided = 0 AND enc.encounter_id IN (?)
             AND ob.concept_id = (SELECT conc.concept_id FROM concept_name conc WHERE conc.name = 'Birth weight' LIMIT 1)
           GROUP BY child HAVING COALESCE(number, text, 100000000000) < 2500",
-        @program_encounters])
+        @program_encounters_baby])
 
-    @lowweight.collect{|t| t.attributes["child"]} rescue []
+    @lowweight.collect{|t| t.attributes["child"].to_i} rescue []
     
   end
 

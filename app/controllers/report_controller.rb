@@ -43,7 +43,10 @@ class ReportController < ApplicationController
     
     @newborn_complications["PREMATURITY"] = (@newborn_complications["PREMATURITY"] || []).concat(report.premature).uniq
     @newborn_complications["W2500"] = (@newborn_complications["W2500"] || []).concat(report.w2500).uniq
-
+    
+    @newborn_complications["NONE"] =  @newborn_complications["NONE"] - (@newborn_complications["SEPSIS"] + @newborn_complications["PREMATURITY"] + @newborn_complications["ASPHYXIA"] +
+        @newborn_complications["OTHER"] + @newborn_complications["W2500"])   
+    
     @complications = report.complications
 
     @obst_complications = report.obst_complications

@@ -25,7 +25,7 @@ class EncountersController < ApplicationController
     
     #watch for terminal conditions
     if params["proc_check"] && (params["concept"]["Procedure Done"].blank? || params["concept"]["Procedure Done"].downcase == "none")
-      redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}" and return
+      redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}&autoflow=false" and return
     end
     
     if (params["concept"]["Baby identifier"])
