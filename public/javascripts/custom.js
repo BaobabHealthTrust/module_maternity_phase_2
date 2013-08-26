@@ -552,21 +552,56 @@ function bpAlerts(){
 }
 
 function probeValues(){
+  
     if (document.location.toString().match(/protocol\_patients/)){  
         try{
             var pageConcept = $("touchscreenInput" + tstCurrentPage).name.replace(/concept\[|]/g, "");
             if (pageConcept != currentConcept){
+              
                 currentConcept =  pageConcept;
-            
+
+                if (document.location.toString().match(/pmtct/i) && $("touchscreenInput" + tstCurrentPage).value.length == 0){
+
+                    if (currentConcept.toLowerCase().trim() == "art start date"){
+                        try{
+                            if (artData["START DATE"] && artData["START DATE"] != "" && artData["START DATE"] != undefined){
+                                $("touchscreenInput" + tstCurrentPage).value = artData["START DATE"].replace(/\//g, "-")
+                            }
+                        }catch(ex){
+                        
+                        }
+                    }
+ 
+                    if (currentConcept.toLowerCase().match(/art registration number/i)){
+                    
+                        try{
+                            if (artData["ARV NUMBER"] && artData["ARV NUMBER"] != "" && artData["ARV NUMBER"] != undefined){
+                                $("touchscreenInput" + tstCurrentPage).value = artData["ARV NUMBER"]
+                            }
+                        }catch(ex){
+
+                        }
+                    }
+
+                    if (currentConcept.toLowerCase().trim() == "on arvs"){
+                        try{
+                            if (artData["START DATE"] && artData["START DATE"] != "" && artData["START DATE"] != undefined){
+                                $("touchscreenInput" + tstCurrentPage).value = "Yes"
+                            }
+                        }catch(ex){
+
+                        }
+                    }
+                }
                 var user = "";
                 var patient = "";
             
                 var inputNodes = document.getElementsByTagName("input")
                 for (var i = 0; i < inputNodes.length; i ++){
                     if (inputNodes[i].name == "patient_id"){
-                        patient = inputNodes[i].value
+                        patient = inputNodes[i].value;
                     }else if (inputNodes[i].name == "user_id"){
-                        user = inputNodes[i].value
+                        user = inputNodes[i].value;
                     }
                 }
            
@@ -623,9 +658,9 @@ function artPull(national_id){
 
             var result = JSON.parse(httpRequest.responseText);
            
-            
-            //Build alert
-            buildPmtctAlert(result)
+            buildPmtctAlert(result);
+
+            artData = result
            
         }
     };
@@ -708,12 +743,14 @@ function buildPmtctAlert(data){
             if (keys[k].trim() == "LATEST HIV TEST"){
                 var hiv_keys = Object.keys(data[keys[k]])
 
-                for (var i = 0; i < hiv_keys.length; i ++){
+                for (var i = 0; i < hiv_keys.length; i ++){                  
                     mainHolder.appendChild(alertRow(hiv_keys[i], data[keys[k]][hiv_keys[i]]))
                 }
                 
             }else{
-                mainHolder.appendChild(alertRow(keys[k], data[keys[k]]))
+                if (data[keys[k]] && data[keys[k]].length > 0){
+                    mainHolder.appendChild(alertRow(keys[k], data[keys[k]]))
+                }
             }
         }catch(ex){
             
@@ -746,16 +783,21 @@ function createCancelButton(){
     img.id = "image";
     img.style.zIndex = 100;
     img.innerHTML = "&nbsp";
-    
+
     img.onclick = function(){
+
+        $('mainHolder').parentNode.removeChild($('mainHolder'));
+        $('lyrShield').parentNode.removeChild($('lyrShield'));         
+        this.parentNode.removeChild(this);
+        
         try{
-            $('mainHolder').style.display = "none";
-            $('lyrShield').style.display = "none";
-        }catch(x){}
-        this.style.display = "none";
+            if ($("touchscreenInput" + tstCurrentPage).value.length == 0 && artData["LATEST HIV TEST"]["HIV TEST DATE"] != "" && artData["LATEST HIV TEST"]["HIV TEST DATE"] != undefined){
+                $("touchscreenInput" + tstCurrentPage).value = artData["LATEST HIV TEST"]["HIV TEST DATE"]
+            }
+        }catch(c){}
     }
 
-    return img;   
+    return img;
 }
 
 function alertRow(key, value){
