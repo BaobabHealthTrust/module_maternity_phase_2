@@ -29,6 +29,15 @@ class ApplicationController < ActionController::Base
     render :template => 'print/print', :layout => nil
   end
 
+  def rescue_action(exception)
+    @message = exception.message
+    @backtrace = exception.backtrace.join("\n") unless exception.nil?
+    logger.info @message
+    logger.info @backtrace
+    render :file => "#{RAILS_ROOT}/app/views/errors/error.rhtml", :layout=> false, :status => 404
+  end if RAILS_ENV == 'production'
+
+
   protected
 
   def start_session

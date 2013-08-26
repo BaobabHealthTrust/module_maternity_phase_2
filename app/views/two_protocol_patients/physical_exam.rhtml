@@ -15,7 +15,7 @@
 				Fundus (weeks) 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[FUNDUS]' helpText='Fundus (weeks) '  tt_pageStyleClass='NumbersOnly na'  max='<%= (@patient.fundus_by_lmp) rescue 42%>'  min='<%= (@patient.fundus_by_lmp - 2) rescue 42%>'  field_type='number'  value='<%= @patient.fundus_by_lmp - 1 rescue nil%>'  pos='0' />
+<input type='text' id='1.1.1'  name='concept[FUNDUS]' helpText='Fundus (weeks) '  field_type='number'  min='<%= (@patient.fundus_by_lmp - 2) rescue 42%>'  tt_pageStyleClass='NumbersOnly na'  max='<%= (@patient.fundus_by_lmp) rescue 42%>'  pos='0'  value='<%= @patient.fundus_by_lmp - 1 rescue nil%>' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Lie 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[LIE]' helpText='Lie ' field_type='text'  condition='__$("1.1.1").value != "N/A"'  pos='1' >
+<select id='1.1.2' name='concept[LIE]' helpText='Lie ' condition='__$("1.1.1").value != "N/A"'  field_type='text'  pos='1' >
 <option></option>
 <option value='Longitudinal'>Longitudinal</option>
  <option value='Transverse'>Transverse</option>
@@ -37,7 +37,7 @@
 				Presentation 
 			</td>
 			<td>
-<select id='1.1.3' name='concept[Presentation]' helpText='Presentation ' tt_pageStyleClass='NoKeyboard'  field_type='text'  condition='__$("1.1.1").value != "N/A"'  pos='2' >
+<select id='1.1.3' name='concept[Presentation]' helpText='Presentation ' condition='__$("1.1.1").value != "N/A"'  field_type='text'  tt_pageStyleClass='NoKeyboard'  pos='2' >
 <option></option>
 <option value='Compound'>Compound</option>
  <option value='Cephalic'>Cephalic</option>
@@ -55,7 +55,7 @@
 				Contractions 
 			</td>
 			<td>
-<select id='1.1.4' name='concept[CONTRACTIONS]' helpText='Contractions ' field_type='text'  condition='__$("1.1.1").value != "N/A"'  pos='3' >
+<select id='1.1.4' name='concept[CONTRACTIONS]' helpText='Contractions ' condition='__$("1.1.1").value != "N/A"'  field_type='text'  pos='3' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -67,7 +67,7 @@
 				Contractions Intensity 
 			</td>
 			<td>
-<select id='1.1.5' name='concept[CONTRACTIONS INTENSITY]' helpText='Contractions Intensity ' field_type='text'  condition='__$("1.1.3").value.trim().toUpperCase() == "YES"'  pos='4' >
+<select id='1.1.5' name='concept[CONTRACTIONS INTENSITY]' helpText='Contractions Intensity ' condition='__$("1.1.3").value.trim().toUpperCase() == "YES"'  field_type='text'  pos='4' >
 <option></option>
 <option value='Mild'>Mild</option>
  <option value='Moderate'>Moderate</option>
@@ -81,7 +81,7 @@
 				Descent 
 			</td>
 			<td>
-<select id='1.1.7' name='concept[DESCENT]' helpText='Descent ' tt_pageStyleClass='NoKeyboard'  field_type='text'  pos='6' >
+<select id='1.1.7' name='concept[DESCENT]' helpText='Descent ' field_type='text'  tt_pageStyleClass='NoKeyboard'  pos='6' >
 <option></option>
 <option value='N/A'>N/A</option>
  <option value='5/5'>5/5</option>
@@ -98,7 +98,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.8'   helpText='Next URL '  value='ante-natal'  name='ret'  type='hidden'  pos='7' />
+<input  id='1.1.8'   helpText='Next URL '  type='hidden'  pos='7'  name='ret'  value='ante-natal' />
 			</td>
 		</tr>
 	</table>

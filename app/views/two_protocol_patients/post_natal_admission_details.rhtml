@@ -31,7 +31,7 @@
 				Admission Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.3'   helpText='Admission Diagnosis '  allowFreeText='true'  field_type='text'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='2' />
+<input type='text' id='1.1.3'   helpText='Admission Diagnosis '  field_type='text'  ajaxURL='/encounters/diagnoses?search_string='  pos='2'  name='concept[Diagnosis][]'  allowFreeText='true' />
 			</td>
 		</tr>
 		<tr>
@@ -39,7 +39,7 @@
 				Select Next Admission Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.4'   helpText='Select Next Admission Diagnosis '  allowFreeText='true'  field_type='text'  optional='true'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='3'  condition='__$("1.1.3").value.trim() != ""' />
+<input type='text' id='1.1.4'   helpText='Select Next Admission Diagnosis '  field_type='text'  condition='__$("1.1.3").value.trim() != ""'  ajaxURL='/encounters/diagnoses?search_string='  pos='3'  optional='true'  name='concept[Diagnosis][]'  allowFreeText='true' />
 			</td>
 		</tr>
 		<tr>
@@ -47,7 +47,7 @@
 				Select Next Admission Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.5'   helpText='Select Next Admission Diagnosis '  allowFreeText='true'  field_type='text'  optional='true'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='4'  condition='__$("1.1.4").value.trim() != ""' />
+<input type='text' id='1.1.5'   helpText='Select Next Admission Diagnosis '  field_type='text'  condition='__$("1.1.4").value.trim() != ""'  ajaxURL='/encounters/diagnoses?search_string='  pos='4'  optional='true'  name='concept[Diagnosis][]'  allowFreeText='true' />
 			</td>
 		</tr>
 		<tr>
@@ -55,7 +55,7 @@
 				Select Next Admission Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.6'   helpText='Select Next Admission Diagnosis '  allowFreeText='true'  field_type='text'  optional='true'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='5'  condition='__$("1.1.5").value.trim() != ""' />
+<input type='text' id='1.1.6'   helpText='Select Next Admission Diagnosis '  field_type='text'  condition='__$("1.1.5").value.trim() != ""'  ajaxURL='/encounters/diagnoses?search_string='  pos='5'  optional='true'  name='concept[Diagnosis][]'  allowFreeText='true' />
 			</td>
 		</tr>
 		<tr>
@@ -63,7 +63,7 @@
 				Select Next Admission Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.7'   helpText='Select Next Admission Diagnosis '  allowFreeText='true'  field_type='text'  optional='true'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='6'  condition='__$("1.1.6").value.trim() != ""' />
+<input type='text' id='1.1.7'   helpText='Select Next Admission Diagnosis '  field_type='text'  condition='__$("1.1.6").value.trim() != ""'  ajaxURL='/encounters/diagnoses?search_string='  pos='6'  optional='true'  name='concept[Diagnosis][]'  allowFreeText='true' />
 			</td>
 		</tr>
 		<tr>
@@ -71,7 +71,7 @@
 				Select Next Admission Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.8'   helpText='Select Next Admission Diagnosis '  allowFreeText='true'  field_type='text'  optional='true'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='7'  condition='__$("1.1.7").value.trim() != ""' />
+<input type='text' id='1.1.8'   helpText='Select Next Admission Diagnosis '  field_type='text'  condition='__$("1.1.7").value.trim() != ""'  ajaxURL='/encounters/diagnoses?search_string='  pos='7'  optional='true'  name='concept[Diagnosis][]'  allowFreeText='true' />
 			</td>
 		</tr>
 		<tr>
@@ -79,7 +79,7 @@
 				Select Next Admission Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.9'   helpText='Select Next Admission Diagnosis '  allowFreeText='true'  field_type='text'  optional='true'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='8'  condition='__$("1.1.8").value.trim() != ""' />
+<input type='text' id='1.1.9'   helpText='Select Next Admission Diagnosis '  field_type='text'  condition='__$("1.1.8").value.trim() != ""'  ajaxURL='/encounters/diagnoses?search_string='  pos='8'  optional='true'  name='concept[Diagnosis][]'  allowFreeText='true' />
 			</td>
 		</tr>
 		<tr>
@@ -87,7 +87,7 @@
 				Select Next Admission Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.10'   helpText='Select Next Admission Diagnosis '  allowFreeText='true'  field_type='text'  optional='true'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='9'  condition='__$("1.1.9").value.trim() != ""' />
+<input type='text' id='1.1.10'   helpText='Select Next Admission Diagnosis '  field_type='text'  condition='__$("1.1.9").value.trim() != ""'  ajaxURL='/encounters/diagnoses?search_string='  pos='9'  optional='true'  name='concept[Diagnosis][]'  allowFreeText='true' />
 			</td>
 		</tr>
 		<tr>
@@ -95,7 +95,7 @@
 				Select Next Admission Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.11'   helpText='Select Next Admission Diagnosis '  allowFreeText='true'  field_type='text'  optional='true'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='10'  condition='__$("1.1.10").value.trim() != ""' />
+<input type='text' id='1.1.11'   helpText='Select Next Admission Diagnosis '  field_type='text'  condition='__$("1.1.10").value.trim() != ""'  ajaxURL='/encounters/diagnoses?search_string='  pos='10'  optional='true'  name='concept[Diagnosis][]'  allowFreeText='true' />
 			</td>
 		</tr>
 		<tr>
@@ -103,7 +103,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.12'   helpText='Next URL '  value='post-natal'  name='ret'  type='hidden'  pos='11' />
+<input  id='1.1.12'   helpText='Next URL '  type='hidden'  pos='11'  name='ret'  value='post-natal' />
 			</td>
 		</tr>
 	</table>

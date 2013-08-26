@@ -1,7 +1,7 @@
-P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, concept: HIV Status, label: Ante Natal PMTCT, pos: 10, parent: 4]
+P.1. Observations [program: MATERNITY PROGRAM, scope: TODAY, includecss: pmtctAlert, concept: HIV Status, label: Ante Natal PMTCT, pos: 10, parent: 4]
 C.1.1. Given a registered patient capture PMTCT
 
-Q.1.1.1. PMTCT Status [concept: HIV STATUS, field_type: text, pos: 0, tt_pageStyleClass: LongSelectList, tt_BeforeUnload: checkHIVTestUnkown("1.1.1"), tt_onUnLoad: var nat_id = "<%= @patient.national_id%>"; checkArtData(nat_id)]
+Q.1.1.1. PMTCT Status [concept: HIV STATUS, field_type: text, pos: 0, tt_pageStyleClass: LongSelectList, tt_BeforeUnload: checkHIVTestUnkown("1.1.1"); checkArtData("<%= @patient.national_id%>")]
 O.1.1.1.1. Non-Reactive
 O.1.1.1.2. Reactive
 O.1.1.1.3. Unknown

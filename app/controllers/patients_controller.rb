@@ -9,7 +9,6 @@ class PatientsController < ApplicationController
   before_filter :sync_user, :except => [:index, :user_login, :user_logout, 
     :set_datetime, :update_datetime, :reset_datetime, :admissions_note_printable, :birth_report_printable]
 
-
   def show
     
     d = (session[:datetime].to_date rescue Date.today)
@@ -1083,7 +1082,7 @@ class PatientsController < ApplicationController
       data[key.titleize.upcase] = data[key]
       data.delete(key)
     }
-    
+ 
     render :text => data.to_json
     
   end

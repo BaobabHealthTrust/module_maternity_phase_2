@@ -99,7 +99,9 @@ function checkAbortionsLimits(cat){
 }
 
 function checkArtData(national_id){
-    artPull(national_id);
+    if ($("touchscreenInput" + tstCurrentPage).value.toLowerCase().trim() == "reactive"){
+        artPull(national_id);
+    }
 }
 
 function setMax(id){
@@ -620,11 +622,11 @@ function artPull(national_id){
             httpRequest.status == 304)) {
 
             var result = JSON.parse(httpRequest.responseText);
-            artData = {}
-            artData[national_id] = result;
-        //Do something with this art data
-        // alert(Object.keys(result["HIV TEST"]))
-                     
+           
+            
+            //Build alert
+            buildPmtctAlert(result)
+           
         }
     };
 
@@ -672,6 +674,106 @@ function padZeros(number, positions){
     return padded;
 }
 
+function buildPmtctAlert(data){
+    /*
+     Fields available in data
+    1. LAST DATE SEEN
+    2. START DATE
+    3. ARV NUMBER
+    4. LATEST HIV TEST
+         I. HIV STATUS
+        II. HIV TEST DATE
+       III. HTC SERIAL NUMBER
+        IV. LOCATION OF HIV TEST
+         V. WORKSTATION LOCATION
+     */
+
+    var mainHolder = document.createElement("div");
+    mainHolder.id = "mainHolder";   
+    mainHolder.style.position = "absolute";
+    mainHolder.style.zIndex = 97;
+
+    var header = document.createElement("th");
+    header.setAttribute("class", "header");
+    
+    header.innerHTML = "ARV INFORMATION FROM ART SYSTEM";
+   
+    mainHolder.appendChild(header)
+    
+    var keys = Object.keys(data)
+
+    for (var k = 0; k < keys.length; k ++){
+
+        try{
+            if (keys[k].trim() == "LATEST HIV TEST"){
+                var hiv_keys = Object.keys(data[keys[k]])
+
+                for (var i = 0; i < hiv_keys.length; i ++){
+                    mainHolder.appendChild(alertRow(hiv_keys[i], data[keys[k]][hiv_keys[i]]))
+                }
+                
+            }else{
+                mainHolder.appendChild(alertRow(keys[k], data[keys[k]]))
+            }
+        }catch(ex){
+            
+        }
+
+    }
+    
+    document.body.appendChild(createCancelButton());
+    
+    var shield = document.createElement("div");
+    shield.id = "lyrShield";
+    shield.style.position = "absolute";
+    shield.style.width = "100%";
+    shield.style.height = "100%";
+    shield.style.left = "0px";
+    shield.style.top = "0px";
+    shield.style.backgroundColor = "#333"; 
+    shield.style.opacity = "0.5";
+    shield.style.zIndex = 90;
+    
+    document.body.appendChild(shield);
+    
+    document.body.appendChild(mainHolder)
+    
+}
+
+function createCancelButton(){
+
+    var img = document.createElement("div");
+    img.id = "image";
+    img.style.zIndex = 100;
+    img.innerHTML = "&nbsp";
+    
+    img.onclick = function(){
+        try{
+            $('mainHolder').style.display = "none";
+            $('lyrShield').style.display = "none";
+        }catch(x){}
+        this.style.display = "none";
+    }
+
+    return img;   
+}
+
+function alertRow(key, value){
+
+    var rowDiv = document.createElement("div");
+    rowDiv.setAttribute("class", "alert-row");    
+    
+    var keyDiv = document.createElement("div");
+    keyDiv.setAttribute("class", "alert-key");
+    keyDiv.innerHTML = key.replace(/last date seen/i, "LAST DATE SEEN AT ART").replace(/start date/i, "DATE STARTED ARVs");
+    rowDiv.appendChild(keyDiv);
+
+    var valueDiv = document.createElement("div");
+    valueDiv.setAttribute("class", "alert-value");
+    valueDiv.innerHTML = value;
+    rowDiv.appendChild(valueDiv);
+    return rowDiv
+}
 
 setTimeout("updateFromVariables()", 1);
 setTimeout("probeValues()", 20);
