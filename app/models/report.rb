@@ -95,13 +95,39 @@ class Report
     pa =  pull("UPDATE OUTCOME", "STAFF CONDUCTING DELIVERY", "Patient Attendant / Ward Attendant /Health Surveillance Assistant")
     other = pull("UPDATE OUTCOME", "STAFF CONDUCTING DELIVERY", "Other")
 
-    result["MD"] = md
-    result["PA"] = pa
-    result["OTHER"] = other
+    result["MD"] = (md + staff_group(["DOCTOR", "CLINICAL OFFICER" ,"NURSE", "MIDWIFE", "CLINICIAN", "MEDICAL DOCTOR"])).uniq
+    result["PA"] = (pa + staff_group(["PATIENT ATTENDANT",  "WARD ATTENDANT", "HEALTH SURVEILLANCE ASSISTANT"])).uniq
+    result["OTHER"] = (other + other_staff).uniq
 
     result
   end
 
+  def other_staff
+    group = ["DOCTOR", "CLINICAL OFFICER" ,"NURSE", "MIDWIFE", "CLINICIAN", "MEDICAL DOCTOR", "PATIENT ATTENDANT", "WARD ATTENDANT", "HEALTH SURVEILLANCE ASSISTANT"]
+    @users = UserProperty.find_by_sql(["SELECT * FROM user_role WHERE role IN (?)", group]).collect{|role| role.user_id} rescue []
+
+    patients = Encounter.find_by_sql(["SELECT * FROM encounter enc INNER JOIN obs ob
+      ON enc.encounter_type = ? AND enc.voided = 0 AND ob.value_coded = ? AND NOT enc.provider_id IN (?) AND
+          enc.encounter_id IN (?)",
+        EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name("DELIVERED").concept_id,
+        @users, @program_encounters]).collect{|enc|enc.patient_id}.uniq
+    
+    patients
+    
+  end
+
+  def staff_group(group)
+    
+    @users = UserProperty.find_by_sql(["SELECT * FROM user_role WHERE role IN (?)", group]).collect{|role| role.user_id} rescue []
+    
+    patients = Encounter.find_by_sql(["SELECT * FROM encounter enc INNER JOIN obs ob
+      ON enc.encounter_type = ? AND enc.voided = 0 AND ob.value_coded = ? AND enc.provider_id IN (?) AND
+          enc.encounter_id IN (?)",
+        EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name("DELIVERED").concept_id,
+        @users, @program_encounters]).collect{|enc|enc.patient_id}.uniq
+    patients
+  end 
+  
   def hiv_status_map
     result = {}
 
