@@ -221,6 +221,7 @@ function calculateEDOD(){
 
 
 function changeIds(){
+    
     $("6").style.display = "none";
     $("7").style.display = "none";
     $("8").style.display = "none";

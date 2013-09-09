@@ -246,7 +246,7 @@
           <b>Position:</b> <%= @position.titleize rescue "" %>
         </td>
         <td>
-          <b>Contractions:</b> <%=  @encounters["CONTRACTIONS"] rescue "" %>&nbsp&nbsp <%= (@encounters["CONTRACTIONS"].titleize.strip == "Yes" ?
+          <b>Contractions:</b> <%= (@encounters["CONTRACTIONS"].titleize.strip == "Yes" ?
               @encounters["CONTRACTIONS INTENSITY"].titleize + "/" + @encounters["CONTRACTIONS LEVEL"].titleize :
               @encounters["CONTRACTIONS"].titleize) rescue "" %>
         </td>

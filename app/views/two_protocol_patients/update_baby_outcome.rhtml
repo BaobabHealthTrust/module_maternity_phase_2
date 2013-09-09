@@ -15,7 +15,7 @@
 				Scan baby barcode 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"'  pos='0' />
+<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Baby outcome 
 			</td>
 			<td>
-<select id='1.1.2'  helpText='Baby outcome ' condition='"<%= @patient.hiv_status.upcase%>" == "NEGATIVE" && id_string.match(__$("1.1.1").value)'  pos='1'  name='concept[Baby Outcome][]' >
+<select id='1.1.2'  helpText='Baby outcome ' pos='1'  condition='"<%= @patient.hiv_status.upcase%>" == "NEGATIVE" && id_string.match(__$("1.1.1").value)'  name='concept[Baby Outcome][]' >
 <option></option>
 <option value='Neonatal death'>Neonatal death</option>
  <option value='Macerated stillbirth'>Macerated stillbirth</option>
@@ -37,7 +37,7 @@
 				Baby outcome 
 			</td>
 			<td>
-<select id='1.2.1'  helpText='Baby outcome ' condition='"<%= @patient.hiv_status.upcase %>" == "POSITIVE" && id_string.match(__$("1.1.1").value)'  pos='2'  name='concept[Baby Outcome][]' >
+<select id='1.2.1'  helpText='Baby outcome ' pos='2'  condition='"<%= @patient.hiv_status.upcase %>" == "POSITIVE" && id_string.match(__$("1.1.1").value)'  name='concept[Baby Outcome][]' >
 <option></option>
 <option value='Neonatal death'>Neonatal death</option>
  <option value='Macerated stillbirth'>Macerated stillbirth</option>
@@ -52,7 +52,7 @@
 				Baby outcome 
 			</td>
 			<td>
-<select id='1.3.1'  helpText='Baby outcome ' condition='"<%= @patient.hiv_status.upcase %>" == "UNKNOWN" && id_string.match(__$("1.1.1").value)'  pos='3'  name='concept[Baby Outcome][]' >
+<select id='1.3.1'  helpText='Baby outcome ' pos='3'  condition='"<%= @patient.hiv_status.upcase %>" == "UNKNOWN" && id_string.match(__$("1.1.1").value)'  name='concept[Baby Outcome][]' >
 <option></option>
 <option value='Neonatal death'>Neonatal death</option>
  <option value='Macerated stillbirth'>Macerated stillbirth</option>
@@ -66,7 +66,7 @@
 				Are there are any comments on the outcome? 
 			</td>
 			<td>
-<select id='1.6.1' name='concept[Are there are any comments on the outcome? ]' helpText='Are there are any comments on the outcome? ' condition='id_string.match(__$("1.1.1").value)'  disabled='disabled'  pos='6' >
+<select id='1.6.1' name='concept[Are there are any comments on the outcome? ]' helpText='Are there are any comments on the outcome? ' pos='6'  condition='id_string.match(__$("1.1.1").value)'  disabled='disabled' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -78,7 +78,7 @@
 				Comments 
 			</td>
 			<td>
-<input type='text' id='1.6.1.2.1'  name='concept[Comments ]' helpText='Comments '  field_type='textarea'  condition='id_string.match(__$("1.1.1").value) && __$("1.6.1").value == "Yes"'  pos='7' />
+<input type='text' id='1.6.1.2.1'  name='concept[Comments ]' helpText='Comments '  pos='7'  condition='id_string.match(__$("1.1.1").value) && __$("1.6.1").value == "Yes"'  field_type='textarea' />
 			</td>
 		</tr>
 	</table>
