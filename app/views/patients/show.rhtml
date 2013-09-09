@@ -42,8 +42,13 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
 
           try{
             var text = bts[i].innerHTML.toLowerCase().trim().replace(/vaginal exam/, "vaginal examination").replace(/abdominal exam/, "abdominal examination").replace(/\s\s+/g, "").trim();
-            if (task_status_map[text] == "done"){
+            
+            if ((task_status_map[text] == "done") && !(text.match(/vitals/i))){
               bts[i].className = "menu_button done";
+              bts[i].onclick = function(){
+                showMessage("Feature already done. </br> Delete previous entry and try again!", false, false);
+              }
+              
             }
           }catch(eee){}
         }
@@ -342,7 +347,7 @@ end
 
       </select>
 
-      <%     
+      <%
       unless (@patient.age(session_date) < 10 || !@patient.gender.match(/f/i)) %>
         <select id="navigation_links">
           <% id = params[:patient_id].blank?? params[:id] : params[:patient_id] %>
