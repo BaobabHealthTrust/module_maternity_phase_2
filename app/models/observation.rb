@@ -115,8 +115,8 @@ class Observation < ActiveRecord::Base
   end
 
   def answer_string(tags=[])
-    name = ConceptName.find_by_concept_id(self.concept_id).name rescue ""    
-    coded_answer_name = self.answer_concept.concept_names.typed(tags).first.name rescue nil
+    name = self.concept.name.name rescue ""
+    coded_answer_name = self.answer_concept_name.name rescue nil
     coded_answer_name ||= self.answer_concept.concept_names.first.name rescue nil
     coded_name = "#{coded_answer_name} #{self.value_modifier}#{self.value_text} #{self.value_numeric}#{(name.upcase.match("TIME")?  self.value_datetime.strftime("%H:%M") : self.value_datetime.strftime("%d/%b/%Y")) rescue nil}#{self.value_boolean && (self.value_boolean == true ? 'Yes' : 'No' rescue nil)}#{' ['+order.to_s+']' if order_id && tags.include?('order')}"
     #the following code is a hack
@@ -124,7 +124,7 @@ class Observation < ActiveRecord::Base
     coded_name = "Negative" if coded_name == "-"
     return coded_name unless coded_name.blank?
     answer = Concept.find_by_concept_id(self.value_coded).shortname rescue nil
-	
+
     if answer.nil?
       answer = Concept.find_by_concept_id(self.value_coded).fullname rescue nil
     end
