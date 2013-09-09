@@ -15,7 +15,7 @@
 				Fundus (weeks) 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[FUNDUS]' helpText='Fundus (weeks) '  field_type='number'  value='<%= @patient.fundus_by_lmp - 1 rescue nil%>'  pos='0'  tt_pageStyleClass='NumbersOnly na'  max='<%= (@patient.fundus_by_lmp) rescue 42%>'  min='<%= (@patient.fundus_by_lmp - 2) rescue 42%>' />
+<input type='text' id='1.1.1'  name='concept[FUNDUS]' helpText='Fundus (weeks) '  max='<%= (@patient.fundus_by_lmp) rescue 42%>'  min='<%= (@patient.fundus_by_lmp - 2) rescue 42%>'  value='<%= @patient.fundus_by_lmp - 1 rescue nil%>'  tt_pageStyleClass='NumbersOnly na'  pos='0'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Lie 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[LIE]' helpText='Lie ' field_type='text'  pos='1'  tt_pageStyleClass='NoKeyboard'  condition='__$("1.1.1").value != "N/A"' >
+<select id='1.1.2' name='concept[LIE]' helpText='Lie ' condition='__$("1.1.1").value != "N/A"'  tt_pageStyleClass='NoKeyboard'  pos='1'  field_type='text' >
 <option></option>
 <option value='Longitudinal'>Longitudinal</option>
  <option value='Transverse'>Transverse</option>
@@ -37,7 +37,7 @@
 				Presentation 
 			</td>
 			<td>
-<select id='1.1.3' name='concept[Presentation]' helpText='Presentation ' field_type='text'  pos='2'  tt_pageStyleClass='NoKeyboard'  condition='__$("1.1.1").value != "N/A"' >
+<select id='1.1.3' name='concept[Presentation]' helpText='Presentation ' condition='__$("1.1.1").value != "N/A"'  tt_pageStyleClass='NoKeyboard'  pos='2'  field_type='text' >
 <option></option>
 <option value='Compound'>Compound</option>
  <option value='Cephalic'>Cephalic</option>
@@ -55,7 +55,7 @@
 				Breech Position Type 
 			</td>
 			<td>
-<select id='1.1.4' name='concept[BREECH]' helpText='Breech Position Type ' field_type='text'  pos='3'  tt_pageStyleClass='NoKeyboard'  condition='__$("1.1.3").value.trim().toUpperCase() == "BREECH"' >
+<select id='1.1.4' name='concept[BREECH]' helpText='Breech Position Type ' condition='__$("1.1.3").value.trim().toUpperCase() == "BREECH"'  tt_pageStyleClass='NoKeyboard'  pos='3'  field_type='text' >
 <option></option>
 <option value='Left Sacro Anterior'>Left Sacro Anterior</option>
  <option value='Left Sacro Transverse'>Left Sacro Transverse</option>
@@ -71,7 +71,7 @@
 				Cephalic Position Type 
 			</td>
 			<td>
-<select id='1.1.5' name='concept[CEPHALIC]' helpText='Cephalic Position Type ' field_type='text'  pos='4'  tt_pageStyleClass='NoKeyboard'  condition='__$("1.1.3").value.trim().toUpperCase() == "CEPHALIC"' >
+<select id='1.1.5' name='concept[CEPHALIC]' helpText='Cephalic Position Type ' condition='__$("1.1.3").value.trim().toUpperCase() == "CEPHALIC"'  tt_pageStyleClass='NoKeyboard'  pos='4'  field_type='text' >
 <option></option>
 <option value='Left Occipito Anterior'>Left Occipito Anterior</option>
  <option value='Left Occipito Transverse'>Left Occipito Transverse</option>
@@ -87,7 +87,7 @@
 				Face Position Type 
 			</td>
 			<td>
-<select id='1.1.6' name='concept[FACE]' helpText='Face Position Type ' field_type='text'  pos='5'  tt_pageStyleClass='NoKeyboard'  condition='__$("1.1.3").value.trim().toUpperCase() == "FACE"' >
+<select id='1.1.6' name='concept[FACE]' helpText='Face Position Type ' condition='__$("1.1.3").value.trim().toUpperCase() == "FACE"'  tt_pageStyleClass='NoKeyboard'  pos='5'  field_type='text' >
 <option></option>
 <option value='Left Mento Anterior'>Left Mento Anterior</option>
  <option value='Left Mento Transverse'>Left Mento Transverse</option>
@@ -103,7 +103,7 @@
 				Shoulder Position Type 
 			</td>
 			<td>
-<select id='1.1.7' name='concept[SHOULDER]' helpText='Shoulder Position Type ' field_type='text'  pos='6'  tt_pageStyleClass='NoKeyboard'  condition='__$("1.1.3").value.trim().toUpperCase() == "SHOULDER"' >
+<select id='1.1.7' name='concept[SHOULDER]' helpText='Shoulder Position Type ' condition='__$("1.1.3").value.trim().toUpperCase() == "SHOULDER"'  tt_pageStyleClass='NoKeyboard'  pos='6'  field_type='text' >
 <option></option>
 <option value='Left Acromion Dorsal Anterior'>Left Acromion Dorsal Anterior</option>
  <option value='Left Acromion Dorsal Posterior'>Left Acromion Dorsal Posterior</option>
@@ -117,7 +117,7 @@
 				Any Contractions? 
 			</td>
 			<td>
-<select id='1.1.8' name='concept[CONTRACTIONS]' helpText='Any Contractions? ' field_type='text'  pos='7'  condition='__$("1.1.1").value != "N/A"' >
+<select id='1.1.8' name='concept[CONTRACTIONS]' helpText='Any Contractions? ' condition='__$("1.1.1").value != "N/A"'  pos='7'  field_type='text' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -129,7 +129,7 @@
 				Contractions Intensity 
 			</td>
 			<td>
-<select id='1.1.9' name='concept[CONTRACTIONS INTENSITY]' helpText='Contractions Intensity ' field_type='text'  pos='8'  condition='__$("1.1.8").value.trim().toUpperCase() == "YES"' >
+<select id='1.1.9' name='concept[CONTRACTIONS INTENSITY]' helpText='Contractions Intensity ' condition='__$("1.1.8").value.trim().toUpperCase() == "YES"'  pos='8'  field_type='text' >
 <option></option>
 <option value='Mild'>Mild</option>
  <option value='Moderate'>Moderate</option>
@@ -143,7 +143,7 @@
 				Contractions Level 
 			</td>
 			<td>
-<input type='text' id='1.1.10'  name='concept[CONTRACTIONS LEVEL]' helpText='Contractions Level '  field_type='number'  pos='9'  tt_onLoad='changeIds()'  tt_pageStyleClass='NumbersOnly na'  absoluteMin='1'  absoluteMax='5'  condition='__$("1.1.9").value.trim().toUpperCase() != "NIGGLING" && __$("1.1.8").value.trim().toUpperCase() == "YES"' />
+<input type='text' id='1.1.10'  name='concept[CONTRACTIONS LEVEL]' helpText='Contractions Level '  condition='__$("1.1.9").value.trim().toUpperCase() != "NIGGLING" && __$("1.1.8").value.trim().toUpperCase() == "YES"'  tt_pageStyleClass='NumbersOnly na'  absoluteMin='1'  tt_onLoad='changeIds()'  absoluteMax='5'  field_type='number'  pos='9' />
 			</td>
 		</tr>
 		<tr>
@@ -151,7 +151,7 @@
 				Descent 
 			</td>
 			<td>
-<select id='1.1.11' name='concept[DESCENT]' helpText='Descent ' field_type='text'  pos='10'  tt_pageStyleClass='NoKeyboard' >
+<select id='1.1.11' name='concept[DESCENT]' helpText='Descent ' tt_pageStyleClass='NoKeyboard'  pos='10'  field_type='text' >
 <option></option>
 <option value='N/A'>N/A</option>
  <option value='5/5'>5/5</option>
@@ -168,7 +168,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.12'   helpText='Next URL '  type='hidden'  name='ret'  value='ante-natal'  pos='11' />
+<input  id='1.1.12'   helpText='Next URL '  value='ante-natal'  type='hidden'  name='ret'  pos='11' />
 			</td>
 		</tr>
 	</table>

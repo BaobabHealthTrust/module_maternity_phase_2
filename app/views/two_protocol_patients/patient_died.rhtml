@@ -15,7 +15,7 @@
 				Patient Died 
 			</td>
 			<td>
-<input  id='1.1.1'   helpText='Patient Died '  type='hidden'  name='concept[Outcome]'  value='Patient Died'  pos='0' />
+<input  id='1.1.1'   helpText='Patient Died '  value='Patient Died'  type='hidden'  name='concept[Outcome]'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -45,7 +45,7 @@
 				Select Reason For Death 
 			</td>
 			<td>
-<input type='text' id='1.1.4'   helpText='Select Reason For Death '  name='concept[Diagnosis]'  allowFreeText='true'  fieldtype='text'  ajaxURL='/encounters/diagnoses?search_string='  pos='3' />
+<input type='text' id='1.1.4'   helpText='Select Reason For Death '  allowFreeText='true'  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text'  name='concept[Diagnosis]'  pos='3' />
 			</td>
 		</tr>
 		<tr>
@@ -53,7 +53,7 @@
 				Select Next Reason For Death 
 			</td>
 			<td>
-<input type='text' id='1.1.5'   helpText='Select Next Reason For Death '  optional='true'  name='concept[Diagnosis]'  allowFreeText='true'  fieldtype='text'  ajaxURL='/encounters/diagnoses?search_string='  pos='4'  condition='__$("1.1.4").value != ""' />
+<input type='text' id='1.1.5'   helpText='Select Next Reason For Death '  condition='__$("1.1.4").value != ""'  allowFreeText='true'  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text'  name='concept[Diagnosis]'  optional='true'  pos='4' />
 			</td>
 		</tr>
 	</table>
