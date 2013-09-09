@@ -40,7 +40,7 @@ class PatientsController < ApplicationController
     @last_location = @patient.recent_location.location_id rescue nil
     @current_location_name = Location.find(session[:location_id]).name rescue nil
   
-    if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration/i) rescue false)
+    if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
       redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
     end
     
