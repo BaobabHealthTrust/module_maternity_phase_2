@@ -26,8 +26,8 @@ function check(id){
                 $("1.1.6").value = vall
             }
         }else{          
-    //$("touchscreeninput" + tstCurrentPage + 1).setAttribute("condition", false)
-    }
+            //$("touchscreeninput" + tstCurrentPage + 1).setAttribute("condition", false)
+        }
     }
     
     if (id == "1.1.6"){
@@ -39,8 +39,8 @@ function check(id){
                 $("1.1.7").value = vall
             }
         }else{
-    //$("touchscreeninput" + tstCurrentPage + 1).setAttribute("condition", false)
-    }
+            //$("touchscreeninput" + tstCurrentPage + 1).setAttribute("condition", false)
+        }
     }
     
     if (id == "1.1.7"){
@@ -53,7 +53,7 @@ function check(id){
             }
         }else{           
             
-    }
+        }
     }
   
 }
@@ -212,9 +212,9 @@ function calculateEDOD(){
     }
 
     $("expected_date_of_delivery").innerHTML = "Expected Date Of Delivery: <i style='font-size: 1.2em; float: right;'>" +
-    edod + "</i><br /><br />Gestation Weeks: " + (gestation < 37 &&
+        edod + "</i><br /><br />Gestation Weeks: " + (gestation < 37 &&
         gestation.trim().length > 0 ? "<i style='color: red'>(Premature)</i>" : (gestation > 41 && gestation.trim().length > 0 ? "<i style='color: red'>(Abnormal)</i>" : "")) +
-    "<i style='font-size: 1.2em; float: right; width: 100px;'>" + gestation + "</i>";
+        "<i style='font-size: 1.2em; float: right; width: 100px;'>" + gestation + "</i>";
 
     timedEvent = setTimeout('calculateEDOD()', 500);
 }
@@ -303,7 +303,7 @@ function showPeriodOnARVs(){
     }
 
     $('arv_period').innerHTML = "<i style='font-size: 1.2em;float: left;'> Period On ARVs    </i> "
-    +  "<i style='font-size: 1.2em;float: right;'>" + calculatePeriodOnARVs() + ((calculatePeriodOnARVs() == 1)? " Month</i>" : " Months</i>")
+        +  "<i style='font-size: 1.2em;float: right;'>" + calculatePeriodOnARVs() + ((calculatePeriodOnARVs() == 1)? " Month</i>" : " Months</i>")
 }
 
 function checkHIVTestUnkown(id){
@@ -406,10 +406,10 @@ function calculateBP(str){
     if(pos == 1){
         bp = ($("touchscreenInput" + tstCurrentPage).value.trim().length > 0 ? $("touchscreenInput" +
             tstCurrentPage).value.trim() : "?") +
-        "/" + ($(id2).value.trim().length > 0 ? $(id2).value.trim() : "?");
+            "/" + ($(id2).value.trim().length > 0 ? $(id2).value.trim() : "?");
     } else if(pos == 2){
         bp = ($(id1).value.trim().length > 0 ? $(id1).value.trim() : "?") +
-        "/" + ($("touchscreenInput" + tstCurrentPage).value.trim().length > 0 ? $("touchscreenInput" +
+            "/" + ($("touchscreenInput" + tstCurrentPage).value.trim().length > 0 ? $("touchscreenInput" +
             tstCurrentPage).value.trim() : "?");
     }
 
@@ -657,8 +657,12 @@ function artPull(national_id){
             httpRequest.status == 304)) {
 
             var result = JSON.parse(httpRequest.responseText);
-           
-            buildPmtctAlert(result);
+
+            try {
+                if (Object.keys(result).length > 0){
+                    buildPmtctAlert(result);
+                }
+            }catch(ex){}
 
             artData = result
            
@@ -731,7 +735,7 @@ function buildPmtctAlert(data){
     var header = document.createElement("th");
     header.setAttribute("class", "header");
     
-    header.innerHTML = "ARV INFORMATION FROM ART SYSTEM";
+    header.innerHTML = "ART DATA FROM ART EMR";
    
     mainHolder.appendChild(header)
     
