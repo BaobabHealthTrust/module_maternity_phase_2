@@ -3,7 +3,7 @@ C.1.1. Given a mother that has delivered, for each selected baby
 
 Q.1.1.1. Scan baby barcode (Optional) [pos: 0, optional: true, concept: Baby identifier, condition: false, tt_onLoad: __$("keyboard").style.display = "none"; checkBarcodeInput();]
 
-Q.1.1.2. Date of delivery [helpText: <%= params["prefix"] %> Date of Delivery, pos: 1, name: concept[Date of delivery], field_type: date, concept: Date of delivery]
+Q.1.1.2. Date of delivery [helpText: <%= params["prefix"] %> Date of Delivery, pos: 1, tt_onLoad: __$("Unknown").style.display = "none",  name: concept[Date of delivery], field_type: date, concept: Date of delivery]
 
 Q.1.1.3. Time of delivery [pos: 2, name: concept[Time of delivery], field_type: advancedTime, concept: Time of delivery, helpText: <%= params["prefix"] %> Time of Delivery]
 

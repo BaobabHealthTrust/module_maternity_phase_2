@@ -15,7 +15,7 @@
 				Referred Out 
 			</td>
 			<td>
-<input  id='1.1.1'   helpText='Referred Out '  value='Referred Out'  pos='0'  name='concept[Outcome]'  type='hidden' />
+<input  id='1.1.1'   helpText='Referred Out '  type='hidden'  name='concept[Outcome]'  value='Referred Out'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Facility Referred To? 
 			</td>
 			<td>
-<input type='text' id='1.1.2'   helpText='Facility Referred To? '  allowFreeText='true'  pos='1'  fieldtype='text'  name='concept[CLINIC PATIENT WAS REFERRRED]'  ajaxURL='/encounters/static_locations?search_string=' />
+<input type='text' id='1.1.2'   helpText='Facility Referred To? '  name='concept[CLINIC PATIENT WAS REFERRRED]'  allowFreeText='true'  fieldtype='text'  ajaxURL='/encounters/static_locations?search_string='  pos='1' />
 			</td>
 		</tr>
 		<tr>
@@ -31,7 +31,7 @@
 				Date Referred Out 
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[REFERRAL OUT DATE]' helpText='Date Referred Out '  pos='2'  field_type='date' />
+<input type='text' id='1.1.3'  name='concept[REFERRAL OUT DATE]' helpText='Date Referred Out '  field_type='date'  pos='2' />
 			</td>
 		</tr>
 		<tr>
@@ -39,7 +39,7 @@
 				Time Referred Out 
 			</td>
 			<td>
-<input type='text' id='1.1.4'  name='concept[REFERRAL OUT TIME]' helpText='Time Referred Out '  pos='3'  field_type='advancedTime'  tt_OnLoad='__$("Unknown").style.display = "none"' />
+<input type='text' id='1.1.4'  name='concept[REFERRAL OUT TIME]' helpText='Time Referred Out '  field_type='advancedTime'  tt_OnLoad='__$("Unknown").style.display = "none"'  pos='3' />
 			</td>
 		</tr>
 		<tr>
@@ -47,7 +47,7 @@
 				Select Referral Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.5'   helpText='Select Referral Diagnosis '  allowFreeText='true'  pos='4'  fieldtype='text'  name='concept[Referral Diagnoses][]'  ajaxURL='/encounters/diagnoses?search_string=' />
+<input type='text' id='1.1.5'   helpText='Select Referral Diagnosis '  name='concept[Referral Diagnoses][]'  allowFreeText='true'  fieldtype='text'  ajaxURL='/encounters/diagnoses?search_string='  pos='4' />
 			</td>
 		</tr>
 		<tr>
@@ -55,7 +55,7 @@
 				Select Next Referral Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.6'   helpText='Select Next Referral Diagnosis '  optional='true'  allowFreeText='true'  pos='5'  condition='__$("1.1.5").value != ""'  fieldtype='text'  name='concept[Referral Diagnoses][]'  ajaxURL='/encounters/diagnoses?search_string=' />
+<input type='text' id='1.1.6'   helpText='Select Next Referral Diagnosis '  optional='true'  name='concept[Referral Diagnoses][]'  allowFreeText='true'  fieldtype='text'  ajaxURL='/encounters/diagnoses?search_string='  pos='5'  condition='__$("1.1.5").value != ""' />
 			</td>
 		</tr>
 	</table>
