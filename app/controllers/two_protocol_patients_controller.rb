@@ -8,9 +8,11 @@ class TwoProtocolPatientsController < ApplicationController
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -25,9 +27,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -42,9 +46,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -59,9 +65,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -76,9 +84,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -93,9 +103,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -110,9 +122,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -127,9 +141,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -144,9 +160,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -161,9 +179,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -178,9 +198,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -195,9 +217,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -212,9 +236,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -229,9 +255,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -246,9 +274,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -263,9 +293,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -280,9 +312,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -297,9 +331,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -314,9 +350,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -331,9 +369,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -348,9 +388,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -365,9 +407,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -382,9 +426,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -399,9 +445,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -416,9 +464,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -433,9 +483,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -450,9 +502,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -467,9 +521,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -484,9 +540,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -501,9 +559,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -518,9 +578,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -535,9 +597,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -552,9 +616,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -569,9 +635,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -586,9 +654,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -603,9 +673,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -620,9 +692,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -637,9 +711,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -654,9 +730,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -671,9 +749,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -688,9 +768,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 
@@ -705,9 +787,11 @@ if params[:user_id].nil?
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
+	@session_date = session[:datetime] rescue nil 
+
 	redirect_to '/encounters/no_patient' and return if @patient.nil?
 
-if params[:user_id].nil?
+	if params[:user_id].nil?
 	redirect_to '/encounters/no_user' and return
 	end
 

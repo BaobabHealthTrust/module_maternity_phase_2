@@ -561,11 +561,19 @@ class Patient < ActiveRecord::Base
 
   def gravida
     concept_id = ConceptName.find_by_name("Gravida").concept_id
-    Observation.find_by_concept_id_and_person_id(concept_id, self.patient_id).answer_string.to_i rescue 0;
+    Observation.find_all_by_concept_id_and_person_id(concept_id, self.patient_id).collect{|ob| ob.answer_string.to_i rescue nil}.compact.max.to_i rescue 0;
   end
 
   def known_babies
     
+  end
+
+  def recent_admission_date(session_date = Date.today)
+    Observation.find(:last, :select => ["value_datetime"],
+      :order => ["obs_datetime"],
+      :conditions => ["person_id = ? AND concept_id = ? AND DATE(value_datetime) > ?", self.patient_id,
+        ConceptName.find_by_name("ADMISSION DATE").concept_id, 
+        (session_date.to_date - 30.days)]).value_datetime.strftime("%d/%b/%Y") rescue nil
   end
   
 end
