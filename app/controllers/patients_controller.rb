@@ -1025,10 +1025,14 @@ class PatientsController < ApplicationController
       @period_on_arvs_string = ""
     end
     lmp_date = (@encounters["DATE OF LAST MENSTRUAL PERIOD"].to_date + 7.days) rescue nil
-    current_date = (session[:datetime]? session[:datetime] : Date.today).to_date rescue nil
+    current_date = ((session[:datetime] && session[:datetime].present?)? session[:datetime] : Date.today).to_date rescue nil
 
-    @edd_weeks = ((current_date - lmp_date).days).to_i/(60 * 60 * 24 * 7) rescue "Unknown"
-
+    if ((lmp_date.to_date + 10.months >= Date.today) rescue false)
+      @edd_weeks = ((current_date - lmp_date).days).to_i/(60 * 60 * 24 * 7) rescue "Unknown"
+    else
+      @edd_weeks = "Unknown"
+    end
+    
     render :layout => false
   end
 
