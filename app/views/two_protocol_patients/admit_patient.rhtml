@@ -15,7 +15,7 @@
 				Gravida 
 			</td>
 			<td>
-<input type='text' id='1.1'  name='concept[Gravida ]' helpText='Gravida '  max='10'  field_type='number'  pos='0'  tt_pageStyleClass='NumbersOnly'  absoluteMin='1'  absoluteMax='20' />
+<input type='text' id='1.1'  name='concept[Gravida ]' helpText='Gravida '  max='10'  pos='0'  absoluteMin='1'  absoluteMax='20'  tt_pageStyleClass='NumbersOnly'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Parity 
 			</td>
 			<td>
-<input type='text' id='1.2'  name='concept[Parity ]' helpText='Parity '  condition='__$("1.1").value > 1'  max='10'  field_type='number'  pos='1'  tt_pageStyleClass='NumbersOnly'  absoluteMin='1'  absoluteMax='20' />
+<input type='text' id='1.2'  name='concept[Parity ]' helpText='Parity '  max='10'  pos='1'  condition='__$("1.1").value > 1'  absoluteMin='1'  absoluteMax='20'  tt_pageStyleClass='NumbersOnly'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -31,7 +31,7 @@
 				Gestation weeks 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Gestation weeks ]' helpText='Gestation weeks '  max='42'  field_type='number'  pos='2'  min='36'  tt_pageStyleClass='NumbersOnly'  absoluteMin='1'  absoluteMax='45' />
+<input type='text' id='1.3'  name='concept[Gestation weeks ]' helpText='Gestation weeks '  max='42'  pos='2'  absoluteMin='1'  absoluteMax='45'  min='36'  tt_pageStyleClass='NumbersOnly'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -65,7 +65,7 @@
 				On ART 
 			</td>
 			<td>
-<select id='1.5' name='concept[On ART ]' helpText='On ART ' condition='((__$("1.4.3.1").value.toLowerCase().trim() == "reactive")  || (__$("1.4").value.toLowerCase().trim() == "reactive"))'  pos='5' >
+<select id='1.5' name='concept[On ART ]' helpText='On ART ' pos='5'  condition='((__$("1.4.3.1").value.toLowerCase().trim() == "reactive")  || (__$("1.4").value.toLowerCase().trim() == "reactive"))' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>

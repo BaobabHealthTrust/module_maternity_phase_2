@@ -23,7 +23,7 @@
 				Referral Type 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[Referral Type ]' helpText='Referral Type ' condition='id_string.match(__$("1.1.1").value)'  pos='1'  disabled='disabled' >
+<select id='1.1.2' name='concept[Referral Type ]' helpText='Referral Type ' pos='1'  condition='id_string.match(__$("1.1.1").value)'  disabled='disabled' >
 <option></option>
 <option value='Internal Referral'>Internal Referral</option>
  <option value='Other Health Facility'>Other Health Facility</option>
@@ -35,7 +35,7 @@
 				Ward 
 			</td>
 			<td>
-<select id='1.1.3' name='concept[Ward ]'  condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value.toLowerCase().trim() == "internal referral"'  pos='2'  helpText='Ward referred to?' >
+<select id='1.1.3' name='concept[Ward ]'  pos='2'  condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value.toLowerCase().trim() == "internal referral"'  helpText='Ward referred to?' >
 <option></option>
 <option value='Check Up'>Check Up</option>
  <option value='Immunization'>Immunization</option>
@@ -50,7 +50,7 @@
 				Facility Referred To? 
 			</td>
 			<td>
-<input type='text' id='1.1.4'   helpText='Facility Referred To? '  allowFreeText='true'  fieldtype='text'  condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value.toLowerCase().trim() == "other health facility"'  pos='3'  name='concept[CLINIC PATIENT WAS REFERRRED]'  ajaxURL='/encounters/static_locations?search_string=' />
+<input type='text' id='1.1.4'   helpText='Facility Referred To? '  fieldtype='text'  pos='3'  condition='id_string.match(__$("1.1.1").value) && __$("1.1.2").value.toLowerCase().trim() == "other health facility"'  name='concept[CLINIC PATIENT WAS REFERRRED]'  allowFreeText='true'  ajaxURL='/encounters/static_locations?search_string=' />
 			</td>
 		</tr>
 		<tr>
@@ -58,7 +58,7 @@
 				Referral Out Date 
 			</td>
 			<td>
-<input type='text' id='1.1.5'  name='concept[Referral Out Date ]'   condition='id_string.match(__$("1.1.1").value)'  field_type='date'  pos='4'  helpText='Date referred' />
+<input type='text' id='1.1.5'  name='concept[Referral Out Date ]'   pos='4'  condition='id_string.match(__$("1.1.1").value)'  helpText='Date referred'  field_type='date' />
 			</td>
 		</tr>
 		<tr>
@@ -66,7 +66,7 @@
 				Referral Out Time 
 			</td>
 			<td>
-<input type='text' id='1.1.6'  name='concept[Referral Out Time ]'   condition='id_string.match(__$("1.1.1").value)'  field_type='advancedTime'  pos='5'  helpText='Time referred' />
+<input type='text' id='1.1.6'  name='concept[Referral Out Time ]'   pos='5'  condition='id_string.match(__$("1.1.1").value)'  helpText='Time referred'  field_type='advancedTime' />
 			</td>
 		</tr>
 		<tr>
@@ -74,7 +74,7 @@
 				Reason for referral 
 			</td>
 			<td>
-<input type='text' id='1.1.7'  name='concept[Reason for referral ]' helpText='Reason for referral '  condition='id_string.match(__$("1.1.1").value)'  pos='6'  ajaxURL='/encounters/diagnoses?search_string=' />
+<input type='text' id='1.1.7'  name='concept[Reason for referral ]' helpText='Reason for referral '  pos='6'  condition='id_string.match(__$("1.1.1").value)'  ajaxURL='/encounters/diagnoses?search_string=' />
 			</td>
 		</tr>
 	</table>

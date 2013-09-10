@@ -543,9 +543,19 @@ class EncountersController < ApplicationController
         encounter.void
       end
 
-    end
+      if ((encounter.type.name.match(/update\soutcome/i) &&
+              (encounter.observations.collect{|ob| ob.answer_string.upcase.strip}).include?("DELIVERED")) rescue false)
 
-    
+        if encounter.patient.recent_babies(session[:datetime] || Date.today)
+          #void recent delivered babies
+          (encounter.patient.recent_baby_relations(session[:datetime] || Date.today) || []).each{|rel|
+            rel.void
+          }       
+        end
+        
+      end
+
+    end    
 
     render :text => [].to_json
   end
@@ -620,16 +630,16 @@ class EncountersController < ApplicationController
     lbl = lbl.titleize.gsub("Post Natal", "Ante Natal") if ret.match(/ante/i)
     lbl = lbl.titleize.gsub("Ante Natal", "Post Natal") if ret.match(/post/i)
    
-    lbl.gsub(/examination/i , "exam")   
+    lbl.gsub(/examination/i , "exam")
     lbl
   end
 
   def static_locations
-		search_string = params[:search_string].upcase
-		filter_list = params[:filter_list].split(/, */) rescue []
-		locations =  Location.find(:all, :select =>'name', :conditions => ["name LIKE ?", '%' + search_string + '%'])
-		render :text => "<li>" + locations.map{|location| location.name }.join("</li><li>") + "</li>"
-	end
+    search_string = params[:search_string].upcase
+    filter_list = params[:filter_list].split(/, */) rescue []
+    locations =  Location.find(:all, :select =>'name', :conditions => ["name LIKE ?", '%' + search_string + '%'])
+    render :text => "<li>" + locations.map{|location| location.name }.join("</li><li>") + "</li>"
+  end
   
   def static_locations2
     search_string = (params[:search_string] || "").upcase

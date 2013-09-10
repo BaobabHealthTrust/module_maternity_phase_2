@@ -289,6 +289,11 @@ class Patient < ActiveRecord::Base
         (session_date - 1.months), self.patient_id, RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id]).length
   end
 
+  def recent_baby_relations(session_date = Date.today)
+    Relationship.find(:all, :conditions => ["voided = 0 AND date_created > ? AND person_a = ? AND relationship = ?",
+        (session_date - 1.months), self.patient_id, RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id])
+  end
+
   def recent_delivery_count(session_date = Date.today)
     ob = Observation.find(:first, :order => ["date_created DESC"], :conditions => ["person_id = ? AND voided = 0 AND concept_id = ? AND obs_datetime > ?",
         self.patient_id, ConceptName.find_by_name("NUMBER OF BABIES").concept_id, (session_date - 1.month)]).answer_string.strip.to_i
