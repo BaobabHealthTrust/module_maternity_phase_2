@@ -1058,7 +1058,8 @@ class PatientsController < ApplicationController
       :filename=>"#{params[:patient_id]}#{rand(10000)}.lbl",
       :disposition => "inline")
   end
-
+  
+=begin
   def delivery_print
 
     patient = Patient.find(params[:patient_id])
@@ -1075,6 +1076,7 @@ class PatientsController < ApplicationController
       :filename=>"#{params[:patient_id]}#{rand(10000)}.lbl",
       :disposition => "inline")
   end
+=end
   
   def art_summary
 
