@@ -16,8 +16,13 @@ class PatientsController < ApplicationController
     session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
  
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
+
+    if @patient.age(session_date) < 10
+      return_ip = "http://#{request.raw_host_with_port}/?user_id=#{session[:user_id] || params[:user_id]}&location_id=#{session[:location_id]}";
+      redirect_to "/encounters/not_female?return_ip=#{return_ip}" and return
+    end
+    
     @next_user_task = []
-    session_date = session[:datetime].to_date rescue Date.today
     
     if params[:autoflow].present? && params[:autoflow].to_s == "true"
       session[:autoflow] = "true"
@@ -72,7 +77,7 @@ class PatientsController < ApplicationController
       
     end if @patient.is_discharged_mother?
     
-    if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done" 
+    if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
 
       @next_user_task = ["Social History",
         "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}"
@@ -194,7 +199,7 @@ class PatientsController < ApplicationController
     #disable tasks for some wrong entries
     @first_level_order = [] if @patient.age(session_date) < 10 || !@patient.gender.match(/f/i)
 
-    @first_level_order.delete_if{|order| 
+    @first_level_order.delete_if{|order|
       ((@patient.recent_babies.to_i < 1 && order.match(/Baby Outcomes/i)) rescue false)
     }
 
@@ -333,7 +338,7 @@ class PatientsController < ApplicationController
      
     when "RECENT"
       available = Encounter.find(:all, :joins => [:observations], :conditions =>
-          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ? AND DATE(encounter_datetime) <= ?",           
+          ["patient_id IN (?) AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ? AND DATE(encounter_datetime) <= ?",
           patient_ids, EncounterType.find_by_name(encounter_name).id, ConceptName.find_by_name(concept).concept_id,
           (session_date - 6.month), (session_date + 6.month)]).collect{|enc| enc.observations.collect{|ob|
           ob.comments.strip.downcase rescue nil }
@@ -919,7 +924,7 @@ class PatientsController < ApplicationController
           @outpatient_diagnosis[o.concept.name.name.upcase] << o.answer_string
         end
       }
-    } 
+    }
   
     @enc_ids  = ["ABDOMINAL EXAMINATION", "OBSERVATIONS", "VITALS"].collect{|enc|
       EncounterType.find_by_name(enc).encounter_type_id rescue nil}
@@ -987,7 +992,7 @@ class PatientsController < ApplicationController
           @babyencounters[o.concept.name.name.upcase] = o.answer_string
         end
       }
-    } 
+    }
 
     # raise @referral.to_yaml
 

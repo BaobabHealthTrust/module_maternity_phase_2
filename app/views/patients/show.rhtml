@@ -73,6 +73,16 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
 
   }
 
+  function changeContinueColor(){
+    try{
+      var buttons = document.getElementsByClassName("blue");
+      for (var i = 0; i < buttons.length; i ++){
+        if (buttons[i].innerHTML.match(/continue/i)){
+          buttons[i].setAttribute("class", "green");
+        }
+      }}catch(ex){}
+  }
+
   function showNexttask(){
     if(__$("patient-dashboard-application") == null){
       setTimeout("showNexttask()", 500);
@@ -93,6 +103,7 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
     }
 
     __$("nextTask").innerHTML = "<b>Next Task:</b><br /><i><%= next_task.titleize rescue ""%></i>";
+    changeContinueColor();
   }
 
   setTimeout("setFlags()", 100);
