@@ -88,6 +88,7 @@
         <% i = 0
         # raise @encounters.to_yaml
         @encounters["DELIVERY MODE"].each{|e|
+          e = e.strip
           i = i + 1
 
           indice = ""

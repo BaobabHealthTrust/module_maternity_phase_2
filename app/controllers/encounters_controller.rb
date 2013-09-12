@@ -3,7 +3,7 @@ class EncountersController < ApplicationController
  	unloadable  
 
   def create
-    
+ 
     d = (session[:datetime].to_date rescue Date.today)   
     t = Time.now
     session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
@@ -16,7 +16,8 @@ class EncountersController < ApplicationController
     end
     
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
-
+    params[:concept] = extract_concepts(params[:observations]) if params[:concept].blank?
+   
     if params[:autoflow].present? && params[:autoflow].to_s == "true"
       session[:autoflow] = "true"
     elsif params[:autoflow].present? && params[:autoflow].to_s == "false"
@@ -152,13 +153,18 @@ class EncountersController < ApplicationController
       type = EncounterType.find_by_name(params[:encounter_type]).id rescue nil
 
       if !type.blank?
-        @encounter = Encounter.create(
-          :patient_id => patient.id,
-          :provider_id => (params[:user_id]),
-          :encounter_type => type,
-          :encounter_datetime => session_date,
-          :location_id => (session[:location_id] || params[:location_id])
-        )
+    
+        if ((params[:encounter_type].downcase.strip == "update outcome" && patient.recent_delivery_outcome.present?) rescue false)
+          @encounter = Encounter.find(patient.recent_delivery_outcome(session_date))
+        else
+          @encounter = Encounter.create(
+            :patient_id => patient.id,
+            :provider_id => (params[:user_id] || session[:user_id]),
+            :encounter_type => type,
+            :encounter_datetime => session_date,
+            :location_id => (session[:location_id] || params[:location_id])
+          )
+        end
 
         @current = nil
         
@@ -510,6 +516,22 @@ class EncountersController < ApplicationController
     (patient.recent_babies < patient.recent_delivery_count) rescue false
   end
 
+  def extract_concepts(observations)
+
+    concepts = {}
+    observ = observations.map{|ob|
+      [ob[:concept_name], (ob[:value_text].present?  ? ob[:value_text] :
+            (ob[:value_numeric].present? ? ob[:value_numeric] : ob[:value_datetime] )).to_s]
+    }.delete_if{|obs| obs[1].blank?}
+
+    observ.each{|key, val|
+      concepts[key] << val if concepts.has_key?(key)
+      concepts[key] = [val] if !concepts.has_key?(key)     
+    }
+   
+    concepts
+  end
+  
   def label
     send_label(Encounter.find(params[:encounter_id]).label)
   end

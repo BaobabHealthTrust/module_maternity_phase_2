@@ -183,9 +183,15 @@ class PatientsController < ApplicationController
       if key.match(/Natal Exams/i)
         ret = key.downcase.gsub(/\s/, "-").gsub(/-exams/, "")
         @links[key]["Admissions Note"] = "/patients/admissions_note?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=#{ret}"
+
+        if @links[key]["Ante Natal Patient History"].present?
+          @links[key]["Ante Natal Patient History"] = @links[key]["Ante Natal Patient History"].gsub(/two\_protocol\_|ante\_natal\_/, "") + "&ret=ante-natal"
+        elsif @links[key]["Post Natal Patient History"].present?
+          @links[key]["Post Natal Patient History"] = @links[key]["Post Natal Patient History"].gsub(/two\_protocol\_|post\_natal\_/, "") + "&ret=post-natal"
+        end
       end
     }
-    
+ 
     @links = @links.delete_if{|key, val| key.match(/hiv/i)}
 
     @groupings = {}
@@ -271,6 +277,11 @@ class PatientsController < ApplicationController
         @next_user_task = [display_task_name.gsub(/examinations|examination/i, "Exam"),
           "/two_protocol_patients/#{encounter.downcase.gsub(/\s/, "_")}?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=ante-natal"]
 
+        if ((@next_user_task && @next_user_task[0].match(/patient\_history/)) rescue false)
+
+          @next_user_task[1] = @next_user_task[1].gsub(/two\_protocol\_|ante\_natal\_|post\_natal\_/, "")
+
+        end
         redirect_to @next_user_task[1]  and return  if (session[:autoflow].to_s == "true" rescue false)
           
       end
@@ -297,14 +308,25 @@ class PatientsController < ApplicationController
           display_task_name = encounter.match(/natal/i)? encounter : ("post natal " + encounter).humanize
           @next_user_task = [display_task_name.gsub(/examinations|examination/i, "Exam"),
             "/two_protocol_patients/#{encounter.downcase.gsub(/\s/, "_")}?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=post-natal"]
+        
+          if ((@next_user_task && @next_user_task[0].match(/patient\_history/)) rescue false)
 
+            @next_user_task[1] = @next_user_task[1].gsub(/two\_protocol\_|ante\_natal\_|post\_natal\_/, "")
+
+          end
           redirect_to @next_user_task[1]  and return  if (session[:autoflow].to_s == "true" rescue false)
 
         end
      
       end
     end
-    
+
+    if ((@next_user_task && @next_user_task[0].match(/patient\_history/)) rescue false)
+
+      @next_user_task[1] = @next_user_task[1].gsub(/two\_protocol\_|ante\_natal\_|post\_natal\_/, "") 
+
+    end
+
     @assign_serial_numbers = get_global_property_value("assign_serial_numbers").to_s == "true" rescue false
     
     @pending_birth_reports = BirthReport.pending(@patient)
@@ -421,6 +443,38 @@ class PatientsController < ApplicationController
 
     @programs.delete_if{|prg| prg[2].blank? || (prg[2].first.blank? rescue false)}
     render :layout => false
+  end
+
+  def patient_history
+
+    @patient = Patient.find(params[:patient_id])
+
+    @encounters = @patient.encounters.collect{|e| e.name}
+    
+  end
+
+  def obstetric_counts
+    
+    @patient = Patient.find(params[:patient_id])
+    @anc_patient = ANCService::ANC.new(@patient) rescue nil
+
+    @ret = params[:ret]
+    @gravida = params[:observations].collect{|obs|  obs[:value_numeric] if obs[:concept_name].match(/gravida/i)}.compact[0]   rescue 1
+    @parity = params[:observations].collect{|obs| obs[:value_numeric] if  obs[:concept_name].match(/parity/i)}.compact[0] rescue 0
+    @abortions = params[:observations].collect{|obs| obs[:value_numeric] if  obs[:concept_name].match(/number of abortions/i)}.compact[0] rescue 0
+
+    @birth_year = @anc_patient.birth_year
+
+    @min_birth_year = @birth_year + 13
+    @max_birth_year = ((@birth_year + 50) > ((session[:datetime] || Date.today).year) ?
+        ((session[:datetime] || Date.today).year) : (@birth_year + 50))
+
+    @abs_max_birth_year = ((@birth_year + 55) > ((session[:datetime] || Date.today).year) ?
+        ((session[:datetime] || Date.today).year) : (@birth_year + 55))
+
+    @delivery_modes = ["", "Spontaneous vaginal delivery", "Caesarean Section",
+      "Vacuum extraction delivery", "Breech delivery"]
+
   end
 
   def visit_history
@@ -948,7 +1002,7 @@ class PatientsController < ApplicationController
     }
 
     @encounters.keys.each{|key|
-      @encounters[key] = @encounters[key].strip
+      @encounters[key] = @encounters[key].strip rescue @encounters[key]
     }
 
    

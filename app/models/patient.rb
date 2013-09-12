@@ -580,5 +580,12 @@ class Patient < ActiveRecord::Base
         ConceptName.find_by_name("ADMISSION DATE").concept_id, 
         (session_date.to_date - 30.days)]).value_datetime.strftime("%d/%b/%Y") rescue nil
   end
+
+  def recent_delivery_outcome(session_date = Date.today)
+    Encounter.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
+      :conditions => ["encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND obs.value_coded = ? AND DATE(encounter_datetime) >= ?",
+        EncounterType.find_by_name("UPDATE OUTCOME"), ConceptName.find_by_name("OUTCOME").concept_id,
+        ConceptName.find_by_name("DELIVERED").concept_id, (session_date.to_date - 2.days)]).encounter_id rescue nil
+  end
   
 end
