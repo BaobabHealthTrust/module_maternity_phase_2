@@ -525,8 +525,9 @@ class Patient < ActiveRecord::Base
 
   def recent_location(session_date = Date.today)
     location_id = ProgramEncounterDetail.find(:first, :order => ["encounter_datetime DESC"], :joins => [:encounter],
-      :conditions => ["program_id = ? AND DATE(encounter_datetime) > ? AND patient_id = ?",
-        Program.find_by_name("MATERNITY PROGRAM").id, (session_date - 7.day), self.patient_id]).encounter.location_id rescue nil
+      :conditions => ["program_id = ? AND DATE(encounter_datetime) > ? AND patient_id = ? AND encounter.location_id != ?",
+        Program.find_by_name("MATERNITY PROGRAM").id, (session_date - 7.day), self.patient_id,
+        Location.find("REGISTRATION").location_id]).encounter.location_id rescue nil
     Location.find(location_id) rescue nil
   end
 

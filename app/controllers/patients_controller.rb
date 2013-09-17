@@ -1142,7 +1142,7 @@ class PatientsController < ApplicationController
     art_link = get_global_property_value("art.link") rescue nil
 
     data = JSON.parse(RestClient.get("#{art_link}/encounters/art_summary?national_id=#{params[:national_id]}")) rescue {}
-    data["start_date"] = data["start_date"].to_date.strftime("%d/%b/%Y") rescue ""
+    data["start_date"] = data["start_date"].to_date.strftime("%d/%b/%Y") rescue "" if !data["start_date"].blank?
     
     data.keys.each {|key|
       data[key.titleize.upcase] = data[key]

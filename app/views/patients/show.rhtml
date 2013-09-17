@@ -43,12 +43,14 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
           try{
             var text = bts[i].innerHTML.toLowerCase().trim().replace(/vaginal exam/, "vaginal examination").replace(/abdominal exam/, "abdominal examination").replace(/\s\s+/g, "").trim();
             
-            if ((task_status_map[text] == "done") && !(text.match(/vitals/i))){
+            if (task_status_map[text] == "done"){
               bts[i].className = "menu_button done";
-              bts[i].onclick = function(){
-                showMessage("Feature already done. </br> Delete previous entry and try again!", false, false);
+
+              if  (!(text.match(/vitals|admission|vaginal\sexam/i))){
+                bts[i].onclick = function(){
+                  showMessage("Feature already done. </br> Delete previous entry and try again!", false, false);
+                }
               }
-              
             }
           }catch(eee){}
         }

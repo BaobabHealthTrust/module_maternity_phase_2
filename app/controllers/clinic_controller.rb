@@ -12,10 +12,17 @@ class ClinicController < ApplicationController
       
       user_login and return
     end
-    
-    @location = Location.find(session[:location_id]) rescue nil
 
-    session[:location_id] = @location.id if !@location.nil?
+    if params[:ext_patient_id]
+      
+      patient = Patient.find(params[:ext_patient_id])
+      create_registration(patient) rescue nil
+      
+    end
+    
+    @location = Location.find(params[:location_id] || session[:location_id]) rescue nil
+
+    session[:location_id] = @location.id if !@location.blank? 
     
     redirect_to "/patients/show/#{params[:ext_patient_id]}?from_search=true&user_id=#{params[:user_id]}&location_id=#{params[:location_id]}" and return if !params[:ext_patient_id].blank?
 
@@ -39,6 +46,53 @@ class ClinicController < ApplicationController
 
     @selected = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
         }"]["demographic.fields"].split(",") rescue []
+
+  end
+
+  def create_registration(patient)
+
+    if (!patient.encounters.collect{|enc| enc.name.upcase.strip rescue nil}.include?("REGISTRATION") rescue false)
+
+      @encounter = Encounter.create(:patient_id => patient.patient_id,
+        :encounter_type => EncounterType.find_by_name("REGISTRATION").id,
+        :encounter_datetime => (session[:datetime].to_time rescue Time.now),
+        :provider_id => (session[:user_id] || params[:user_id]),
+        :location_id => session[:location_id],
+        :creator => (session[:user_id] || params[:user_id])
+      )
+
+      Observation.create(:person_id => patient.patient_id,
+        :concept_id => ConceptName.find_by_name("Workstation location").concept_id,
+        :value_text => Location.find(session[:location_id]).name,
+        :location_id => session[:location_id],
+        :encounter_id => @encounter.id,
+        :creator => (session[:user_id] || params[:user_id]),
+        :obs_datetime => (session[:datetime] || Time.now)
+      ) 
+
+      @program = Program.find_by_concept_id(ConceptName.find_by_name("MATERNITY PROGRAM").concept_id) rescue nil
+
+      @program_encounter = ProgramEncounter.find_by_program_id(@program.id,
+        :conditions => ["patient_id = ? AND DATE(date_time) = ?",
+          patient.id,  (session[:datetime].to_time rescue Time.now).to_date.strftime("%Y-%m-%d")])
+
+      if @program_encounter.blank?
+
+        @program_encounter = ProgramEncounter.create(
+          :patient_id => patient.id,
+          :date_time =>  (session[:datetime].to_time rescue Time.now),
+          :program_id => @program.id
+        )
+
+      end
+
+      ProgramEncounterDetail.create(
+        :encounter_id => @encounter.id.to_i,
+        :program_encounter_id => @program_encounter.id,
+        :program_id => @program.id
+      )
+
+    end
 
   end
 
@@ -133,26 +187,28 @@ class ClinicController < ApplicationController
   end
 
   def overview
+    
     @program_encounter_details =  ProgramEncounterDetail.find(:all, :select => ["encounter_id"], :joins => [:program_encounter],
-      :conditions => ["program_encounter.program_id = ?",
-        Program.find_by_name("MATERNITY PROGRAM").program_id]).collect{|ed| ed.encounter_id } rescue []
+      :conditions => ["program_encounter.program_id IN (?)",
+        [Program.find_by_name("MATERNITY PROGRAM").program_id, Program.find_by_name("UNDER 5 PROGRAM").program_id]]).collect{|ed| ed.encounter_id } rescue []
 
     User.current = User.find(session[:user]["user_id"])
-
+    
+=begin
     if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
       map = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
         }"]["label.encounter.map"].split(",") rescue []
     end
 
-    @types = []
-
-    map.each{ |tie|
+      map.each{ |tie|
       encounter = tie.split("|")[1] rescue nil
-      @types << encounter if !encounter.blank?
+      @types << encounter if !encounter.blank? && !@types.include?(encounter)
     }
 
     @types.delete_if{|del| del.match(/Refer|Diagnosis|social|dispensing|observations|examination|vitals|admit|baby/i) || del.downcase == "outcome"}
+=end
     
+    @types = ["REGISTRATION", "BABY DELIVERY"]
     @me = Encounter.statistics(@types,  @program_encounter_details, :conditions =>
         ['DATE(encounter_datetime) = DATE(NOW()) AND encounter.creator = ? AND encounter.location_id = ?',
         User.current.user_id, session[:location_id]])
@@ -199,9 +255,9 @@ class ClinicController < ApplicationController
   end
 
   def project_users
-    if !session[:user].nil?
+    if !session[:user].blank?
       @user = session[:user]
-    else 
+    else
       @user = JSON.parse(RestClient.get("#{@link}/verify/#{(session[:user_id])}")) rescue {}
     end
     render :layout => false
@@ -406,10 +462,10 @@ class ClinicController < ApplicationController
     render :text => activities.to_json
   end
 
-  def project_members    
+  def project_members
   end
 
-  def my_activities    
+  def my_activities
   end
 
   def check_user_activities
@@ -600,11 +656,11 @@ class ClinicController < ApplicationController
 
     demographics = demographics - [params[:target]]
 
-    initial["#{Rails.env}"]["demographic.fields"] = demographics.join(",")
+    initial["#{Rails.env}"]["demographic.fields"] = demographics.join(",") rescue []
 
     File.open("#{Rails.root}/config/application.yml", "w+") { |f| f.write(initial.to_yaml) }
 
-    fields = ["Middle Name", "Maiden Name", "Home of Origin", "Current District",
+    fields = ["Middle Name", "Maiden Name",  "Current District",
       "Current T/A", "Current Village", "Landmark or Plot", "Cell Phone Number",
       "Office Phone Number", "Home Phone Number", "Occupation", "Nationality"]
 
@@ -689,7 +745,7 @@ class ClinicController < ApplicationController
   def sync_user
     if !session[:user].nil?
       @user = session[:user]
-    else 
+    else
       @user = JSON.parse(RestClient.get("#{@link}/verify/#{(session[:user_id])}")) rescue {}
     end
   end

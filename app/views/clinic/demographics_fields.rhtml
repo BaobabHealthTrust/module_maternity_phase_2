@@ -496,7 +496,11 @@
     '/clinic/add_field?user_id=<%= @user["user_id"] rescue params[:user_id] %>&target=' + el.getAttribute("target"));
     if (myHash[el.getAttribute("target")] && myHash[el.getAttribute("target")] != "undefined"){
       var el2 = __$(myHash[el.getAttribute("target")])
-      loopResults(myHash, el2);
+     
+      setTimeout(function(){
+        loopResults(myHash, el2)
+      }, 500);
+      
     }
   }
 

@@ -16,7 +16,7 @@ class EncountersController < ApplicationController
     end
     
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
-    params[:concept] = extract_concepts(params[:observations]) if params[:concept].blank?
+    params[:concept] = extract_concepts(params[:observations]) rescue {} if params[:concept].blank?
    
     if params[:autoflow].present? && params[:autoflow].to_s == "true"
       session[:autoflow] = "true"
@@ -634,7 +634,7 @@ class EncountersController < ApplicationController
       lbl = label if (concepts.include?(concept) rescue false)
     }
 
-    lbl.gsub(/examination/i , "exam").gsub(/ante natal|post natal/i, "")
+    #lbl.gsub(/examination/i , "exam").gsub(/ante natal|post natal/i, "")
   end
   
   def labell(encounter_id, hash)
