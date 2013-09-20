@@ -1,0 +1,55 @@
+<%= javascript_include_tag "barcode" %>
+<script>
+
+  var tt_cancel_destination = "<%= @return_url %>"
+  var tt_cancel_show = "<%= @return_url %>"
+
+  barcodeId = 'touchscreenInput0';
+  barcodeFocusOnce = true;
+  // barcodeScanAction = gotoNextPage;
+
+  setTimeout("setupBarcode()", 300);
+
+  function setupBarcode(){
+    barcodeScanAction = gotoNextPage;
+    loadBarcodePage();
+  }
+
+  function inform() {
+    $('infoBar'+tstCurrentPage).innerHTML = "";
+  }
+
+  function checkBarcodeInput(){
+    var input = __$("touchscreenInput" + tstCurrentPage).value;
+
+    if (input.match(/\$/) && input.length > 2){
+      __$("touchscreenInput" + tstCurrentPage).value = input.replace(/\$/, "")
+      gotoNextPage();
+    }else{
+      setTimeout(function(){
+        checkBarcodeInput();
+      }, 10);
+    }
+  }
+
+</script>
+
+<style>
+
+  #tt_page_workstation_location .options {
+    display: none;
+  }
+</style>
+
+<form id='barcode' action="/encounters/give_drugs" method='post'>
+  <label for="barcode">Scan Baby Barcode</label>
+  <%= text_field_tag(:identifier, nil,
+    :helpText => "Scan baby barcode",
+    :tt_onLoad => "__$('keyboard').style.display='none'; showCategory('Give drugs'); checkBarcodeInput();"
+  ) %>
+  <%= hidden_field_tag "user_id", "#{params[:user_id] || session[:user_id]}" %>
+  <%= hidden_field_tag "return_url", "#{@return_url}" %>
+  <%= hidden_field_tag "patient_id", "#{@patient.id}" %>
+  <br />
+  <%= submit_tag :value => "Submit" %>
+</form>

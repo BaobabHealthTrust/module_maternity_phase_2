@@ -1,0 +1,4 @@
+P.1. Dispensing [program: MATERNITY PROGRAM, label: Give Drugs, includejs: dispense;generics, includecss: dispense;drug-style, pos: 66, parent: 2]
+C.1.1. Given a diagnised patient, Give Drugs
+
+Q.1.1.1. Treatment [optional: true, tt_onLoad: generateGenerics(<%= @patient.id %>); showCategory("Give Drugs"); __$("category").style.fontSize = "30px";  tt_onUnLoad: removeGenerics(), tt_pageStyleClass: NoControls, pos: 0]

@@ -842,11 +842,32 @@ class EncountersController < ApplicationController
     generics.uniq
   end
 
+  def baby_drugs_route
+
+    @return_url = request.referrer
+    @patient = Patient.find(params[:patient_id])
+   
+  end
+  
   def give_drugs
 
-   
-    @return_url = request.referrer
-    @patient = Patient.find(params[:patient_id]) rescue nil
+    @return_url = params[:return_url] || request.referrer
+    
+    @baby = PatientIdentifier.find_all_by_identifier_and_identifier_type(params[:identifier],
+      PatientIdentifierType.find_by_name("National id").patient_identifier_type_id).first.patient rescue nil
+    
+    if params[:identifier].present? && (@baby.blank? ||
+        !((Patient.find(params[:patient_id]).babies_national_ids.split("|").include?(params[:identifier])) rescue false))
+      redirect_to "/encounters/missing_baby?national_id=#{params[:identifier]}&ward=" and return
+    end
+    
+    if @baby
+      @patient = @baby
+      params[:patient_id] = @baby.patient_id
+      @program = "UNDER 5 PROGRAM"
+    else
+      @patient = Patient.find(params[:patient_id])
+    end
    
     @generics = generic
   
@@ -919,7 +940,7 @@ class EncountersController < ApplicationController
     session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
     
     User.current = User.find(session[:user]["user_id"])
-    redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}" and return if params[:prescription].blank?
+    redirect_to params[:return_url] || "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}" and return if params[:prescription].blank?
     
     if params[:prescription]
 
@@ -1090,7 +1111,7 @@ class EncountersController < ApplicationController
     #  redirect_to "/patients/print_exam_label/?patient_id=#{@patient.id}" and return if (@encounter.type.name.upcase rescue "") ==
     #   "TREATMENT"
    
-    redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}"
+    redirect_to params[:return_url] || "/patients/show/#{params[:patient_id]}?user_id=#{User.current.user_id}"
 
   end
 

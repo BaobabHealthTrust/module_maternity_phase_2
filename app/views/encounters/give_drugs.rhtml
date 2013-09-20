@@ -3,7 +3,7 @@
 
 <script type="text/javascript" language="javascript">
   <!--
-  tt_cancel_destination = "/patients/show?patient_id=<%= @patient.id %>&user_id=<%= session[:user]["user_id"] %>"
+  tt_cancel_destination = "<%= @return_url %>"
   var generics = <%= @generics.to_json rescue {} %>;
   var frequencies = <%= @frequencies.to_json rescue {} %>;
   var diagnosisList = <%= @diagnosis.to_json rescue {} %>;
@@ -42,11 +42,12 @@
 </div>
 
 <form id='prescription' action="/encounters/create_prescription" method='post'>
-  <%= hidden_field_tag "program", "MATERNITY PROGRAM" %>
+  <%= hidden_field_tag "program", (@program || "MATERNITY PROGRAM") %>
   <%= hidden_field_tag "encounter[encounter_type_name]", "TREATMENT" %>
   <%= hidden_field_tag "encounter[patient_id]", @patient.id %>
   <%= hidden_field_tag "encounter[encounter_datetime]", session[:datetime] ||=  DateTime.now() %>
   <%= hidden_field_tag "encounter[provider_id]", params["user_id"]%>
+  <%= hidden_field_tag "return_url", @return_url%>
 
   <input
     type='text' name='drugs' tt_onLoad='generateGenerics(<%= @patient.id %>)'

@@ -168,6 +168,8 @@ class PatientsController < ApplicationController
     }
      
     @links["Give Drugs"] = "/encounters/give_drugs?patient_id=#{@patient.id}&user_id=#{@user.id}"
+    @links["Baby Outcomes"]["Give Drugs"] = "/encounters/baby_drugs_route?patient_id=#{@patient.id}&user_id=#{@user.id}" rescue nil
+   
     @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
     
     @project = get_global_property_value("project.name") rescue "Unknown"
@@ -197,9 +199,17 @@ class PatientsController < ApplicationController
     @groupings = {}
     @groupings["Ante Natal Exams"] = ["ante_natal_admission_details", "ante_natal_vitals", "ante_natal_patient_history", "ante natal pmtct", "physical_exam", "ante_natal_vaginal_examination", "general_body_exam", "admission_diagnosis", "ante natal notes", "admissions_note"]
     @groupings["Post Natal Exams"] = ["post_natal_admission_details", "abdominal examination", "post natal pmtct", "post_natal_patient_history", "post_natal_vitals", "post_natal_vaginal_examination", "post natal notes", "admissions_note"]
-    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "kangaroo_review_visit", "Notes"]
     @groupings["Update Outcome"] = ["delivered", "discharged", "referred_out", "absconded", "patient_died"]
-    @first_level_order = ["Ante Natal Exams", "Post Natal Exams", "Update Outcome", "Baby Outcomes", "Social History", "Give Drugs"]
+    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "kangaroo_review_visit", "give_drugs", "Notes"]
+    @groupings["Baby Outcomes"].delete_if{|outcome| 
+      @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?(outcome.gsub(/\_/, ""))
+    }
+    @first_level_order = ["Ante Natal Exams", "Post Natal Exams", "Update Outcome"]
+    
+    @first_level_order << "Baby Outcomes" if !((@patient.recent_babies.to_i < 1) rescue false)  
+    @first_level_order << "Social History" if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("SOCIAL HISTORY")
+    @first_level_order << "Give Drugs" if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("GIVE DRUGS")
+    
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
 
     #disable tasks for some wrong entries

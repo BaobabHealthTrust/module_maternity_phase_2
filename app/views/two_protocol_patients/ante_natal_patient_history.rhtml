@@ -17,7 +17,19 @@
 				Gravida 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[GRAVIDA]' helpText='Gravida '  field_type='number'  tt_onUnLoad='count = 1'  absoluteMin='1'  pos='0'  Max='15'  tt_pageStyleClass='NumbersOnly' />
+<input type='text' id='1.1.1'  name='concept[GRAVIDA]' helpText='Gravida '  field_type='number'  absoluteMin='1'  tt_onUnLoad='count = 1'  pos='0'  Max='15'  tt_pageStyleClass='NumbersOnly' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Multiple gestation? 
+			</td>
+			<td>
+<select id='1.1.2' name='concept[MULTIPLE GESTATION]' helpText='Multiple gestation? ' field_type='text'  condition='parseInt(__$("1.1.1").value.trim()) > 1'  pos='1' >
+<option></option>
+<option value='Yes'>Yes</option>
+ <option value='No'>No</option>
+ </select>
 			</td>
 		</tr>
 		<tr>
@@ -25,7 +37,7 @@
 				Number of delivered pregnancies 
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[PARITY]' helpText='Number of delivered pregnancies '  field_type='number'  absoluteMin='0'  Max='15'  pos='2'  tt_OnUnLoad='checkAbortionsLimits("ante-natal")'  tt_pageStyleClass='NumbersOnly'  condition='__$("1.1.1").value > 1'  tt_OnLoad='checkDeliveriesLimits("ante-natal")' />
+<input type='text' id='1.1.3'  name='concept[PARITY]' helpText='Number of delivered pregnancies '  tt_OnLoad='checkDeliveriesLimits("ante-natal")'  field_type='number'  tt_OnUnLoad='checkAbortionsLimits("ante-natal")'  absoluteMin='0'  condition='__$("1.1.1").value > 1'  Max='15'  pos='2'  tt_pageStyleClass='NumbersOnly' />
 			</td>
 		</tr>
 		<tr>
@@ -33,15 +45,71 @@
 				Number of abortions 
 			</td>
 			<td>
-<input type='text' id='1.1.4'  name='concept[NUMBER OF ABORTIONS]' helpText='Number of abortions '  field_type='number'  absoluteMin='0'  Max='5;  num_babies = __$("1.1.3").value;'  pos='3'  tt_pageStyleClass='NumbersOnly'  condition='__$("1.1.1").value > 1' />
+<input type='text' id='1.1.4'  name='concept[NUMBER OF ABORTIONS]' helpText='Number of abortions '  field_type='number'  absoluteMin='0'  condition='__$("1.1.1").value > 1'  Max='5;  num_babies = __$("1.1.3").value;'  pos='3'  tt_pageStyleClass='NumbersOnly' />
 			</td>
 		</tr>
 		<tr>
 			<td>
-				Next URL 
+				 Number Of Caesarean Sections 
 			</td>
 			<td>
-<input  id='1.1.5'   helpText='Next URL '  name='next_url'  pos='4'  value='/two_protocol_patients/obstetric_counts?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>'  type='hidden' />
+<input type='text' id='1.1.5'  name='concept[Caesarean Section]' helpText=' Number Of Caesarean Sections '  field_type='number'  tt_OnUnLoad='check("1.1.5")'  condition='__$("1.1.1").value > 1'  pos='4'  tt_pageStyleClass='NumbersOnly' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				 Number Of breech Deliveries 
+			</td>
+			<td>
+<input type='text' id='1.1.6'  name='concept[Breech delivery]' helpText=' Number Of breech Deliveries '  field_type='number'  tt_OnUnLoad='check("1.1.6")'  condition='__$("1.1.1").value > 1'  pos='5'  tt_pageStyleClass='NumbersOnly' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				 Number Of Vacuum Extraction Deliveries 
+			</td>
+			<td>
+<input type='text' id='1.1.7'  name='concept[Vacuum extraction delivery]' helpText=' Number Of Vacuum Extraction Deliveries '  field_type='number'  tt_OnUnLoad='check("1.1.7")'  condition='__$("1.1.1").value > 1'  pos='6'  tt_pageStyleClass='NumbersOnly' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				 Number Of Spontaneous Vaginal Deliveries 
+			</td>
+			<td>
+<input type='text' id='1.1.8'  name='concept[Spontaneous vaginal delivery]' helpText=' Number Of Spontaneous Vaginal Deliveries '  field_type='number'  tt_OnUnLoad='check("1.1.8")'  condition='__$("1.1.1").value > 1'  pos='7'  tt_pageStyleClass='NumbersOnly' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				TTV Status 
+			</td>
+			<td>
+<input type='text' id='1.1.16'  name='concept[TT STATUS]' helpText='TTV Status '  max='5'  field_type='number'  absoluteMin='0'  pos='14'  tt_pageStyleClass='NumbersOnly' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Last Menstrual Period 
+			</td>
+			<td>
+<input type='text' id='1.1.17'  name='concept[DATE OF LAST MENSTRUAL PERIOD]' helpText='Last Menstrual Period '  field_type='date'  tt_onLoad='lmp = "<%= params["lmp"] rescue '' %>"; name = "<%= ' For <br>' + @patient.name rescue '' %>"; checkANCLMP(); calculateEDOD("1.1.17")'  tt_onUnLoad='window.clearInterval(timedEvent)'  pos='15' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Gestation (months) 
+			</td>
+			<td>
+<input type='text' id='1.1.18'  name='concept[estimate LMP]' helpText='Gestation (months) '  max='9'  field_type='number'  condition='$("1.1.17").value.toLowerCase().trim() == "unknown"'  pos='16'  tt_onUnLoad='var date = "<%= Date.today%>"; setLMPDate($("touchscreenInput" + tstCurrentPage).value + "|" + date)'  disabled='disabled'  min='6'  tt_pageStyleClass='NumbersOnly' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Category 
+			</td>
+			<td>
+<input  id='1.1.19'   helpText='Category '  type='hidden'  value='ante-natal'  pos='19'  name='ret' />
 			</td>
 		</tr>
 	</table>

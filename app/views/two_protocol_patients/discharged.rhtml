@@ -15,7 +15,7 @@
 				Outcome 
 			</td>
 			<td>
-<input  id='1.1.1'   helpText='Outcome '  name='concept[Outcome]'  pos='0'  value='Discharged'  type='hidden' />
+<input  id='1.1.1'   helpText='Outcome '  value='Discharged'  type='hidden'  pos='0'  name='concept[Outcome]' />
 			</td>
 		</tr>
 		<tr>
@@ -36,7 +36,7 @@
 				Which Health Facility 
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[HEALTH FACILITY]' helpText='Which Health Facility '  fieldtype='text'  allowFreeText='true'  pos='2'  ajaxURL='/encounters/static_locations?search_string='  condition='__$("1.1.2").value.trim().toUpperCase() == "ANOTHER HEALTH FACILITY"' />
+<input type='text' id='1.1.3'  name='concept[HEALTH FACILITY]' helpText='Which Health Facility '  ajaxURL='/encounters/static_locations?search_string='  condition='__$("1.1.2").value.trim().toUpperCase() == "ANOTHER HEALTH FACILITY"'  allowFreeText='true'  fieldtype='text'  pos='2' />
 			</td>
 		</tr>
 		<tr>
@@ -44,7 +44,7 @@
 				Select Discharge Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.4'   helpText='Select Discharge Diagnosis '  fieldtype='text'  allowFreeText='true'  pos='3'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string=' />
+<input type='text' id='1.1.4'   helpText='Select Discharge Diagnosis '  ajaxURL='/encounters/diagnoses?search_string='  allowFreeText='true'  fieldtype='text'  pos='3'  name='concept[Diagnosis][]' />
 			</td>
 		</tr>
 		<tr>
@@ -52,7 +52,7 @@
 				Select Next Discharge Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.5'   helpText='Select Next Discharge Diagnosis '  fieldtype='text'  allowFreeText='true'  pos='4'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  condition='__$("1.1.4").value != ""'  optional='true' />
+<input type='text' id='1.1.5'   helpText='Select Next Discharge Diagnosis '  ajaxURL='/encounters/diagnoses?search_string='  condition='__$("1.1.4").value != ""'  allowFreeText='true'  fieldtype='text'  optional='true'  pos='4'  name='concept[Diagnosis][]' />
 			</td>
 		</tr>
 	</table>
