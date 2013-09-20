@@ -204,8 +204,8 @@ class PatientsController < ApplicationController
     @groupings["Baby Outcomes"].delete_if{|outcome| 
       @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?(outcome.gsub(/\_/, ""))
     }
-    @first_level_order = ["Ante Natal Exams", "Post Natal Exams", "Update Outcome"]
-    
+    @first_level_order = ["Ante Natal Exams", "Update Outcome"]
+    @first_level_order << "Post Natal Exams" if ((@patient.recent_delivery_count > 0) rescue false)
     @first_level_order << "Baby Outcomes" if !((@patient.recent_babies.to_i < 1) rescue false)  
     @first_level_order << "Social History" if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("SOCIAL HISTORY")
     @first_level_order << "Give Drugs" if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("GIVE DRUGS")
@@ -223,7 +223,7 @@ class PatientsController < ApplicationController
       prefix = (@patient.recent_babies.to_i + 1) rescue 0
 
       @prefix = "Baby"
-      
+     
       unless (@patient.recent_delivery_count.to_i == 1 rescue false)
         case prefix
         when 1
