@@ -556,16 +556,31 @@ class EncountersController < ApplicationController
   def void
     prog = ProgramEncounterDetail.find_by_encounter_id(params[:encounter_id]) rescue nil
 
-    unless prog.nil?
-      prog.void
-
+    unless prog.blank?
+     
       encounter = Encounter.find(params[:encounter_id]) rescue nil
 
-      unless encounter.nil?
-        encounter.void
-      end
+      enc_name = encounter.type.name
+      patient = encounter.patient
+      born_alive = patient.delivery_outcome.match(/alive/i) rescue false
+      discharge_err = patient.discharge_outcome.match(/dead/i) rescue false
+      limited = patient.person.death_date.to_date <= patient.person.birthdate.to_date + 1.month rescue false
 
-      if ((encounter.type.name.match(/update\soutcome/i) &&
+
+      if born_alive && discharge_err && limited
+
+        patient.person.update_attributes(:dead => false,
+          :death_date => nil,
+          :cause_of_death => nil)
+
+      end rescue nil
+      
+      unless encounter.blank?
+        prog.void
+        encounter.void
+      end       
+      
+      if ((enc_name.match(/update\soutcome/i) &&
               (encounter.observations.collect{|ob| ob.answer_string.upcase.strip}).include?("DELIVERED")) rescue false)
 
         if encounter.patient.recent_babies(session[:datetime] || Date.today)
@@ -612,6 +627,7 @@ class EncountersController < ApplicationController
         labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil if params[:baby].blank?
         labl = label2_4baby(e.encounter_id, @label_encounter_map).titleize rescue nil if !params[:baby].blank?
         labl = e.encounter.type.name.titleize if labl.blank?
+        labl = "Delivered" if labl == "Discharged"
         [
           e.encounter_id, labl,
           e.encounter.encounter_datetime.strftime("%H:%M"),
@@ -857,7 +873,7 @@ class EncountersController < ApplicationController
       PatientIdentifierType.find_by_name("National id").patient_identifier_type_id).first.patient rescue nil
     
     if params[:identifier].present? && (@baby.blank? ||
-        !((Patient.find(params[:patient_id]).babies_national_ids.split("|").include?(params[:identifier])) rescue false))
+          !((Patient.find(params[:patient_id]).babies_national_ids.split("|").include?(params[:identifier])) rescue false))
       redirect_to "/encounters/missing_baby?national_id=#{params[:identifier]}&ward=" and return
     end
     

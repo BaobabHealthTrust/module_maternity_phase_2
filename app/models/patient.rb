@@ -284,6 +284,18 @@ class Patient < ActiveRecord::Base
     
   end
 
+  def delivery_outcome
+    self.encounters.collect{|enc| enc.observations.collect{|ob| 
+        ob.answer_string.strip if (ob.concept.name.name.match(/BABY OUTCOME/i) rescue false)
+      } if (enc.name.match(/baby delivery/i) rescue false)}.flatten.compact.first rescue ""
+  end
+
+  def discharge_outcome
+    self.encounters.collect{|enc| enc.observations.collect{|ob|
+        ob.answer_string.strip if (ob.concept.name.name.match(/STATUS OF BABY/i) rescue false)
+      } if (enc.name.match(/UPDATE OUTCOME/i) rescue false)}.flatten.compact.first rescue ""
+  end
+
   def recent_babies(session_date = Date.today)
     Relationship.find(:all, :conditions => ["voided = 0 AND date_created > ? AND person_a = ? AND relationship = ?",
         (session_date - 1.months), self.patient_id, RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id]).length
@@ -297,7 +309,7 @@ class Patient < ActiveRecord::Base
   def recent_delivery_count(session_date = Date.today)
     ob = Observation.find(:first, :order => ["date_created DESC"], :conditions => ["person_id = ? AND voided = 0 AND concept_id = ? AND obs_datetime > ?",
         self.patient_id, ConceptName.find_by_name("NUMBER OF BABIES").concept_id, (session_date - 1.month)]).answer_string.strip.to_i
-    ob 
+    ob
   end
 
   def fundus
@@ -338,7 +350,7 @@ class Patient < ActiveRecord::Base
     label.draw_multi_text("#{self.national_id_with_dashes} #{self.person.birthdate_formatted}#{sex}")
     label.draw_multi_text("#{address}")
     label.print(1)
-  end 
+  end
 
   def baby_details(type)
 
@@ -494,13 +506,13 @@ class Patient < ActiveRecord::Base
   end
 
   def get_global_property_value(global_property)
-		property_value = Settings[global_property]
-		if property_value.nil?
-			property_value = GlobalProperty.find(:first, :conditions => {:property => "#{global_property}"}
+    property_value = Settings[global_property]
+    if property_value.nil?
+      property_value = GlobalProperty.find(:first, :conditions => {:property => "#{global_property}"}
       ).property_value rescue nil
-		end
-		return property_value
-	end
+    end
+    return property_value
+  end
 
   def next_of_kin
     nok = {}
@@ -534,12 +546,12 @@ class Patient < ActiveRecord::Base
   def is_discharged_mother?(session_date = Date.today)
     
     ProgramEncounterDetail.find(:all, :limit => 20, :order => ["encounter_datetime DESC"], :joins => [:encounter],
-      :conditions => ["program_id = ? AND DATE(encounter_datetime) > ? AND encounter_type = ? AND patient_id = ?",
+      :conditions => ["program_id = ? AND DATE(encounter_datetime) > ? AND encounter_type = ? AND patient_id = ? AND encounter.voided = 0",
         Program.find_by_name("MATERNITY PROGRAM").id, (session_date - 7.day),
         EncounterType.find_by_name("UPDATE OUTCOME").id, self.patient_id]).collect{|enc|
       enc.encounter.observations.collect{|obs|
         obs.answer_string.upcase if obs.concept.name.name.upcase.strip == "DISCHARGED"
-      }
+      } rescue []
     }.flatten.delete_if{|val| val.blank?}.present? rescue false
    
   end
@@ -578,12 +590,12 @@ class Patient < ActiveRecord::Base
     Observation.find(:last, :select => ["value_datetime"],
       :order => ["obs_datetime"],
       :conditions => ["person_id = ? AND concept_id = ? AND DATE(value_datetime) > ?", self.patient_id,
-        ConceptName.find_by_name("ADMISSION DATE").concept_id, 
+        ConceptName.find_by_name("ADMISSION DATE").concept_id,
         (session_date.to_date - 30.days)]).value_datetime.strftime("%d/%b/%Y") rescue nil
   end
 
   def recent_delivery_outcome(session_date = Date.today)
-    Encounter.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
+    self.encounters.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
       :conditions => ["encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND obs.value_coded = ? AND DATE(encounter_datetime) >= ?",
         EncounterType.find_by_name("UPDATE OUTCOME"), ConceptName.find_by_name("OUTCOME").concept_id,
         ConceptName.find_by_name("DELIVERED").concept_id, (session_date.to_date - 2.days)]).encounter_id rescue nil
