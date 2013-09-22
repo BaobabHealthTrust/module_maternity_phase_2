@@ -490,7 +490,7 @@ class EncountersController < ApplicationController
         else
 
           unless (params[:next_url].match(/admit\_to\_ward/i) &&
-                Location.find(session[:location_id]).name.match(/registration/i) rescue false)
+                Location.find(session[:location_id]).name.match(/registration|labour\sward/i) rescue false)
          
             redirect_to params[:next_url] + "#{@ret}" and return if !params[:next_url].blank?
             
