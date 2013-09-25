@@ -143,12 +143,12 @@
         :tt_onLoad => " __$('touchscreenInput' + " +
           "tstCurrentPage).setAttribute('absoluteMax', (__$('enter_gravida').value - parseInt(#{sub_rule})))",
         :tt_onUnLoad => "if(__$('enter_number_of_deliveries').value == 0){
-    }; __$('enter_number_of_abortions').setAttribute('absoluteMax', (parseInt(__$('enter_gravida').value - parseInt(__$('enter_number_of_deliveries').value) -1 )));
-    __$('enter_number_of_abortions').setAttribute('absoluteMin', (parseInt(__$('enter_gravida').value - parseInt(__$('enter_number_of_deliveries').value) -1 )));
+    }; __$('enter_number_of_abortions').setAttribute('absoluteMax', (parseInt(__$('enter_gravida').value - parseInt(__$('enter_number_of_deliveries').value) - parseInt(#{sub_rule}) )));
+    __$('enter_number_of_abortions').setAttribute('absoluteMin', (parseInt(__$('enter_gravida').value - parseInt(__$('enter_number_of_deliveries').value) - parseInt(#{sub_rule}) )));
     __$('enter_number_of_abortions').setAttribute('validationRule', '[' + (parseInt(__$('enter_gravida').value) -
     parseInt(__$('enter_number_of_deliveries').value) - 1) + ']');
     __$('enter_number_of_abortions').setAttribute('validationMessage', 'Expected value is ' + (parseInt(__$('enter_gravida').value) -
-    parseInt(__$('enter_number_of_deliveries').value) - 1));
+    parseInt(__$('enter_number_of_deliveries').value) - parseInt(#{sub_rule})));
     __$('enter_number_of_abortions').removeAttribute('validationRule'); " +
           "__$('enter_number_of_abortions').removeAttribute('validationMessage')"
       } %>

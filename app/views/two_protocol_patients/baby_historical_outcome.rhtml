@@ -15,7 +15,7 @@
 				Year of Birth 
 			</td>
 			<td>
-<input type='text' id='1.1.2'  name='concept[YEAR OF BIRTH]'   max='min'  field_type='number'  helpText='<%= params["prefix"]%> Year of Birth'  pos='0'  min='<%= (Date.today - (@patient.age.years + 10)).year%>'  tt_pageStyleClass='NumbersOnly' />
+<input type='text' id='1.1.2'  name='concept[YEAR OF BIRTH]'   pos='0'  min='<%= (Date.today - (@patient.age.years + 10)).year%>'  tt_pageStyleClass='NumbersOnly'  max='min'  helpText='<%= params["prefix"]%> Year of Birth'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				 Delivery Mode 
 			</td>
 			<td>
-<select id='1.1.3' name='concept[Delivery Mode]'  helpText='<%= params["prefix"]%> Delivery Mode'  pos='1' >
+<select id='1.1.3' name='concept[Delivery Mode]'  pos='1'  helpText='<%= params["prefix"]%> Delivery Mode' >
 <option></option>
 <option value='Spontaneous vaginal delivery'>Spontaneous vaginal delivery</option>
  <option value='Caesarean Section'>Caesarean Section</option>
@@ -37,7 +37,7 @@
 				Gestation (months) 
 			</td>
 			<td>
-<input type='text' id='1.1.4'  name='concept[gestation]'   max='9'  helpText='<%= params["prefix"]%> Gestation'  pos='2'  min='6' />
+<input type='text' id='1.1.4'  name='concept[gestation]'   pos='2'  min='6'  max='9'  helpText='<%= params["prefix"]%> Gestation' />
 			</td>
 		</tr>
 		<tr>
@@ -45,7 +45,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.5'   helpText='Next URL '  type='hidden'  value='/two_protocol_patients/baby_historical_outcome?user_id=<%= @user.id%>&patient_id=<%= @patient.id%>&prefix=1%>'  pos='3'  name='next_url' />
+<input  id='1.1.5'   helpText='Next URL '  type='hidden'  pos='3'  name='next_url'  value='/two_protocol_patients/baby_historical_outcome?user_id=<%= @user.id%>&patient_id=<%= @patient.id%>&prefix=1%>' />
 			</td>
 		</tr>
 	</table>

@@ -27,7 +27,7 @@
 				Referral Clinic If Referred? 
 			</td>
 			<td>
-<input type='text' id='1.1.2.1'   helpText='Referral Clinic If Referred? '  condition='__$("1.1").value == "Yes"'  field_type='text'  ajaxURL='/encounters/static_locations?search_string='  allowFreeText='true'  pos='1'  name='concept[REFERRAL CLINIC IF REFERRED]' />
+<input type='text' id='1.1.2.1'   helpText='Referral Clinic If Referred? '  condition='__$("1.1").value == "Yes"'  allowFreeText='true'  pos='1'  ajaxURL='/encounters/static_locations?search_string='  name='concept[REFERRAL CLINIC IF REFERRED]'  field_type='text' />
 			</td>
 		</tr>
 		<tr>
@@ -35,7 +35,7 @@
 				Time of referral Arrival 
 			</td>
 			<td>
-<input type='text' id='1.1.2.2'  name='concept[REFERRAL ARRIVAL TIME]' helpText='Time of referral Arrival '  condition='__$("1.1").value == "Yes"'  field_type='advancedTime'  pos='2' />
+<input type='text' id='1.1.2.2'  name='concept[REFERRAL ARRIVAL TIME]' helpText='Time of referral Arrival '  condition='__$("1.1").value == "Yes"'  pos='2'  field_type='advancedTime' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Date of referral arrival 
 			</td>
 			<td>
-<input type='text' id='1.1.2.3'  name='concept[REFERRAL ARRIVAL DATE]' helpText='Date of referral arrival '  condition='__$("1.1").value == "Yes"'  tt_OnLoad='__$("Unknown").style.display = "none"'  field_type='date'  pos='3' />
+<input type='text' id='1.1.2.3'  name='concept[REFERRAL ARRIVAL DATE]' helpText='Date of referral arrival '  condition='__$("1.1").value == "Yes"'  pos='3'  tt_OnLoad='__$("Unknown").style.display = "none"'  field_type='date' />
 			</td>
 		</tr>
 		<tr>
@@ -51,7 +51,7 @@
 				Select Referral Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.2.4'   helpText='Select Referral Diagnosis '  condition='__$("1.1").value == "Yes"'  ajaxURL='/encounters/diagnoses?search_string='  allowFreeText='true'  fieldtype='text'  pos='4'  name='concept[REASON FOR REFERRAL TO ANOTHER SITE][]' />
+<input type='text' id='1.1.2.4'   helpText='Select Referral Diagnosis '  condition='__$("1.1").value == "Yes"'  fieldtype='text'  allowFreeText='true'  pos='4'  ajaxURL='/encounters/diagnoses?search_string='  name='concept[REASON FOR REFERRAL TO ANOTHER SITE][]' />
 			</td>
 		</tr>
 		<tr>
@@ -59,7 +59,7 @@
 				Select Next Referral Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.2.5'   helpText='Select Next Referral Diagnosis '  ajaxURL='/encounters/diagnoses?search_string='  condition='__$("1.1.2.4").value != ""'  allowFreeText='true'  fieldtype='text'  optional='true'  pos='5'  name='concept[REASON FOR REFERRAL TO ANOTHER SITE][]' />
+<input type='text' id='1.1.2.5'   helpText='Select Next Referral Diagnosis '  fieldtype='text'  optional='true'  allowFreeText='true'  pos='5'  ajaxURL='/encounters/diagnoses?search_string='  name='concept[REASON FOR REFERRAL TO ANOTHER SITE][]'  condition='__$("1.1.2.4").value != ""' />
 			</td>
 		</tr>
 		<tr>
@@ -67,7 +67,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.2'   helpText='Next URL '  type='hidden'  value='/two_protocol_patients/admit_to_ward?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&location_id=<%= params["location_id"]%>'  pos='7'  name='next_url' />
+<input  id='1.2'   helpText='Next URL '  type='hidden'  pos='7'  name='next_url'  value='/two_protocol_patients/admit_to_ward?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>&location_id=<%= params["location_id"]%>' />
 			</td>
 		</tr>
 	</table>

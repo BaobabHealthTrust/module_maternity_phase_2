@@ -223,6 +223,8 @@
       <%= hidden_field_tag "ret", @ret %>
       <%= hidden_field_tag "user_id", "#{params[:user_id] || session[:user_id]}" %>
 
+      <%  sub_rule = params[:ret].match(/ante/)? 1 : 0 %>
+
       <%= touch_numeric_tag "GRAVIDA", @patient, nil,
         {:id => "enter_gravida",
         :helptext => "Gravida",
@@ -255,9 +257,9 @@
         :condition => false,
         :condition => "__$('enter_gravida').value > 1",
         :tt_onLoad => "showCategory('Obstetric History'); __$('touchscreenInput' + " +
-          "tstCurrentPage).setAttribute('absoluteMax', (__$('enter_gravida').value - 1)); gotoNextPage()",
-        :tt_onUnLoad => "__$('enter_number_of_abortions').setAttribute('absoluteMax', (parseInt(__$('enter_gravida').value - parseInt(__$('enter_number_of_deliveries').value) -1 )));
-    __$('enter_number_of_abortions').setAttribute('absoluteMin', (parseInt(__$('enter_gravida').value - parseInt(__$('enter_number_of_deliveries').value) -1 )));
+          "tstCurrentPage).setAttribute('absoluteMax', (__$('enter_gravida').value - parseInt(#{sub_rule}))); gotoNextPage()",
+        :tt_onUnLoad => "__$('enter_number_of_abortions').setAttribute('absoluteMax', (parseInt(__$('enter_gravida').value - parseInt(__$('enter_number_of_deliveries').value) - parseInt(#{sub_rule}) )));
+    __$('enter_number_of_abortions').setAttribute('absoluteMin', (parseInt(__$('enter_gravida').value - parseInt(__$('enter_number_of_deliveries').value) - parseInt(#{sub_rule}) )));
     __$('enter_number_of_abortions').setAttribute('validationRule', '[' + (parseInt(__$('enter_gravida').value) -
     parseInt(__$('enter_number_of_deliveries').value) - 1) + ']');
     __$('enter_number_of_abortions').setAttribute('validationMessage', 'Expected value is ' + (parseInt(__$('enter_gravida').value) -
@@ -266,8 +268,6 @@
           "__$('enter_number_of_abortions').removeAttribute('validationMessage')"
       } %>
 
-      <%  sub_rule = params[:ret].match(/ante/)? 1 : 0 %>
-    
       <%= touch_numeric_tag "NUMBER OF ABORTIONS", @patient, nil,
         {:id => "enter_number_of_abortions",
         :helptext => "Enter Number Of Abortions",
