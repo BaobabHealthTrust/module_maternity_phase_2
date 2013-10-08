@@ -766,7 +766,7 @@ class PatientsController < ApplicationController
         current_printer = ward.split(":")[1] if ward.split(":")[0].upcase == location
       } rescue []
 
-      ["ORIGINAL FOR:(PARENT)", "DUPLICATE FOR DISTRICT:REGISTRY OF BIRTH", "TRIPLICATE FOR DISTRICT:REGISTRY OF ORIGINAL HOME", "QUADRUPLICATE FOR:THE HOSPITAL", ""].each do |rec|
+      ["ORIGINAL FOR:(PARENT)", "DUPLICATE FOR:THE HOSPITAL", ""].each do |rec|
 
         @recipient = rec
         name = rec.split(":").last.downcase.gsub("(", "").gsub(")", "") if !rec.blank?
@@ -778,14 +778,14 @@ class PatientsController < ApplicationController
         } if !rec.blank?
 
         t2 = Thread.new{
-          sleep(2)
+          sleep(5)
           Kernel.system "lp #{(!current_printer.blank? ? '-d ' + current_printer.to_s : "")} /tmp/output-#{Regexp.escape(name)}" + ".pdf\n"
         } if !rec.blank?
 
       end
 
       t3 = Thread.new{
-        sleep(20)
+        sleep(15)
         Kernel.system "rm /tmp/output-*"
       }
 
