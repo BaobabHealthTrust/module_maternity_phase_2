@@ -67,7 +67,7 @@
   </select>
 
   <form id="register" action="<%= @patient_registration %>/search?search_by=name&user_id=<%= (params[:user_id] || session[:user]["user_id"])
-      %>&ext=true&gender=Female&location_id=<%= session[:location_id] || params[:location_id] %>" method="post">
+      %>&ext=true&gender=Female&app_name=<%= @project %>&location_id=<%= session[:location_id] || params[:location_id] %>" method="post">
 
     <% @selected.each do |item| %>
 
