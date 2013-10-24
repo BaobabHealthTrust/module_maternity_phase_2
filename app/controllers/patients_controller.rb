@@ -16,6 +16,24 @@ class PatientsController < ApplicationController
     session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
  
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
+    
+    #check if we are supposed to enroll any babies in EID program
+    if (@patient.hiv_status.match(/positive/i) rescue false)
+
+      @babies = @patient.recent_baby_relations rescue []
+
+      @babies.each do |baby|
+
+        @baby_patient = Patient.find(baby.person_b) rescue nil
+        next if @baby_patient.blank?
+        
+        baby_programs = @baby_patient.patient_programs.collect{|pr| pr.program.name} rescue []
+       
+        create_registration(@baby_patient, "EARLY INFANT DIAGNOSIS PROGRAM") if !baby_programs.include?("EARLY INFANT DIAGNOSIS PROGRAM")
+
+      end
+
+    end
 
     if @patient.age(session_date) < 10
       return_ip = "http://#{request.raw_host_with_port}/?user_id=#{session[:user_id] || params[:user_id]}&location_id=#{session[:location_id]}";
@@ -1128,25 +1146,6 @@ class PatientsController < ApplicationController
       :disposition => "inline")
   end
   
-=begin
-  def delivery_print
-
-    patient = Patient.find(params[:patient_id])
-
-    if [false, 0, "0", "false"].include?(patient.person.dead)
-      print_string = (patient.national_id_label rescue "") + (patient.baby_details("summary") rescue "") + (patient.baby_details("apgar") rescue "") + (patient.baby_details("complications") rescue "")
-    else
-      print_string = (patient.national_id_label rescue "") + (patient.baby_details("summary") rescue "") + (patient.baby_details("complications") rescue "")
-    end
-
-    send_data(print_string,
-      :type=>"application/label; charset=utf-8",
-      :stream=> false,
-      :filename=>"#{params[:patient_id]}#{rand(10000)}.lbl",
-      :disposition => "inline")
-  end
-=end
-  
   def art_summary
 
     art_link = get_global_property_value("art.link") rescue nil
@@ -1162,7 +1161,66 @@ class PatientsController < ApplicationController
     render :text => data.to_json
     
   end
- 
+
+
+  def create_registration(patient, program)
+
+    return if patient.blank?
+
+    @encounter = Encounter.create(:patient_id => patient.patient_id,
+      :encounter_type => EncounterType.find_by_name("REGISTRATION").id,
+      :encounter_datetime => (session[:datetime].to_time rescue Time.now),
+      :provider_id => (session[:user_id] || params[:user_id]),
+      :location_id => session[:location_id],
+      :creator => (session[:user_id] || params[:user_id])
+    )
+
+    Observation.create(:person_id => patient.patient_id,
+      :concept_id => ConceptName.find_by_name("Workstation location").concept_id,
+      :value_text => Location.find(session[:location_id]).name,
+      :location_id => session[:location_id],
+      :encounter_id => @encounter.id,
+      :creator => (session[:user_id] || params[:user_id]),
+      :obs_datetime => (session[:datetime] || Time.now)
+    )
+
+    @program = Program.find_by_concept_id(ConceptName.find_by_name(program).concept_id) rescue nil
+
+    @program_encounter = ProgramEncounter.find_by_program_id(@program.id,
+      :conditions => ["patient_id = ? AND DATE(date_time) = ?",
+        patient.id,  (session[:datetime].to_time rescue Time.now).to_date.strftime("%Y-%m-%d")])
+
+    if @program_encounter.blank?
+
+      @program_encounter = ProgramEncounter.create(
+        :patient_id => patient.id,
+        :date_time =>  (session[:datetime].to_time rescue Time.now),
+        :program_id => @program.id
+      )
+
+    end
+
+    ProgramEncounterDetail.create(
+      :encounter_id => @encounter.id.to_i,
+      :program_encounter_id => @program_encounter.id,
+      :program_id => @program.id
+    )
+
+    @current = PatientProgram.find_by_program_id(@program.id,
+      :conditions => ["patient_id = ? AND COALESCE(date_completed, '') = ''", patient.id])
+
+    if @current.blank?
+
+      @current = PatientProgram.create(
+        :patient_id => patient.id,
+        :program_id => @program.id,
+        :date_enrolled => (session[:datetime].to_time rescue Time.now)
+      )
+
+    end
+      
+  end
+  
   protected
 
   def sync_user

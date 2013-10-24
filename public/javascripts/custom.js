@@ -325,6 +325,24 @@ function checkNVPStart(id){
     return false;
 }
 
+function checkVDRLStatus(id){
+    if($(id).value.toLowerCase().trim() == "reactive"){
+
+        showMessage("Patient needs treatment now!", true);
+        return true;
+    }
+    return false;
+}
+
+function checkFeedingStart(id){
+    if($(id).value.toLowerCase().trim() == "no"){
+
+        showMessage("Baby needs to start feeding Now!", true);
+        return true;
+    }
+    return false;
+}
+
 function checkARTStart(id){
     if($(id).value.toLowerCase().trim() == "no"){
 

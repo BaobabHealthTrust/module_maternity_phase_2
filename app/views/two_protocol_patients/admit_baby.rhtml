@@ -15,7 +15,7 @@
 				Scan baby barcode 
 			</td>
 			<td>
-<input type='text' id='1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}' />
+<input type='text' id='1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -35,7 +35,7 @@
 				Admission date 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  pos='2'  condition='id_string.match(__$("1.1").value)'  field_type='date' />
+<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  field_type='date'  pos='2'  condition='id_string.match(__$("1.1").value)' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,15 @@
 				Baby weight at admission (grams) 
 			</td>
 			<td>
-<input type='text' id='1.4'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  absoluteMax='10000'  pos='3'  min='2000'  tt_pageStyleClass='NumbersOnlyWithDecimal'  max='5000'  absoluteMin='100'  field_type='number'  condition='id_string.match(__$("1.1").value)' />
+<input type='text' id='1.4'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  tt_pageStyleClass='NumbersOnlyWithDecimal'  absoluteMin='100'  min='2000'  field_type='number'  absoluteMax='10000'  max='5000'  pos='3'  condition='id_string.match(__$("1.1").value)' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Baby temperature (<sup>o</sup>C) 
+			</td>
+			<td>
+<input type='text' id='1.5'  name='concept[temperature]' helpText='Baby temperature (<sup>o</sup>C) '  absoluteMin='0'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  min='36'  field_type='number'  absoluteMax='70'  max='38'  pos='4'  condition='id_string.match(__$("1.1").value)' />
 			</td>
 		</tr>
 		<tr>
@@ -51,7 +59,19 @@
 				Reason for admission 
 			</td>
 			<td>
-<input type='text' id='1.5'  name='concept[Reason for admission ]' helpText='Reason for admission '  pos='4'  ajaxUrl='/encounters/diagnoses?&search_string='  condition='id_string.match(__$("1.1").value)' />
+<input type='text' id='1.6'  name='concept[Reason for admission ]' helpText='Reason for admission '  ajaxUrl='/encounters/diagnoses?&search_string='  pos='5'  condition='id_string.match(__$("1.1").value)' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Vitamin K given? 
+			</td>
+			<td>
+<select id='1.7' name='concept[Vitamin K given? ]'  helpText='Vitamin K given?'  pos='6'  condition='id_string.match(__$("1.1").value)' >
+<option></option>
+<option value='Yes'>Yes</option>
+ <option value='No'>No</option>
+ </select>
 			</td>
 		</tr>
 	</table>

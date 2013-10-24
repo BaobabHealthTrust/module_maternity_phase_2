@@ -15,7 +15,7 @@
 				Perineum 
 			</td>
 			<td>
-<select id='1.1.1' name='concept[Perineum]' helpText='Perineum ' pos='0'  field_type='text' >
+<select id='1.1.1' name='concept[Perineum]' helpText='Perineum ' field_type='text'  pos='0' >
 <option></option>
 <option value='Intact'>Intact</option>
  <option value='Tear'>Tear</option>
@@ -29,7 +29,7 @@
 				Tear extent 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[TEAR]' helpText='Tear extent ' pos='1'  condition='__$("1.1.1").value.trim().toUpperCase() == "TEAR"'  field_type='text' >
+<select id='1.1.2' name='concept[TEAR]' helpText='Tear extent ' field_type='text'  pos='1'  condition='__$("1.1.1").value.trim().toUpperCase() == "TEAR"' >
 <option></option>
 <option value='1 Degree'>1 Degree</option>
  <option value='2 Degrees'>2 Degrees</option>
@@ -55,7 +55,7 @@
 				Mother blood group 
 			</td>
 			<td>
-<select id='1.2.2.1' name='concept[Blood Group]' helpText='Mother blood group ' condition='__$("1.2").value == "Yes"'  pos='3'  tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"' >
+<select id='1.2.2.1' name='concept[Blood Group]' helpText='Mother blood group ' condition='__$("1.2").value == "Yes"'  tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"'  pos='3' >
 <option></option>
 <option value='A-'>A-</option>
  <option value='A+'>A+</option>
@@ -70,10 +70,36 @@
 		</tr>
 		<tr>
 			<td>
+				VDRL Status 
+			</td>
+			<td>
+<select id='1.3' name='concept[VDRL]' helpText='VDRL Status ' tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"'  tt_BeforeUnLoad='checkVDRLStatus("1.3")'  pos='4' >
+<option></option>
+<option value='Treated'>Treated</option>
+ <option value='Reactive'>Reactive</option>
+ <option value='Non-Reactive'>Non-Reactive</option>
+ <option value='Unknown'>Unknown</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Convulsions? 
+			</td>
+			<td>
+<select id='1.4' name='concept[Convulsions]' helpText='Convulsions? ' pos='5' >
+<option></option>
+<option value='Yes'>Yes</option>
+ <option value='No'>No</option>
+ </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
 				Complications 
 			</td>
 			<td>
-<select id='1.3' name='concept[Complications ]' helpText='Complications ' pos='4'  tt_pageStyleClass='LongSelectList'  tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"' >
+<select id='1.5' name='concept[Complications ]' helpText='Complications ' tt_pageStyleClass='LongSelectList'  tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"'  pos='6' >
 <option></option>
 <option value='Other'>Other</option>
  <option value='Ruptured uterus'>Ruptured uterus</option>
@@ -92,7 +118,7 @@
 				Specify 
 			</td>
 			<td>
-<input type='text' id='1.3.9.1'  name='concept[Specify ]' helpText='Specify '  condition='__$("1.3").value == "Other"'  pos='5' />
+<input type='text' id='1.5.9.1'  name='concept[Specify ]' helpText='Specify '  condition='__$("1.5").value == "Other"'  pos='7' />
 			</td>
 		</tr>
 		<tr>
@@ -100,7 +126,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.5'   helpText='Next URL '  type='hidden'  pos='6'  name='next_url'  value='/two_protocol_patients/delivery_procedures?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>' />
+<input  id='1.6'   helpText='Next URL '  value='/two_protocol_patients/delivery_procedures?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>'  name='next_url'  type='hidden'  pos='8' />
 			</td>
 		</tr>
 	</table>

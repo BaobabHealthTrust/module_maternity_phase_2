@@ -42,19 +42,34 @@ O.1.1.13.4. Caesarean section
 Q.1.1.14. Newborn baby complications [pos: 13, condition: __$("1.1.7").value.toLowerCase().trim() == "alive", name: concept[Newborn baby complications], concept: Newborn baby complications, helpText: <%= params["prefix"] %> Newborn Complications]
 O.1.1.14.1. None
 O.1.1.14.2. Asphyxia
+Q.1.1.14.2.1. Action taken due to Asphyxia [concept: Adverse event action taken, pos: 14]
+O.1.1.14.2.1.1. Drying and wrapping only
+O.1.1.14.2.1.2. Airway clearing and stimulation
+O.1.1.14.2.1.3. Bag and mask
+O.1.1.14.2.1.4. Ventilation
+
 O.1.1.14.3. Sepsis
 O.1.1.14.4. Other
 
-Q.1.1.15. Breast feeding initiated within 60 minutes? [pos: 14, helpText: <%= params["prefix"] %> Breast Feeding Initiated Within 60 Minutes?, condition: __$("1.1.7").value.toLowerCase().trim() == "alive"]
+Q.1.1.15. Breast feeding initiated within 60 minutes? [pos: 15, helpText: <%= params["prefix"] %> Breast Feeding Initiated Within 60 Minutes?, tt_BeforeUnload: checkFeedingStart("1.1.15"), condition: __$("1.1.7").value.toLowerCase().trim() == "alive"]
 O.1.1.15.1. No
 O.1.1.15.2. Yes
 
-Q.1.16.1. Tetracycline eye ointment given? [pos: 15, helpText: <%= params["prefix"] %> Tetracycline Eye Ointment Given?, condition: __$("1.1.7").value.toLowerCase().trim() == "alive"]
+Q.1.16.1. Tetracycline eye ointment given? [pos: 16, helpText: <%= params["prefix"] %> Tetracycline Eye Ointment Given?, condition: __$("1.1.7").value.toLowerCase().trim() == "alive"]
 O.1.16.1.1. No
 O.1.16.1.2. Yes
 
-Q.1.17.1. Comments [pos: 17, concept: clinician notes, field_type: textarea, helpText: Notes (Optional)]
+Q.1.17. Resuscitation Required? [disabled: disabled, pos: 17]
+O.1.17.1. No
+O.1.17.2. Yes
 
-Q.1.18.1. Next URL [pos: 18, name: next_url, value: /two_protocol_patients/mother_delivery_details?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>, type: hidden]
+Q.1.18.2.1. Resuscitation Type [pos: 18, condition: __$("1.17").value.trim().toUpperCase() == "YES",   tt_onLoad: $("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"]
+O.1.18.2.1.1. Ventilation
+O.1.18.2.1.2. Suctioning
+O.1.18.2.1.3. Heart massage
+
+Q.1.19.1. Comments [pos: 19, optional: true, concept: clinician notes, field_type: textarea, helpText: Notes (Optional)]
+
+Q.1.20.1. Next URL [pos: 20, name: next_url, value: /two_protocol_patients/mother_delivery_details?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>, type: hidden]
 
 
