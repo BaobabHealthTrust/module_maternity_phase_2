@@ -173,13 +173,13 @@
                                      alt="O" />
 
                               </div>
-                              <div style="font-size: 0.9em; display: table-cell; vertical-align: middle; cursor: pointer;
+                              <div style="font-size: 0.8em; display: table-cell; vertical-align: middle; cursor: pointer;
                               <%= (e == 0 ? " border-top: 1px dotted #6281a7; " : "") %>
                                    border-bottom: 1px dotted #6281a7; padding: 5px; ">
 
-                                <%= name %>
+                                <%= name + "<br/><span style='font-size: 0.75em; padding-left: 10px;'>(" + programs[e][1] + ")</span>"%>
 
-                                <div style="font-size: 0.5em; font-style: italic;
+                                <div style="font-size: 0.55em; font-style: italic;  padding-left: 10px;
                                      vertical-align: middle;">
                                   (<%= programs[e][3] %>)
                                 </div>
