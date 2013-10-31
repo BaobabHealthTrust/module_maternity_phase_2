@@ -765,6 +765,18 @@ class EncountersController < ApplicationController
     render :text => "<li></li>" + "<li>" + @suggested_answers.join("</li><li>") + "</li>"
   end
 
+  def list_complications
+    search_string = (params[:search_string] || '')
+
+    @suggested_answers =  [
+      "None", "Fever", "Ante part hemorrhage", "Post part hemorrhage", " Prolonged first stage of labour",
+      "Prolonged second stage of labour", "Pre-Eclampsia", "Sepsis", "Ruptured uterus", "Convulsions", "Proteunia",
+      "PV Bleeding", "Hypertension", "UTI", "Other"
+    ].delete_if{|value| !value.match(/#{params[:search_string]}/i)}
+    
+    render :text => "<option>" + "<li>" + @suggested_answers.join("</li><li>") + "</li>"
+  end
+  
   def current_baby_exam
 
     children = Encounter.find(:all, :joins =>[:observations],

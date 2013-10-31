@@ -31,20 +31,12 @@ O.1.3.2. Non-Reactive
 O.1.3.3. Reactive
 O.1.3.4. Treated
 
-Q.1.4. Convulsions? [concept: Convulsions, pos: 5]
-O.1.4.1. No
-O.1.4.2. Yes
+Q.1.5. Complications [ajaxURL: /encounters/list_complications?search_string=, helpText: Select mother complication, pos: 6, name: concept[Complications][]]
 
-Q.1.5. Complications [pos: 6, tt_pageStyleClass: LongSelectList, tt_onLoad: $("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"]
-O.1.5.1. None
-O.1.5.2. Ante part hemorrhage
-O.1.5.3. Post part hemorrhage
-O.1.5.4. Prolonged first stage of labour
-O.1.5.5. Prolonged second stage of labour
-O.1.5.6. Pre-Eclampsia [concept: Pre-Eclampsia]
-O.1.5.7. Sepsis
-O.1.5.8. Ruptured uterus
-O.1.5.9. Other
-Q.1.5.9.1. Specify [pos: 7]
+Q.1.6. Specify [disabled: disabled, pos: 7, condition: $("1.5").value == "Other", tt_onUnload: $("1.5").value = $("1.6").value]
 
-Q.1.6. Next URL [pos: 8, name: next_url, value: /two_protocol_patients/delivery_procedures?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>, type: hidden]
+Q.1.7. Complications [condition: !$("1.6").value.length > 0, ajaxURL: /encounters/list_complications?search_string=, helpText: Select next mother complication, pos: 8, name: concept[Complications][]]
+
+Q.1.8. Specify [disabled: disabled, pos: 9, condition: $("1.7").value == "Other", tt_onUnload: $("1.7").value = $("1.8").value]
+
+Q.1.9. Next URL [pos: 10, name: next_url, value: /two_protocol_patients/delivery_procedures?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>, type: hidden]

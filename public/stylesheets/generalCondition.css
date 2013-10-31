@@ -1,0 +1,63 @@
+
+#tt_page_summary .inputFrameClass { height: 90;}
+
+#qwerty{ display:none; }
+
+.numericKeyboard #char, #slash, #star, #plus, #date, #minus, #comma, #percent {
+    display: none;
+}
+
+#selectWindow{
+    -moz-user-select: none;
+    display: table;
+    width: 85%;
+    height: 12%;
+    border:1px solid #999999;
+    align: center;
+    border-spacing: 13px;
+    margin-left:auto;
+    margin-right:auto;
+    border-radius: 10px;
+    background: white;
+    margin-top: 50px;
+}
+
+.leftButt{
+    width: auto;
+}
+
+.value{
+    border:1px solid #999999;
+    border-color:gray;
+    color: white;
+    vertical-align: middle;
+    height: auto;
+    cursor: pointer;
+}
+
+.leftButt, .value{
+    font-size:1.3em;
+    border-radius: 5px;
+    font-weight: bold;
+    background: white;
+    display:table-cell;
+    border:1px solid #999999;
+    height: auto;
+    color: rgb(5, 30, 5);
+    vertical-align: middle;
+    text-align: center;   
+}
+.value{
+    height: 40px;
+    font-weight: bold;
+    width: 160px;
+}
+.row-div{
+    display: table-row;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border-spacing: 5px;
+    height: 50px !important;   
+}
+
+
