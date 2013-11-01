@@ -3,10 +3,6 @@ C.1. If baby has been admitted to ward
 
 Q.1.1. Scan baby barcode [pos: 0, concept: Baby identifier, tt_onLoad: __$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}]
 
-Q.1.2. Ward [pos: 1, condition: id_string.match(__$("1.1").value)]
-O.1.2.1. Nursery
-O.1.2.2. Kangaroo
-
 Q.1.3. Admission date [pos: 2, field_type: date, tt_onLoad: $("Unknown").style.display = "none", condition: id_string.match(__$("1.1").value)]
 
 Q.1.4. Admission time [pos: 3, field_type: advancedTime, condition: id_string.match(__$("1.1").value)]
