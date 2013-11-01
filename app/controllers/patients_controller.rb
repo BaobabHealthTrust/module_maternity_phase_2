@@ -227,6 +227,8 @@ class PatientsController < ApplicationController
     @first_level_order << "Baby Outcomes" if !((@patient.recent_babies.to_i < 1) rescue false)  
     @first_level_order << "Social History" if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("SOCIAL HISTORY")
     @first_level_order << "Give Drugs" if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("GIVE DRUGS")
+
+    @first_level_order.insert(1, @first_level_order.delete_at(@first_level_order.index("Post Natal Exams"))) rescue nil if @first_level_order.include?("Post Natal Exams")
     
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
 

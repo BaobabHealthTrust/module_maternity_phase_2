@@ -627,7 +627,7 @@ class EncountersController < ApplicationController
         labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil if params[:baby].blank?
         labl = label2_4baby(e.encounter_id, @label_encounter_map).titleize rescue nil if !params[:baby].blank?
         labl = e.encounter.type.name.titleize if labl.blank?
-        labl = "Delivered" if labl == "Discharged"
+       # labl = "Delivered" if labl == "Discharged"
         [
           e.encounter_id, labl,
           e.encounter.encounter_datetime.strftime("%H:%M"),
