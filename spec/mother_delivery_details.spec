@@ -35,7 +35,7 @@ Q.1.5. Complications [ajaxURL: /encounters/list_complications?search_string=, he
 
 Q.1.6. Specify [disabled: disabled, pos: 7, condition: $("1.5").value == "Other", tt_onUnload: $("1.5").value = $("1.6").value]
 
-Q.1.7. Complications [condition: !$("1.6").value.length > 0, ajaxURL: /encounters/list_complications?search_string=, helpText: Select next mother complication, pos: 8, name: concept[Complications][]]
+Q.1.7. Complications [condition: !($("1.6").value.length > 0) && ($("1.5").value.toLowerCase().trim() != "none"), ajaxURL: /encounters/list_complications?search_string=, helpText: Select next mother complication, pos: 8, name: concept[Complications][]]
 
 Q.1.8. Specify [disabled: disabled, pos: 9, condition: $("1.7").value == "Other", tt_onUnload: $("1.7").value = $("1.8").value]
 

@@ -1,9 +1,9 @@
 P.1. Vitals [program: MATERNITY PROGRAM, scope: TODAY, concept: FETAL HEART RATE, includejs: vitals, pos: 7, label: Ante Natal Vitals, parent: 4]
 C.1.1. Given a registered patient, capture Vitals
 
-Q.1.1.1. Systolic Blood Pressure [concept: SYSTOLIC BLOOD PRESSURE, field_type: number, tt_onLoad: bpOn = 1; calculateBP("1.1.1*1.1.2*1"); bpAlerts(); attribute("1.1.1*validationRule*([0-9]+\\.[0-9])|Unknown$"); attribute("1.1.1*validationMessage*You must enter a decimal between 0 and 9 (for example 36<b>.6</b>)"), min: 90, max: 140, tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, pos: 0, allowFreeText: true, absoluteMin: 20, absoluteMax: 250, units: mm Hg, tt_onUnLoad: window.clearInterval(timedEvent); temp = ""; bpOn = false]
+Q.1.1.1. Systolic Blood Pressure [concept: SYSTOLIC BLOOD PRESSURE, field_type: number, tt_onLoad: bpOn = 1; calculateBP("1.1.1*1.1.2*1"); bpAlerts(), min: 90, max: 140, tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, pos: 0, allowFreeText: true, absoluteMin: 20, absoluteMax: 250, units: mm Hg, tt_onUnLoad: window.clearInterval(timedEvent); temp = ""; bpOn = false]
 
-Q.1.1.2. Diastolic Blood Pressure [concept: DIASTOLIC BLOOD PRESSURE, field_type: number, tt_onLoad: bpOn = 2; calculateBP("1.1.1*1.1.2*2"); bpAlerts(); attribute("1.1.2*validationRule*^([0-9]+)|Unknown$"), min: 60, max: 90, tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, pos: 1, allowFreeText: true, absoluteMin: 35, absoluteMax: 135, units: mm Hg, tt_onUnLoad: window.clearInterval(timedEvent); temp = ""; bpOn = false]
+Q.1.1.2. Diastolic Blood Pressure [concept: DIASTOLIC BLOOD PRESSURE, field_type: number, tt_onLoad: bpOn = 2; calculateBP("1.1.1*1.1.2*2"); bpAlerts(), min: 60, max: 90, tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, pos: 1, allowFreeText: true, absoluteMin: 35, absoluteMax: 135, units: mm Hg, tt_onUnLoad: window.clearInterval(timedEvent); temp = ""; bpOn = false]
 
 Q.1.1.3. Pulse (Beats Per Minute)[concept: PULSE, field_type: number, tt_onLoad: attribute("1.1.3*validationRule*([0-9]+)|Unknown$"), min: 50, max: 120, tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, pos: 3, absoluteMin: 0, absoluteMax: 160, units: bpm]
 

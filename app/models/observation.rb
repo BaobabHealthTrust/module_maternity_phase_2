@@ -92,15 +92,15 @@ class Observation < ActiveRecord::Base
 
   def to_s(tags=[])
     formatted_name = self.concept_name.typed(tags).name rescue nil
-    formatted_name ||= self.concept_name.name rescue nil
+    formatted_name ||= self.concept.concept_names.last.name rescue nil
     formatted_name ||= self.concept.concept_names.typed(tags).first.name || self.concept.fullname rescue nil
-    formatted_name ||= self.concept.concept_names.first.name rescue 'Unknown concept name'
+    formatted_name ||= self.concept.concept_names.last.name rescue 'Unknown concept name'
     "#{formatted_name}:  #{self.answer_string(tags)}"
   end
 
   def to_piped_s(tags=[])
     formatted_name = self.concept_name.typed(tags).name rescue nil
-    formatted_name ||= self.concept_name.name rescue nil
+    formatted_name ||= self.concept.concept_names.last.name rescue nil
     formatted_name ||= self.concept.concept_names.typed(tags).first.name || self.concept.fullname rescue nil
     formatted_name ||= self.concept.concept_names.first.name rescue 'Unknown concept name'
     "#{formatted_name}|  #{self.answer_string(tags)}"
@@ -115,7 +115,8 @@ class Observation < ActiveRecord::Base
   end
 
   def answer_string(tags=[])
-    name = self.concept.name.name rescue ""
+    name = self.concept.concept_names.last.name rescue ""
+    name = self.concept.name.name rescue "" if name.blank?
     coded_answer_name = self.answer_concept_name.name rescue nil
     coded_answer_name ||= self.answer_concept.concept_names.first.name rescue nil
     coded_name = "#{coded_answer_name} #{self.value_modifier}#{self.value_text} #{self.value_numeric}#{(name.upcase.match("TIME")?  self.value_datetime.strftime("%H:%M") : self.value_datetime.strftime("%d/%b/%Y")) rescue nil}#{self.value_boolean && (self.value_boolean == true ? 'Yes' : 'No' rescue nil)}#{' ['+order.to_s+']' if order_id && tags.include?('order')}"

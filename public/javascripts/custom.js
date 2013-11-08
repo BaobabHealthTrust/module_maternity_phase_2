@@ -163,7 +163,7 @@ function checkHIVTestDate(id){
 
     var weeks_ago = parseInt((today.getTime()- hiv_test_date.getTime())/ (1000 * 60 * 60 * 24 * 7));
 
-    if (weeks_ago > 12){
+    if (weeks_ago > 12 && $("1.1.1").value.toLowerCase().trim() != "reactive" ){
         showMessage("Patient needs to be tested now!", true);
         return "true";
     }

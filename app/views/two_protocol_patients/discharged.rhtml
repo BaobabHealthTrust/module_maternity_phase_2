@@ -15,7 +15,7 @@
 				Outcome 
 			</td>
 			<td>
-<input  id='1.1.1'   helpText='Outcome '  pos='0'  type='hidden'  value='Discharged'  name='concept[Outcome]' />
+<input  id='1.1.1'   helpText='Outcome '  type='hidden'  name='concept[Outcome]'  value='Discharged'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Discharged to Where? 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[DISCHARGED]' helpText='Discharged to Where? ' pos='1'  field_type='text' >
+<select id='1.1.2' name='concept[DISCHARGED]' helpText='Discharged to Where? ' field_type='text'  pos='1' >
 <option></option>
 <option value='Home'>Home</option>
  <option value='Home - Waiting'>Home - Waiting</option>
@@ -36,7 +36,7 @@
 				Which Health Facility 
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[HEALTH FACILITY]' helpText='Which Health Facility '  pos='2'  condition='__$("1.1.2").value.trim().toUpperCase() == "ANOTHER HEALTH FACILITY"'  allowFreeText='true'  ajaxURL='/encounters/static_locations?search_string='  fieldtype='text' />
+<input type='text' id='1.1.3'  name='concept[HEALTH FACILITY]' helpText='Which Health Facility '  allowFreeText='true'  fieldtype='text'  condition='__$("1.1.2").value.trim().toUpperCase() == "ANOTHER HEALTH FACILITY"'  ajaxURL='/encounters/static_locations?search_string='  pos='2' />
 			</td>
 		</tr>
 		<tr>
@@ -44,7 +44,7 @@
 				Select Discharge Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.4'   helpText='Select Discharge Diagnosis '  pos='3'  name='concept[Diagnosis][]'  allowFreeText='true'  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text' />
+<input type='text' id='1.1.4'   helpText='Select Discharge Diagnosis '  allowFreeText='true'  fieldtype='text'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  pos='3' />
 			</td>
 		</tr>
 		<tr>
@@ -52,7 +52,7 @@
 				Select Next Discharge Diagnosis 
 			</td>
 			<td>
-<input type='text' id='1.1.5'   helpText='Select Next Discharge Diagnosis '  pos='4'  optional='true'  condition='__$("1.1.4").value != ""'  name='concept[Diagnosis][]'  allowFreeText='true'  ajaxURL='/encounters/diagnoses?search_string='  fieldtype='text' />
+<input type='text' id='1.1.5'   helpText='Select Next Discharge Diagnosis '  allowFreeText='true'  fieldtype='text'  name='concept[Diagnosis][]'  condition='__$("1.1.4").value != ""'  ajaxURL='/encounters/diagnoses?search_string='  optional='true'  pos='4' />
 			</td>
 		</tr>
 	</table>

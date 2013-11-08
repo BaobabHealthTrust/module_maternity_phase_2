@@ -19,7 +19,7 @@
 				Scan baby barcode 
 			</td>
 			<td>
-<input type='text' id='1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}' />
+<input type='text' id='1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode '  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput(); id_string = "<%= @patient.babies_national_ids%>"; try{nat_id = "<%= params['national_id'] rescue ''%>"; if (nat_id.length > 1){__$("touchscreenInput" + tstCurrentPage).value = nat_id + "$";}}catch(ex){}'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -27,7 +27,7 @@
 				Admission date 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  pos='2'  condition='id_string.match(__$("1.1").value)'  tt_onLoad='$("Unknown").style.display = "none"'  field_type='date' />
+<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  tt_onLoad='$("Unknown").style.display = "none"'  condition='id_string.match(__$("1.1").value)'  field_type='date'  pos='2' />
 			</td>
 		</tr>
 		<tr>
@@ -35,7 +35,7 @@
 				Admission time 
 			</td>
 			<td>
-<input type='text' id='1.4'  name='concept[Admission time ]' helpText='Admission time '  pos='3'  condition='id_string.match(__$("1.1").value)'  field_type='advancedTime' />
+<input type='text' id='1.4'  name='concept[Admission time ]' helpText='Admission time '  condition='id_string.match(__$("1.1").value)'  field_type='advancedTime'  pos='3' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Baby weight at admission (grams) 
 			</td>
 			<td>
-<input type='text' id='1.5'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  max='5000'  pos='4'  absoluteMin='100'  field_type='number'  condition='id_string.match(__$("1.1").value)'  absoluteMax='10000'  tt_pageStyleClass='NumbersOnlyWithDecimal'  min='2000' />
+<input type='text' id='1.5'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  tt_pageStyleClass='NumbersOnlyWithDecimal'  min='2000'  absoluteMin='100'  absoluteMax='10000'  condition='id_string.match(__$("1.1").value)'  max='5000'  field_type='number'  pos='4' />
 			</td>
 		</tr>
 		<tr>
@@ -51,7 +51,7 @@
 				Baby temperature (<sup>o</sup>C) 
 			</td>
 			<td>
-<input type='text' id='1.6'  name='concept[temperature]' helpText='Baby temperature (<sup>o</sup>C) '  max='38'  pos='5'  absoluteMin='0'  condition='id_string.match(__$("1.1").value)'  field_type='number'  absoluteMax='70'  min='36'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal' />
+<input type='text' id='1.6'  name='concept[temperature]' helpText='Baby temperature (<sup>o</sup>C) '  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  absoluteMin='0'  min='36'  absoluteMax='70'  condition='id_string.match(__$("1.1").value)'  max='38'  field_type='number'  pos='5' />
 			</td>
 		</tr>
 		<tr>
@@ -59,7 +59,7 @@
 				Reason for admission 
 			</td>
 			<td>
-<input type='text' id='1.7'   helpText='Reason for admission '  ajaxUrl='/encounters/diagnoses?&search_string='  pos='6'  condition='id_string.match(__$("1.1").value)'  name='concept[Reason for admission][]' />
+<input type='text' id='1.7'   helpText='Reason for admission '  name='concept[Reason for admission][]'  condition='id_string.match(__$("1.1").value)'  ajaxUrl='/encounters/diagnoses?&search_string='  pos='6' />
 			</td>
 		</tr>
 		<tr>
@@ -67,7 +67,7 @@
 				Next reason for admission (Optional) 
 			</td>
 			<td>
-<input type='text' id='1.8'   helpText='Next reason for admission (Optional) '  ajaxUrl='/encounters/diagnoses?&search_string='  pos='7'  optional='true'  condition='id_string.match(__$("1.1").value)'  name='concept[Reason for admission][]' />
+<input type='text' id='1.8'   helpText='Next reason for admission (Optional) '  name='concept[Reason for admission][]'  condition='id_string.match(__$("1.1").value)'  optional='true'  ajaxUrl='/encounters/diagnoses?&search_string='  pos='7' />
 			</td>
 		</tr>
 		<tr>
@@ -75,7 +75,7 @@
 				General Condition 
 			</td>
 			<td>
-<input type='text' id='1.9'  name='concept[General condition]'   pos='8'  helpText='General condition of baby'  tt_onLoad='showGeneralConditionControl(); __$("keyboard").style.display = "none"'  condition='id_string.match(__$("1.1").value)'  tt_pageStyleClass='NoKeyboard' />
+<input type='text' id='1.9'  name='concept[General condition]'   tt_onLoad='showGeneralConditionControl(); __$("keyboard").style.display = "none"'  helpText='General condition of baby'  tt_pageStyleClass='NoKeyboard'  condition='id_string.match(__$("1.1").value)'  pos='8' />
 			</td>
 		</tr>
 	</table>
