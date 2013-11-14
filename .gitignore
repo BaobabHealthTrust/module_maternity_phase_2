@@ -2,6 +2,7 @@ log/
 tmp/
 config/roles/
 public/images/patient_id.png
+public/images/baby_id.png
 nbproject/
 *.swap
 *.yml
