@@ -15,7 +15,7 @@ Q.1.7. Reason for admission [pos: 6, name: concept[Reason for admission][], cond
 
 Q.1.8. Next reason for admission (Optional) [optional: true, pos: 7, name: concept[Reason for admission][], condition: id_string.match(__$("1.1").value), ajaxUrl: /encounters/diagnoses?&search_string=]
 
-Q.1.9. Blood sugar [pos: 8, name: concept[Blood sugar], field_type: number, condition: id_string.match(__$("1.1").value)]
+Q.1.9. Blood sugar (mg/dL) [pos: 8, name: concept[Blood sugar], min: 30, max: 150, field_type: number, condition: id_string.match(__$("1.1").value)]
 
 Q.1.10. Vitamin K given [pos: 9, name: concept[Vitamin K given?], condition: id_string.match(__$("1.1").value)]
 O.1.10.1. No

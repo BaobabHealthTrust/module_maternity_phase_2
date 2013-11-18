@@ -43,8 +43,12 @@ class EncountersController < ApplicationController
         
       end
 
-      if !my_baby.blank? && request.referrer.match(/BABY\_ADMISSION\_NOTE/i)
+      adm_note = !my_baby.blank? && request.referrer.match(/BABY\_ADMISSION\_NOTE/i)
+    
+      if adm_note && my_baby.last.patient.recent_admission(session_date).present?
         redirect_to "/patients/baby_admissions_note?identifier=#{params['concept']['Baby identifier']}&patient_id=#{params[:patient_id]}&user_id=#{session[:user_id] || params[:user_id]}" and return
+      elsif adm_note
+        redirect_to "/encounters/missing_admission" and return
       end
     
       if ((my_baby.blank? || !my_children.include?(my_baby.last.patient.patient_id)) rescue true)        

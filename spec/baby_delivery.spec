@@ -17,9 +17,9 @@ Q.1.1.5. Gender [pos: 4, name: concept[Gender], concept: Gender, helpText: <%= p
 O.1.1.5.1. Male
 O.1.1.5.2. Female
 
-Q.1.1.6. Presentation [pos: 5, name: concept[Presentation], ajaxURL: /encounters/presentation?search_string=, field_type: text, concept: Presentation, helpText: <%= params["prefix"] %> Presentation]
+Q.1.1.6. Presentation [pos: 5, tt_onLoad: $("keyboard").style.display = "none", name: concept[Presentation], ajaxURL: /encounters/presentation?search_string=, field_type: text, concept: Presentation, helpText: <%= params["prefix"] %> Presentation]
 
-Q.1.1.7. Delivery Outcome [pos: 6, name: concept[BABY OUTCOME], ajaxURL: /encounters/concept_set_options?set=baby_outcome&search_string=, field_type: text, concept: BABY OUTCOME, helpText: <%= params["prefix"] %> Delivery Outcome]
+Q.1.1.7. Delivery Outcome [pos: 6, tt_onLoad: $("keyboard").style.display = "none", name: concept[BABY OUTCOME], ajaxURL: /encounters/concept_set_options?set=baby_outcome&search_string=, field_type: text, concept: BABY OUTCOME, helpText: <%= params["prefix"] %> Delivery Outcome]
 
 Q.1.1.8. Baby on NVP? [pos: 7, name: concept[Baby on NVP?], tt_BeforeUnload: checkNVPStart("1.1.8"), condition: __$("1.1.7").value.toLowerCase().trim() == "alive" && <%= (@patient.hiv_status.downcase.strip == "positive" rescue false)%>, helpText: <%= params["prefix"] %> on NVP?]
 O.1.1.8.1. No
@@ -63,7 +63,7 @@ Q.1.17. Resuscitation Required? [disabled: disabled, pos: 17]
 O.1.17.1. No
 O.1.17.2. Yes
 
-Q.1.18.2.1. Resuscitation Type [pos: 18, condition: __$("1.17").value.trim().toUpperCase() == "YES",   tt_onLoad: $("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"]
+Q.1.18.2.1. Resuscitation Type [pos: 18, condition: __$("1.17").value.trim().toUpperCase() == "YES",   tt_onLoad: $("keyboard").style.display = "none";]
 O.1.18.2.1.1. Ventilation
 O.1.18.2.1.2. Suctioning
 O.1.18.2.1.3. Heart massage

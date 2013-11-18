@@ -15,7 +15,7 @@
 				Perineum 
 			</td>
 			<td>
-<select id='1.1.1' name='concept[Perineum]' helpText='Perineum ' pos='0'  field_type='text' >
+<select id='1.1.1' name='concept[Perineum]' helpText='Perineum ' field_type='text'  pos='0' >
 <option></option>
 <option value='Intact'>Intact</option>
  <option value='Tear'>Tear</option>
@@ -29,7 +29,7 @@
 				Tear extent 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[TEAR]' helpText='Tear extent ' condition='__$("1.1.1").value.trim().toUpperCase() == "TEAR"'  pos='1'  field_type='text' >
+<select id='1.1.2' name='concept[TEAR]' helpText='Tear extent ' condition='__$("1.1.1").value.trim().toUpperCase() == "TEAR"'  field_type='text'  pos='1' >
 <option></option>
 <option value='1 Degree'>1 Degree</option>
  <option value='2 Degrees'>2 Degrees</option>
@@ -55,7 +55,7 @@
 				Mother blood group 
 			</td>
 			<td>
-<select id='1.2.2.1' name='concept[Blood Group]' helpText='Mother blood group ' condition='__$("1.2").value == "Yes"'  tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"'  pos='3' >
+<select id='1.2.2.1' name='concept[Blood Group]' helpText='Mother blood group ' condition='__$("1.2").value == "Yes"'  pos='3'  tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"' >
 <option></option>
 <option value='A-'>A-</option>
  <option value='A+'>A+</option>
@@ -73,7 +73,7 @@
 				VDRL Status 
 			</td>
 			<td>
-<select id='1.3' name='concept[VDRL]' helpText='VDRL Status ' tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"'  tt_BeforeUnLoad='checkVDRLStatus("1.3")'  pos='4' >
+<select id='1.3' name='concept[VDRL]' helpText='VDRL Status ' tt_BeforeUnLoad='checkVDRLStatus("1.3")'  pos='4'  tt_onLoad='$("keyboard").style.display = "none"; $("inputFrame" + tstCurrentPage).style.height = "550px"; $("viewport").style.height = "550px"' >
 <option></option>
 <option value='Treated'>Treated</option>
  <option value='Reactive'>Reactive</option>
@@ -87,7 +87,7 @@
 				Complications 
 			</td>
 			<td>
-<input type='text' id='1.5'     helpText='Select mother complication'  name='concept[Complications][]'  pos='6'  ajaxURL='/encounters/list_complications?search_string=' />
+<input type='text' id='1.5'     ajaxURL='/encounters/list_complications?search_string='  name='concept[Complications][]'  pos='6'  helpText='Select mother complication' />
 			</td>
 		</tr>
 		<tr>
@@ -95,7 +95,7 @@
 				Specify 
 			</td>
 			<td>
-<input type='text' id='1.6'  name='concept[Specify ]' helpText='Specify '  tt_onUnload='$("1.5").value = $("1.6").value'  disabled='disabled'  condition='$("1.5").value == "Other"'  pos='7' />
+<input type='text' id='1.6'  name='concept[Specify ]' helpText='Specify '  tt_onUnload='$("1.5").value = $("1.6").value'  condition='$("1.5").value == "Other"'  disabled='disabled'  pos='7' />
 			</td>
 		</tr>
 		<tr>
@@ -103,7 +103,7 @@
 				Complications 
 			</td>
 			<td>
-<input type='text' id='1.7'     helpText='Select next mother complication'  condition='!($("1.6").value.length > 0) && ($("1.5").value.toLowerCase().trim() != "none")'  name='concept[Complications][]'  pos='8'  ajaxURL='/encounters/list_complications?search_string=' />
+<input type='text' id='1.7'     condition='!($("1.6").value.length > 0) && ($("1.5").value.toLowerCase().trim() != "none")'  ajaxURL='/encounters/list_complications?search_string='  name='concept[Complications][]'  pos='8'  helpText='Select next mother complication' />
 			</td>
 		</tr>
 		<tr>
@@ -111,7 +111,7 @@
 				Specify 
 			</td>
 			<td>
-<input type='text' id='1.8'  name='concept[Specify ]' helpText='Specify '  tt_onUnload='$("1.7").value = $("1.8").value'  disabled='disabled'  condition='$("1.7").value == "Other"'  pos='9' />
+<input type='text' id='1.8'  name='concept[Specify ]' helpText='Specify '  tt_onUnload='$("1.7").value = $("1.8").value'  condition='$("1.7").value == "Other"'  disabled='disabled'  pos='9' />
 			</td>
 		</tr>
 		<tr>
@@ -119,7 +119,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.9'   helpText='Next URL '  type='hidden'  name='next_url'  pos='10'  value='/two_protocol_patients/delivery_procedures?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>' />
+<input  id='1.9'   helpText='Next URL '  value='/two_protocol_patients/delivery_procedures?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>'  name='next_url'  pos='10'  type='hidden' />
 			</td>
 		</tr>
 	</table>

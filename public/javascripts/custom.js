@@ -515,8 +515,12 @@ function updateFromVariables(){
         setTimeout("updateFromVariables()", 100);
         
     }catch(ex){
-        if (document.location.toString().match(/protocol\_patients/)){         
-            setTimeout("updateFromVariables()", 100)
+        try{
+            if (document.location.toString().match(/protocol\_patients/)){
+                setTimeout("updateFromVariables()", 100)
+            }
+        }catch(x){
+            
         }
     }
    

@@ -17,7 +17,7 @@
 				Systolic Blood Pressure 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[SYSTOLIC BLOOD PRESSURE]' helpText='Systolic Blood Pressure '  absoluteMax='250'  min='90'  tt_onLoad='bpOn = 1; bpAlerts(); calculateBP("1.1.1*1.1.2*1")'  units='mm Hg'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  max='140'  allowFreeText='true'  absoluteMin='20'  pos='0'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""; bpOn = false;'  field_type='number' />
+<input type='text' id='1.1.1'  name='concept[SYSTOLIC BLOOD PRESSURE]' helpText='Systolic Blood Pressure '  allowFreeText='true'  min='90'  units='mm Hg'  field_type='number'  absoluteMin='20'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  pos='0'  max='140'  tt_onLoad='bpOn = 1; bpAlerts(); calculateBP("1.1.1*1.1.2*1")'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""; bpOn = false;'  absoluteMax='250' />
 			</td>
 		</tr>
 		<tr>
@@ -25,7 +25,7 @@
 				Diastolic Blood Pressure 
 			</td>
 			<td>
-<input type='text' id='1.1.2'  name='concept[DIASTOLIC BLOOD PRESSURE]' helpText='Diastolic Blood Pressure '  absoluteMax='135'  min='60'  tt_onLoad='bpOn = 2; bpAlerts(); calculateBP("1.1.1*1.1.2*2")'  units='mm Hg'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  max='90'  allowFreeText='true'  absoluteMin='35'  pos='1'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""; bpOn = false;'  field_type='number' />
+<input type='text' id='1.1.2'  name='concept[DIASTOLIC BLOOD PRESSURE]' helpText='Diastolic Blood Pressure '  allowFreeText='true'  min='60'  units='mm Hg'  field_type='number'  absoluteMin='35'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  pos='1'  max='90'  tt_onLoad='bpOn = 2; bpAlerts(); calculateBP("1.1.1*1.1.2*2")'  tt_onUnLoad='window.clearInterval(timedEvent); temp = ""; bpOn = false;'  absoluteMax='135' />
 			</td>
 		</tr>
 		<tr>
@@ -33,7 +33,7 @@
 				Pulse (Beats Per Minute)
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[PULSE]' helpText='Pulse (Beats Per Minute)'  absoluteMax='160'  min='50'  tt_onLoad='attribute("1.1.3*validationRule*([0-9]+)|Unknown$")'  units='bpm'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  max='120'  absoluteMin='0'  pos='3'  field_type='number' />
+<input type='text' id='1.1.3'  name='concept[PULSE]' helpText='Pulse (Beats Per Minute)'  min='50'  units='bpm'  field_type='number'  absoluteMin='0'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  pos='3'  max='120'  tt_onLoad='attribute("1.1.3*validationRule*([0-9]+)|Unknown$")'  absoluteMax='160' />
 			</td>
 		</tr>
 		<tr>
@@ -41,7 +41,7 @@
 				Respiration (Breaths Per Minute) 
 			</td>
 			<td>
-<input type='text' id='1.1.4'  name='concept[RESPIRATION]' helpText='Respiration (Breaths Per Minute) '  absoluteMax='200'  min='12'  tt_onLoad='attribute("1.1.4*validationRule*([0-9]+)|Unknown$")'  units='bpm'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  max='20'  absoluteMin='0'  pos='4'  field_type='number' />
+<input type='text' id='1.1.4'  name='concept[RESPIRATION]' helpText='Respiration (Breaths Per Minute) '  min='12'  units='bpm'  field_type='number'  absoluteMin='0'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  pos='4'  max='20'  tt_onLoad='attribute("1.1.4*validationRule*([0-9]+)|Unknown$")'  absoluteMax='200' />
 			</td>
 		</tr>
 		<tr>
@@ -49,7 +49,7 @@
 				Temperature 
 			</td>
 			<td>
-<input type='text' id='1.1.5'  name='concept[TEMPERATURE]'   absoluteMax='100'  min='36.5'  helpText='Temperature (<sup>o</sup>C)'  tt_onLoad='attribute("1.1.5*validationRule*([0-9]+)|Unknown$")'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  max='37.5'  absoluteMin='0'  pos='5'  field_type='number' />
+<input type='text' id='1.1.5'  name='concept[TEMPERATURE]'   min='36.5'  field_type='number'  absoluteMin='0'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  pos='5'  max='37.5'  tt_onLoad='attribute("1.1.5*validationRule*([0-9]+)|Unknown$")'  helpText='Temperature (<sup>o</sup>C)'  absoluteMax='100' />
 			</td>
 		</tr>
 		<tr>
@@ -57,7 +57,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.6'   helpText='Next URL '  type='hidden'  name='ret'  pos='6'  value='post-natal' />
+<input  id='1.1.6'   helpText='Next URL '  value='post-natal'  name='ret'  pos='6'  type='hidden' />
 			</td>
 		</tr>
 	</table>

@@ -27,10 +27,6 @@
 
       }
 
-      inner-cell{
-        width: 25%;
-      }
-
       body {
         background-color: white;
       }
@@ -143,15 +139,21 @@
         <tr style="border: hidden">
 
           <td colspan="4" class ="data-group" style=" background: white; padding-left: 30px; border: hidden; padding-top: 5px; ">
+
+            &nbsp<br />
+            &nbsp<br />
+            &nbsp<br />
+            &nbsp<br />
+
             Reasons for referral:   &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span style=""> <%= @referral_details["REASON FOR REFERRAL"]%></span>
           </td>
 
         </tr>
         <tr>
           <td class ="data-group" colspan="2" style="width: 50%">
-            <table cellspacing="3" >
+            <table cellspacing="3" style="width: 100%">
               <tr>
-                <th colspan="2">
+                <th colspan="2" style="text-align: left">
                   <b>Maternal History:</b>
                 </th>
 
@@ -161,7 +163,7 @@
                 <td class="cell-group">
                   HIV Status
                 </td>
-                <td class="cell-group">
+                <td class="cell-group" style="width: 65%">
                   : <%= @maternal_history["HIV STATUS"] %>
                 </td>
               </tr>
@@ -212,9 +214,9 @@
 
           <td class ="data-group" colspan="2">
 
-            <table cellspacing="3" >
+            <table cellspacing="3" style="width: 100%" >
               <tr>
-                <th colspan="2">
+                <th colspan="2" style="text-align: left">
                   <b>Birth History:</b>
                 </th>
 
@@ -224,7 +226,7 @@
                 <td class="cell-group">
                   Delivery time
                 </td>
-                <td class="cell-group">
+                <td class="cell-group" style="width: 65%">
                   : <%= @birth_history["DATE OF CONFINEMENT"].titleize %> &nbsp&nbsp&nbsp&nbsp <%= @birth_history["TIME OF DELIVERY"].titleize %>
                 </td>
               </tr>
@@ -286,9 +288,9 @@
 
         <tr >
           <td class ="data-group" colspan="2" style="width: 50%">
-            <table cellspacing="3" >
+            <table cellspacing="3" style="width: 100%">
               <tr>
-                <th colspan="2">
+                <th colspan="2" style="text-align: left">
                   <b>Maternal Complications:</b>
                 </th>
 
@@ -298,7 +300,7 @@
                 <td class="cell-group">
                   Diagnosis
                 </td>
-                <td class="cell-group">
+                <td class="cell-group" style="width: 65%">
 
                   : <%=  @maternal_complications["DIAGNOSIS"]%>
                 </td>
@@ -325,9 +327,9 @@
           </td>
 
           <td class ="data-group" colspan="2">
-            <table cellspacing="3" >
+            <table cellspacing="3" style="width: 100%">
               <tr>
-                <th colspan="2">
+                <th colspan="2" style="text-align: left; width: 100%">
                   <b>Birth Complications</b>
                 </th>
 
@@ -337,7 +339,7 @@
                 <td class="cell-group">
                   Asphyxia
                 </td>
-                <td class="cell-group">
+                <td class="cell-group" style="width: 65%">
 
                   : <%=  (((@birth_complications["NEWBORN BABY COMPLICATIONS"].match(/Asphyxia/i)? "Yes  --> Action taken: " : "") + @birth_complications["ADVERSE EVENT ACTION TAKEN"]) rescue nil)%>
                 </td>
@@ -381,7 +383,7 @@
           <td class ="data-group"  colspan="4">
             <table cellspacing="3" style="width: 100%">
               <tr>
-                <th colspan="4">
+                <th colspan="4" style="text-align: left">
                   <b>Admission details</b>
                 </th>
 

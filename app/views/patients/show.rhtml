@@ -30,9 +30,14 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
       }
       for (var i = 0; i < bts.length; i ++){
         if(!bts[i].path && !clas){
+         
+          if (bts[i].innerHTML == "Social History" && task_status_map["social history"] == "done"){
+            bts[i].className = "menu_button done";
+          }
+
           //hack sub menu
           bts[i].onmousedown = function(){
-
+          
             this.onmouseup = function(){
 
               setTimeout("paintButtons('menu_button')", 20)
@@ -46,7 +51,7 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
             if (task_status_map[text] == "done"){
               bts[i].className = "menu_button done";
 
-              if  (!(text.match(/vitals|admission|pmtct|vaginal|patient\shistory|\sexam/i))){
+              if  (!(text.match(/notes|vitals|admission|pmtct|vaginal|patient\shistory|\sexam/i))){
                 bts[i].onclick = function(){
                   showMessage("Feature already done. </br> Delete previous entry and try again!", false, false);
                 }

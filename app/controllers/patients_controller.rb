@@ -94,15 +94,21 @@ class PatientsController < ApplicationController
       redirect_to @next_user_task[1] #and return if (session[:autoflow] == "true")
       
     end if @patient.is_discharged_mother?
-    
+
     if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
 
       @next_user_task = ["Social History",
         "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}"
       ]
 
+      social_history = 0
+
       redirect_to @next_user_task[1] and return if (session[:autoflow] == "true")
 
+    else
+
+      social_history = 1
+      
     end
 
     @links = {}
@@ -145,7 +151,7 @@ class PatientsController < ApplicationController
         encounter_name = @label_encounter_map[task.upcase]rescue nil
         concept = @task.task_scopes[task][:concept].upcase rescue nil
        
-        @task_status_map[task] = done_ret(scope, encounter_name, "", concept) unless task.upcase.match(/notes/i)
+        @task_status_map[task] = done_ret(scope, encounter_name, "", concept) #unless task.upcase.match(/notes/i)
    
         @links[task.titleize] = "/#{ctrller}/#{task.downcase.gsub(/\s/, "_")}?patient_id=#{
         @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
@@ -171,7 +177,7 @@ class PatientsController < ApplicationController
           concept = @task.task_scopes[t.downcase][:concept].upcase rescue nil
           ret = task[0].titleize.match(/ante natal|post natal/i)[0].gsub(/\s/, "-").downcase rescue ""
        
-          @task_status_map[t] = done_ret(scope, encounter_name, ret, concept) unless t.upcase.match(/notes/i)
+          @task_status_map[t] = done_ret(scope, encounter_name, ret, concept)# unless t.upcase.match(/notes/i)
         
           @links[task[0].titleize][t.titleize] = "/#{ctrller}/#{t.downcase.gsub(/\s/, "_").downcase}?patient_id=#{
           @patient.id}&user_id=#{params[:user_id]}"
@@ -180,6 +186,8 @@ class PatientsController < ApplicationController
       end
 
     }
+
+    @task_status_map["SOCIAL HISTORY"] = "done" if social_history == 1
    
     @links.delete_if{|key, link|
       @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
@@ -300,7 +308,7 @@ class PatientsController < ApplicationController
       encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
       concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
 
-      next if encounter.match(/note/i)
+      # next if encounter.match(/note/i)
       
       if done_ret(scope, encounter_name, "ante-natal", concept) == "notdone"
         display_task_name = encounter.match(/natal/i)? encounter : ("ante natal " + encounter).humanize
@@ -331,7 +339,7 @@ class PatientsController < ApplicationController
         scope = "TODAY" if scope.blank?
         encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
         concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
-        next if encounter.match(/note/i)
+        #next if encounter.match(/note/i)
         
         if done_ret(scope, encounter_name, "post-natal", concept) == "notdone"
 
@@ -1245,7 +1253,7 @@ class PatientsController < ApplicationController
     @facility = get_global_property_value("facility.name") rescue ""
 
     @maternal_history = @mother.maternal_history
-    
+    raise @maternal_history.to_yaml
     @birth_history = @baby.birth_history
 
     @maternal_complications = @mother.maternal_complications
