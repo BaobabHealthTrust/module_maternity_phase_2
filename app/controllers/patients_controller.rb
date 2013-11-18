@@ -1253,7 +1253,7 @@ class PatientsController < ApplicationController
     @facility = get_global_property_value("facility.name") rescue ""
 
     @maternal_history = @mother.maternal_history
-    raise @maternal_history.to_yaml
+    #raise @maternal_history.to_yaml
     @birth_history = @baby.birth_history
 
     @maternal_complications = @mother.maternal_complications
