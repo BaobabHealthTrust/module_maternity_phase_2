@@ -127,7 +127,7 @@
     </style>
 
   </head>
-  <body>
+  <body onload="setDefaultView()">
     <div id="content" style="background-color: #fff; border-top: 1px #fff solid; margin-top: 0px;">
 
       <h2 style="color: #6281a7; margin-top: -2px; margin-bottom: 0px; padding-left: 10px;">
@@ -157,7 +157,7 @@
 
                         <div style="width: 100%; display: table; border-spacing: 0px;">
 
-                          <div id="<%= "parent_program#{@programs[e][0]}" %>" style="display: table-row;"
+                          <div class="<%=  "p#{e}"%>" id="<%= "parent_program#{@programs[e][0]}" %>" style="display: table-row;"
                                onclick="__$('obs').innerHTML = '';checkRadio('program<%= @programs[e][0] %>', controlsSet1);
                                  ajaxCustomRequest(__$('encounters'), '/list_encounters?user_id=<%= params[:user_id]
                              %>&program_id=<%= @programs[e][0] %>', 'program')">
@@ -177,10 +177,7 @@
 
                               <%= @programs[e][1] %>
 
-                              <!--div style="font-size: 0.5em; font-style: italic;
-                                   vertical-align: middle;">
-                                (<%= @programs[e][3] %>)
-                              </div-->
+                              (<%= @programs[e][3] %>)
 
                             </div>
                           </div>
@@ -219,6 +216,16 @@
 
       function __$(id){
         return document.getElementById(id);
+      }
+
+      function setDefaultView(){
+        var program_one = document.getElementsByClassName("p0")[0]
+
+        if (program_one){
+          program_one.onclick.apply(program_one);
+        }
+
+
       }
 
       function checkRadio(id, controls){
@@ -357,6 +364,11 @@
                 cell2.appendChild(imgDel);
               }catch(c){}
 
+            }
+            
+            var encounter_one = __$("parent_encounter" + result[0][0]);
+            if (encounter_one){
+              encounter_one.onclick.apply(encounter_one);
             }
 
           } else {

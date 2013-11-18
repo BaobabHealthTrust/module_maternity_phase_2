@@ -491,7 +491,7 @@ class Patient < ActiveRecord::Base
       label.draw_text(" Breast Fed In 60 min?: ",28,170,0,2,1,1,false)
       label.draw_text(" On NVP?              : ",28,200,0,2,1,1,false)
       label.draw_text(" Comments             : ", 28,230,0,2,1,1,false)
-
+      
       label.draw_text("#{values['PLACE OF DELIVERY']}",248,80,0,2,1,1,false)
       label.draw_text("#{values['TETRACYCLINE EYE OINTMENT GIVEN?']}",248,110,0,2,1,1,false)
       label.draw_text("#{values['NEWBORN BABY COMPLICATIONS']}",248,140,0,2,1,1,false)
@@ -633,14 +633,16 @@ class Patient < ActiveRecord::Base
     } unless vxam_enc.blank?
 
     if ((vxam["RUPTURE TIME"].present? && vxam["RUPTURE DATE"].present?) rescue false)
-      vxam["RUPTURE DELAY"] = "#{vxam['RUPTURE DATE'].to_date.to_s} #{vxam['RUPTURE TIME']}".to_datetime
+      vxam["RUPTURE DELAY"] = "#{vxam['RUPTURE DATE'].to_date.to_s} &nbsp&nbsp  #{vxam['RUPTURE TIME']}"
+      
       dod =  self.valid_delivery_time(today)
-      self.encounters.find(:last, :conditions => ["encounter_datetime > ?", (dod.to_datetime - 30.days)])
+      doa =  self.valid_admission_time(dod)
+      
+      diff = ((doa.to_time - vxam["RUPTURE DELAY"].to_time)/3600) rescue nil
+      
+      result["ROM"] = "At &nbsp&nbsp #{vxam["RUPTURE DELAY"]}  &nbsp&nbsp (#{diff.round} hrs from admission) " rescue "Unknown"
     end
-    
-    lmp = self.lmp(today)
-    
-    result["LMP"] = lmp    
+      
     result["VXAM"] = vxam    
     result
 
@@ -656,8 +658,24 @@ class Patient < ActiveRecord::Base
       :conditions => ["DATE(obs_datetime) >= ? AND voided = 0 AND concept_id = ?",
         (session_date.to_date - 9.months), ConceptName.find_by_name("TIME OF DELIVERY").concept_id]).answer_string.strip rescue nil
     return nil if time.blank?
-    
+
     "#{date.to_date.to_s} #{time}"
+    
+  end
+
+  def valid_admission_time(session_date = Date.today)
+    date = Observation.find(:last, :order => ["obs_datetime ASC"],
+      :conditions => ["DATE(obs_datetime) >= ?  AND DATE(obs_datetime) <= ? AND  voided = 0 AND concept_id = ?",
+        (session_date.to_date - 9.months), session_date.to_date, ConceptName.find_by_name("ADMISSION DATE").concept_id]).answer_string.strip rescue nil
+    return nil if date.blank?
+
+    time = Observation.find(:last, :order => ["obs_datetime ASC"],
+      :conditions => ["DATE(obs_datetime) >= ? AND DATE(obs_datetime) <= ? AND voided = 0 AND concept_id = ?",
+        (session_date.to_date - 9.months), session_date.to_date, ConceptName.find_by_name("ADMISSION TIME").concept_id]).answer_string.strip rescue nil
+    return nil if time.blank?
+
+    "#{date.to_date.to_s} #{time}"
+
   end
 
   def birth_history(today = Date.today)
