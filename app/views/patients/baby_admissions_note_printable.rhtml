@@ -1,0 +1,547 @@
+<html>
+  <head>
+    <title></title>
+
+    <style>
+      td {
+        border: 1px solid #000;
+        vertical-align: top;
+        font-size: 14px;
+        border-radius: 2px;
+      }
+
+      .data-group{
+        border-radius: 3px;
+        border-color: black;
+        background: lavender;
+        margin: 5px;
+        padding: 1px;
+        padding-left: 30px;
+      }
+
+      .cell-group{
+        border: hidden;       
+        vertical-align: top;
+        font-size: 14px;
+        padding-left: 15px;
+
+      }
+
+      inner-cell{
+        width: 25%;
+      }
+
+      body {
+        background-color: white;
+      }
+
+      .details td {
+        border: 1px solid #000;
+        vertical-align: middle;
+        font-size: 14px;
+        border-radius: 2px;
+      }
+
+    </style>
+    <style media="screen">
+      .holder{
+        padding: 0px;
+        margin-top: 50px;
+        height: 88%;
+        min-height: 80%;
+        overflow-Y: auto;
+        overflow-X: hidden;
+      }
+
+    </style>
+    <style media="print">
+      body {
+        background-color: white;
+      }
+
+      .details td {
+
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+      .holder{
+        margin-top: 40%;
+        overflow-Y: hidden;        
+      }
+
+      .main-table{
+        margin-top: 25px !important;
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <div class="holder" style="width: 100%;">
+
+      <table class="main-table" width="99%" style="margin: 5px; margin-top: 5px;" cellspacing="3">
+
+        <tr >
+
+          <td class="details" colspan="4" style="border-radius: 5px;">
+            <table width="99%"  cellspacing="5" >
+              <tr>
+                <th colspan="6" style="font-size: 24px; padding: 10px;">
+                  <%= @facility %> - Baby Admission Note
+                </th>
+              </tr>
+
+              <tr>
+                <td>
+                  <b>Baby Registration Number:</b>
+                </td>
+                <td>
+                  <%= @baby.serial_number %>
+                </td>
+                <td colspan="2" align="center" rowspan="7">
+                  <br /> <img src="/images/baby_id.png" alt="National Id" /><br><span>Baby: &nbsp&nbsp&nbsp <%= @baby.person.name  %>  (<%= @baby.national_id_with_dashes %>)</span>
+                </td>
+                <td colspan="2" align="center" rowspan="7">
+                  <br /> <img src="/images/baby_id.png" alt="National Id" /><br><span>Mother: &nbsp&nbsp&nbsp <%= @mother.person.name  %>  (<%= @mother.national_id_with_dashes %>)</span>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <b>Baby Age:</b>
+                </td>
+                <td>
+                  <%= @baby.age_in_months((session[:datetime].to_date rescue Date.today)) %> Months
+                </td>
+              </tr>
+
+
+              <tr>
+                <td>
+                  <b>Mother's Admission No:</b>
+                </td>
+                <td >
+                  num
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <b>Address:</b>
+                </td>
+                <td>
+                  <%= @baby.address %>
+                </td>
+              </tr>              
+
+            </table>
+
+          </td >
+
+        </tr>
+
+        <tr style="border: hidden">
+
+          <td colspan="4" class ="data-group" style=" background: white; padding-left: 30px; border: hidden; padding-top: 5px; ">
+            Reasons for referral:   &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span style=""> <%= @referral_details["REASON FOR REFERRAL"]%></span>
+          </td>
+
+        </tr>
+        <tr>
+          <td class ="data-group" colspan="2" style="width: 50%">
+            <table cellspacing="3" >
+              <tr>
+                <th colspan="2">
+                  <b>Maternal History:</b>
+                </th>
+
+              </tr>
+
+              <tr>
+                <td class="cell-group">
+                  HIV Status
+                </td>
+                <td class="cell-group">
+                  : <%= @maternal_history["HIV STATUS"] %>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  VDRL
+                </td>
+                <td class="cell-group">
+                  : <%= @maternal_history["VDRL"] %>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Rhesus Factor
+                </td>
+                <td class="cell-group">
+                  : <%= ((@maternal_history["BLOOD TYPING"].match(/\-|\+/)[0].to_s + "ve") rescue "Unknown") %>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="cell-group">
+                  Membranes
+                </td>
+                <td class="cell-group">
+                  : <%=  @maternal_history["VXAM"]["RUPTURE DELAY"] %>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Liquor
+                </td>
+                <td class="cell-group">
+                  : <%= @maternal_history["VXAM"]["COLOUR OF LIQOUR"] %>
+                </td>
+
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Gestational age
+                </td>
+                <td class="cell-group">
+                  : <%= @prematurity %>
+                </td>
+              </tr>
+            </table>
+          </td>
+
+          <td class ="data-group" colspan="2">
+
+            <table cellspacing="3" >
+              <tr>
+                <th colspan="2">
+                  <b>Birth History:</b>
+                </th>
+
+              </tr>
+
+              <tr>
+                <td class="cell-group">
+                  Delivery time
+                </td>
+                <td class="cell-group">
+                  : <%= @birth_history["DATE OF CONFINEMENT"].titleize %> &nbsp&nbsp&nbsp&nbsp <%= @birth_history["TIME OF DELIVERY"].titleize %>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Mode of delivery
+                </td>
+                <td class="cell-group">
+                  : <%= @birth_history["DELIVERY MODE"] %>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="cell-group">
+                  Birth Weight
+                </td>
+                <td class="cell-group">
+                  : <%=  @birth_history["BIRTH WEIGHT"].blank? ? "?" : (@birth_history["BIRTH WEIGHT"].to_i.to_s + " grams")%>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Sex
+                </td>
+                <td class="cell-group">
+                  : <%= @birth_history["GENDER"] %>
+                </td>
+
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Place of delivery
+                </td>
+                <td class="cell-group">
+                  : <%= @birth_history["PLACE OF DELIVERY"] %>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Rescuscitation
+                </td>
+                <td class="cell-group">
+                  : <%= @birth_history["RESUSCITATION TYPE"]%>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  APGAR Score
+                </td>
+                <td class="cell-group">
+                  : 1<sup>st</sup> Min = <%= @birth_history["APGAR MINUTE ONE"] %>  &nbsp&nbsp&nbsp 2<sup>nd</sup> Min= <%= @birth_history["APGAR MINUTE FIVE"] %>
+                </td>
+              </tr>
+            </table>
+          </td>
+
+
+        </tr>
+
+        <tr >
+          <td class ="data-group" colspan="2" style="width: 50%">
+            <table cellspacing="3" >
+              <tr>
+                <th colspan="2">
+                  <b>Maternal Complications:</b>
+                </th>
+
+              </tr>
+
+              <tr>
+                <td class="cell-group">
+                  Diagnosis
+                </td>
+                <td class="cell-group">
+
+                  : <%=  @maternal_complications["DIAGNOSIS"]%>
+                </td>
+
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Complications
+                </td>
+                <td class="cell-group">
+                  : <%=  @maternal_complications["COMPLICATIONS"]%>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Drugs
+                </td>
+                <td class="cell-group">
+                  : <%=  @maternal_complications["DRUGS"]%>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+
+          <td class ="data-group" colspan="2">
+            <table cellspacing="3" >
+              <tr>
+                <th colspan="2">
+                  <b>Birth Complications</b>
+                </th>
+
+              </tr>
+
+              <tr>
+                <td class="cell-group">
+                  Asphyxia
+                </td>
+                <td class="cell-group">
+
+                  : <%=  (((@birth_complications["NEWBORN BABY COMPLICATIONS"].match(/Asphyxia/i)? "Yes  --> Action taken: " : "") + @birth_complications["ADVERSE EVENT ACTION TAKEN"]) rescue nil)%>
+                </td>
+
+              </tr>
+
+
+              <tr>
+                <td class="cell-group">
+                  LBW
+                </td>
+                <td class="cell-group">
+                  <% @wt = @baby.birth_weight %>
+                  : <%= (@wt > 0 and @wt < 2500) ? "Yes" : (@wt >= 2500 ? "No" : "Unknown") %>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group">
+                  Prematurity
+                </td>
+                <td class="cell-group">
+                  : <%=  @prem%>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="cell-group">
+                  KMC Initiated
+                </td>
+                <td class="cell-group">
+                  : <%=  @baby.kmc_started?%>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+
+          <td class ="data-group"  colspan="4">
+            <table cellspacing="3" style="width: 100%">
+              <tr>
+                <th colspan="4">
+                  <b>Admission details</b>
+                </th>
+
+              </tr>
+
+              <tr>
+
+                <td class="cell-group inner-cell">
+                  Admission time
+                </td>
+
+                <td class="cell-group inner-cell">
+                  : <%= (@admission_details["ADMISSION DATE"] + " " +  @admission_details["ADMISSION TIME"]) %>
+                </td>
+
+                <td class="cell-group inner-cell">
+                  Condition on arrival
+                </td>
+
+                <td class="cell-group inner-cell">
+
+                  : <%= @admission_details["GENERAL CONDITION"]%>
+                </td>
+
+              </tr>
+              <tr>
+                <td class="cell-group inner-cell">
+                  Temperature
+                </td>
+                <td class="cell-group inner-cell">
+                  : <%= (@admission_details["TEMPERATURE (C)"] + " <sup>o</sup>C") rescue nil %>
+                </td>
+
+                <td class="cell-group inner-cell">
+                  Skin Color
+                </td>
+                <td class="cell-group inner-cell">
+                  : <%= @admission_details["SKIN COLOR"] %>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="cell-group inner-cell">
+                  Admission weight
+                </td>
+                <td class="cell-group inner-cell">
+                  : <%=  (@admission_details["BABY WEIGHT AT ADMISSION"] + " grams") rescue nil  %>
+                </td>
+
+                <td class="cell-group inner-cell">
+                  Heart Beat
+                </td>
+                <td class="cell-group inner-cell">
+                  : <%=  @admission_details["HEART BEAT"].titleize%>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-group inner-cell">
+                  Blood sugar
+                </td>
+                <td class="cell-group inner-cell">
+                  : <%= (((@admission_details["BLOOD SUGAR"].to_i > 0) rescue false) ? (@admission_details["BLOOD SUGAR"]  + " mmol/l") : "Unknown")%>
+                </td>
+
+                <td class="cell-group inner-cell">
+                  Respiration
+                </td>
+                <td class="cell-group inner-cell">
+                  : <%= @admission_details["RESPIRATION"] %>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="cell-group inner-cell">
+                  Admission Diagnoses
+                </td>
+                <td class="cell-group inner-cell">
+                  : <%= @admission_details["REASON FOR ADMISSION"]%>
+                </td>
+
+                <%if @mother.hiv_status.match(/positive/i)%>
+                  <td class="cell-group inner-cell">
+                    NVP Initiated
+                  </td>
+
+                  <td class="cell-group inner-cell">
+                    : <%= @birth_history["BABY ON NVP?"] %>
+                  </td>
+                <%else%>
+                  <td class="cell-group inner-cell">
+
+                  </td>
+
+                  <td class="cell-group inner-cell">
+
+                  </td>
+                <%end%>
+              </tr>
+
+              <tr>
+                <td class="cell-group inner-cell">
+                  Vitamin K given?
+                </td>
+                <td class="cell-group inner-cell">
+                  : <%= @admission_details["VITAMIN K GIVEN?"]%>
+                </td>
+
+                <td class="cell-group inner-cell">
+                  Suckling reflex
+                </td>
+                <td class="cell-group inner-cell">
+                  : <%= @admission_details["OBSERVATION ON SUCKLING REFLEX"] %>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+
+        </tr>
+
+        <tr style="border: hidden;">
+
+          <td style="border: hidden;  padding-left: 30px; padding-top: 40px; ">
+            <b><i>Name of referring officer: </i></b>
+          </td>
+
+          <td style="border: hidden;  padding-top: 40px; ">
+            <span style="text-decoration: underline"> <%=  User.find(params[:user_id] || session[:user_id]).name%></span>
+          </td>
+
+          <td  style="border: hidden;">
+            &nbsp
+          </td>
+
+          <td  style="border: hidden; padding-top: 40px;">
+            Signature:
+          </td>
+        </tr>
+
+
+        <tr style="border: hidden;">
+
+          <td style="border: hidden;  padding-left: 30px; padding-top: 40px; ">
+            <b><i>Name admitting officer: </i></b>
+          </td>
+
+          <td style="border: hidden;   padding-top: 40px; ">
+            <span style="text-decoration: underline"> <%=  User.find(params[:user_id] || session[:user_id]).name%></span>
+          </td>
+
+          <td  style="border: hidden;">
+            &nbsp
+          </td>
+
+          <td style="border: hidden; padding-top: 40px;">
+            Signature: 
+          </td>
+
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

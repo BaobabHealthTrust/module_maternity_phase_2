@@ -11,7 +11,7 @@ class EncountersController < ApplicationController
     assign_serial_numbers = get_global_property_value("assign_serial_numbers").to_s == "true" rescue false
 
     if assign_serial_numbers
-      serial_num = SerialNumber.find(:first, :conditions => ["national_id IS NULL"])rescue nil
+      serial_num = SerialNumber.find(:first, :conditions => ["national_id IS NULL"]) rescue nil
       redirect_to "/encounters/no_serial_number"  and return  if serial_num.blank?
     end
     
@@ -32,22 +32,25 @@ class EncountersController < ApplicationController
     if (params["concept"]["Baby identifier"])
 
       my_baby = PatientIdentifier.find_all_by_identifier_and_identifier_type(params["concept"]["Baby identifier"],
-        PatientIdentifierType.find_by_name("National id").patient_identifier_type_id) rescue nil
+        PatientIdentifierType.find_by_name("National id").patient_identifier_type_id) rescue nil     
 
       if !my_baby.blank? && my_baby.length == 1
        
         my_children = Relationship.find(:all, :conditions => ["person_a = ? AND relationship = ? AND voided = 0",
-            params[:patient_id], RelationshipType.find_by_a_is_to_b("Parent").id]).collect{|rel|
+            params[:patient_id], RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id]).collect{|rel|
           rel.person_b
         } rescue []
         
       end
-      
-      if ((my_baby.blank? || !my_children.include?(my_baby.first.patient.patient_id)) rescue true)
-        
+
+      if !my_baby.blank? && request.referrer.match(/BABY\_ADMISSION\_NOTE/i)
+        redirect_to "/patients/baby_admissions_note?identifier=#{params['concept']['Baby identifier']}&patient_id=#{params[:patient_id]}&user_id=#{session[:user_id] || params[:user_id]}" and return
+      end
+    
+      if ((my_baby.blank? || !my_children.include?(my_baby.last.patient.patient_id)) rescue true)        
         redirect_to "/encounters/missing_baby?national_id=#{params['concept']['Baby identifier']}&ward=" and return
                
-      end unless params[:encounter_type].downcase.strip == "baby delivery"
+      end unless ["baby delivery", "admit patient"].include?(params[:encounter_type].downcase.strip)
       
       if !my_baby.blank? && my_baby.length == 1
         fake_identifier =  params['concept']['Baby identifier']
@@ -71,7 +74,7 @@ class EncountersController < ApplicationController
     end
     
     #create baby given condition
-    if (my_baby.first.patient.patient_id.blank? rescue true) and params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].nil?
+    if (my_baby.first.patient.patient_id.blank? rescue true) and params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].blank?
       
       baby = Baby.new(params[:user_id], params[:patient_id], session[:location_id], session_date)
 
@@ -96,7 +99,7 @@ class EncountersController < ApplicationController
       baby_id = baby.associate_with_mother("#{link}", first_name,
         "#{(!mother.nil? ? (mother.names.first.family_name rescue "Unknown") :
         "Unknown")}", params["concept"]["Gender"], birth_date).to_s.strip #rescue nil
-
+      
       redirect_to "/encounters/missing_baby?message=failed_to_create_baby_for_#{patient.name}" and return if baby_id.blank?
 
       my_baby = PatientIdentifier.find_by_sql("SELECT * FROM patient_identifier WHERE identifier = #{baby_id}
@@ -627,7 +630,7 @@ class EncountersController < ApplicationController
         labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil if params[:baby].blank?
         labl = label2_4baby(e.encounter_id, @label_encounter_map).titleize rescue nil if !params[:baby].blank?
         labl = e.encounter.type.name.titleize if labl.blank?
-       # labl = "Delivered" if labl == "Discharged"
+        # labl = "Delivered" if labl == "Discharged"
         [
           e.encounter_id, labl,
           e.encounter.encounter_datetime.strftime("%H:%M"),
@@ -1158,10 +1161,12 @@ class EncountersController < ApplicationController
         current_printer = ward.split(":")[1] if ward.split(":")[0].upcase == location
       } rescue []
 
+      cat = params[:cat].blank? ? "" : params[:cat] + "_"
+      
       t1 = Thread.new{
         Kernel.system "wkhtmltopdf --zoom #{zoom} -s A4 http://" +
-          request.env["HTTP_HOST"] + "\"/patients/admissions_note_printable/" +
-          @patient.patient_id.to_s + "?patient_id=#{@patient.patient_id}&user_id=#{params[:user_id]}&ret=#{params[:ret]}"+ "\" /tmp/output-" + params[:user_id].to_s + ".pdf \n"
+          request.env["HTTP_HOST"] + "\"/patients/#{cat}admissions_note_printable/" +
+          @patient.patient_id.to_s + "?patient_id=#{@patient.patient_id}&baby_id=#{@patient.id}&user_id=#{params[:user_id]}&ret=#{params[:ret]}"+ "\" /tmp/output-" + params[:user_id].to_s + ".pdf \n"
       }
 
       t2 = Thread.new{
@@ -1175,10 +1180,9 @@ class EncountersController < ApplicationController
         Kernel.system "rm /tmp/output-*"
       }
 
-
     end
-
-    redirect_to "/patients/admissions_note?patient_id=#{@patient.id}&user_id=#{session[:user_id]}"+
+    
+    redirect_to "/patients/#{cat}admissions_note?patient_id=#{@patient.id}&baby_id=#{@patient.id}&user_id=#{session[:user_id]}&identifier=#{params[:identifier]}"+
       (params[:ret] ? "&ret=" + params[:ret] : "") and return
   end
 

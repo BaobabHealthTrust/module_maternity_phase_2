@@ -190,7 +190,7 @@ function fadeIn(div, opacity){
         opacity = opacity + 0.01;
         setTimeout(function(){
             fadeIn(div, opacity)
-        }, 5)
+        }, 4)
     }
 }
 
@@ -200,5 +200,5 @@ function showDiv(div){
     div.style.display = "table-row";
     setTimeout(function(){
         fadeIn(div, 0);
-    }, 300);
+    }, 120);
 }

@@ -197,7 +197,7 @@ function calculateEDOD(){
 
         var theDate = new Date($("touchscreenInput" + tstCurrentPage).value.trim());
 
-        theDate.setDate(theDate.getDate() + 7);
+        theDate.setDate(theDate.getDate() - 7);
 
         var today = new Date();
 

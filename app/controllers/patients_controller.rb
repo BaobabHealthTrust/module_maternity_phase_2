@@ -7,7 +7,7 @@ class PatientsController < ApplicationController
 	unloadable  
 
   before_filter :sync_user, :except => [:index, :user_login, :user_logout, 
-    :set_datetime, :update_datetime, :reset_datetime, :admissions_note_printable, :birth_report_printable]
+    :set_datetime, :update_datetime, :reset_datetime, :admissions_note_printable, :baby_admissions_note_printable, :birth_report_printable]
 
   def show
     
@@ -218,9 +218,9 @@ class PatientsController < ApplicationController
     @groupings["Ante Natal Exams"] = ["ante_natal_admission_details", "ante_natal_vitals", "ante_natal_patient_history", "ante natal pmtct", "physical_exam", "ante_natal_vaginal_examination", "general_body_exam", "admission_diagnosis", "ante natal notes", "admissions_note"]
     @groupings["Post Natal Exams"] = ["post_natal_admission_details", "abdominal examination", "post natal pmtct", "post_natal_patient_history", "post_natal_vitals", "post_natal_vaginal_examination", "post natal notes", "admissions_note"]
     @groupings["Update Outcome"] = ["delivered", "discharged", "referred_out", "absconded", "patient_died"]
-    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "kangaroo_review_visit", "give_drugs", "Notes"]
+    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "kangaroo_review_visit", "give_drugs", "Notes", "Baby Admission Note"]
     @groupings["Baby Outcomes"].delete_if{|outcome| 
-      @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?(outcome.gsub(/\_/, ""))
+      !@task.current_user_activities.collect{|ts| ts.upcase.strip}.include?(outcome.gsub(/\_/, " ").upcase)
     }
     @first_level_order = ["Ante Natal Exams", "Update Outcome"]
     @first_level_order << "Post Natal Exams" if ((@patient.recent_delivery_count > 0) rescue false)
@@ -1113,7 +1113,7 @@ class PatientsController < ApplicationController
     else
       @period_on_arvs_string = ""
     end
-    lmp_date = (@encounters["DATE OF LAST MENSTRUAL PERIOD"].to_date + 7.days) rescue nil
+    lmp_date = (@encounters["DATE OF LAST MENSTRUAL PERIOD"].to_date - 7.days) rescue nil
     current_date = ((session[:datetime] && session[:datetime].present?)? session[:datetime] : Date.today).to_date rescue nil
 
     if ((lmp_date.to_date + 10.months >= Date.today) rescue false)
@@ -1221,6 +1221,64 @@ class PatientsController < ApplicationController
 
     end
       
+  end
+
+  def baby_admissions_note
+
+    pids = PatientIdentifier.find_all_by_identifier(params[:identifier])
+    
+    @patient = pids.last.patient
+    @mother = Patient.find(@patient.mother.person_a)
+    @return_url = request.referrer
+    
+  end
+
+  def baby_admissions_note_printable
+
+    @baby = Patient.find(params[:baby_id])
+    @mother =  Patient.find(@baby.mother.person_a)
+    @user = (params[:user_id] || session[:user_id])
+    @user_name = User.find(@user).name rescue nil if @user.present?
+
+    @user_name = User.find(params[:user_id] || session[:user_id]).name rescue nil if @user_name.blank?
+
+    @facility = get_global_property_value("facility.name") rescue ""
+
+    @maternal_history = @mother.maternal_history
+    
+    @birth_history = @baby.birth_history
+
+    @maternal_complications = @mother.maternal_complications
+
+    @birth_complications = @baby.birth_complications
+
+    @admission_details = @baby.admission_details
+
+    @referral_details = @baby.referral_details
+
+    @prematurity = "Unknown"
+    @prem = "No"
+    if @maternal_history["LMP"].present? && @birth_history["DATE OF CONFINEMENT"].present?
+      date_diff_wks = (@birth_history["DATE OF CONFINEMENT"].to_date - @maternal_history["LMP"].to_date).to_i/7 rescue nil
+      if date_diff_wks.present? && date_diff_wks > 0
+        if date_diff_wks < 34
+          @prem = "Yes"
+          @prematurity = " #{date_diff_wks} wks   -   Pre term"
+        elsif date_diff_wks <= 37
+          @prem = "Yes"
+          @prematurity = " #{date_diff_wks} wks   -   Near term"
+        elsif date_diff_wks <= 42
+          @prematurity = " #{date_diff_wks} wks   -   Full term"
+        elsif date_diff_wks > 42
+          @prematurity = " #{date_diff_wks} wks   -   Post term"
+        end
+      end
+    end
+    
+
+    @baby.create_barcode("baby_id")
+    @mother.create_barcode
+
   end
   
   protected

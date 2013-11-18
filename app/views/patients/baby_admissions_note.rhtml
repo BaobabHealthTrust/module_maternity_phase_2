@@ -1,0 +1,45 @@
+<style type="text/css">
+  #nav {
+    background-color: #333333;
+    border-top:3px solid #99AAB7;
+    color:#CADCEA;
+    height:80px;
+    width:100%;
+    bottom:0px;
+    position:absolute;
+    overflow:hidden;
+    z-index: 1000;
+  }
+  #footer {
+    background-color: #333333;
+  }
+  #main {
+    width: 99.7%;
+    overflow: auto;
+    background: white;
+    height: 88.5%;
+  }
+</style>
+<%
+@return_url = @return_url.sub("baby_admission_note", "show").sub("two_protocol_patients", "patients")
+@return_url +=  @return_url.match(/user_id\=/)? "" : "&user_id=#{session[:user_id]}"
+%>
+<iframe id="main" src="/patients/baby_admissions_note_printable?baby_id=<%= @patient.id %>&mother_id=<%= @mother.id %>&user_id=<%= (params[:user_id] || session[:user_id])%>"></iframe>
+<div id="nav">
+  
+  <button class="green" onclick="window.location = '/patients/show?user_id=<%= session[:user_id] || params[:user_id]%>&patient_id=<%= @mother.id %>'"
+          style="float: right; margin: 10px;">
+    <span>
+      Finish
+    </span>
+  </button>
+
+  <button class="blue" onclick="if(__$('popupBox')){__$('popupBox').innerHTML = '<p>Printing. Please wait...</p>'};
+    showStatus(); window.location = '/encounters/print_note?patient_id=<%= @patient.id %>&identifier=<%=  params[:identifier] %>&user_id=<%= params[:user_id]%>&cat=baby'"
+          style="float: right; margin: 10px;">
+    <span>
+      Print
+    </span>
+  </button>
+</div>
+<div id="popupBox"></div>
