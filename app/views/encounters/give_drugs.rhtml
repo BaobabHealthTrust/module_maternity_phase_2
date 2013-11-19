@@ -48,6 +48,7 @@
   <%= hidden_field_tag "encounter[encounter_datetime]", session[:datetime] ||=  DateTime.now() %>
   <%= hidden_field_tag "encounter[provider_id]", params["user_id"]%>
   <%= hidden_field_tag "return_url", @return_url%>
+  <%= hidden_field_tag "user_id", params[:user_id] || session[:user_id]%>
 
   <input
     type='text' name='drugs' tt_onLoad='generateGenerics(<%= @patient.id %>)'

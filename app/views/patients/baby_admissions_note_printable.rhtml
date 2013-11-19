@@ -142,9 +142,7 @@
 
             &nbsp<br />
             &nbsp<br />
-            &nbsp<br />
-            &nbsp<br />
-
+            
             Reasons for referral:   &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span style=""> <%= @referral_details["REASON FOR REFERRAL"]%></span>
           </td>
 
@@ -319,7 +317,7 @@
                   Drugs
                 </td>
                 <td class="cell-group">
-                  : <%=  @maternal_complications["DRUGS"]%>
+                  : <%=  (@maternal_complications["DRUGS"].blank?? "Unknown" : @maternal_complications["DRUGS"])%>
                 </td>
               </tr>
 
@@ -341,7 +339,7 @@
                 </td>
                 <td class="cell-group" style="width: 65%">
 
-                  : <%=  (((@birth_complications["NEWBORN BABY COMPLICATIONS"].match(/Asphyxia/i)? "Yes  --> Action taken: " : "") + @birth_complications["ADVERSE EVENT ACTION TAKEN"]) rescue nil)%>
+                  : <%=  (((@birth_complications["NEWBORN BABY COMPLICATIONS"].match(/Asphyxia/i)? "Yes  --> Action taken: " : "") + @birth_complications["ADVERSE EVENT ACTION TAKEN"]) rescue "No")%>
                 </td>
 
               </tr>
@@ -396,7 +394,7 @@
                 </td>
 
                 <td class="cell-group inner-cell">
-                  : <%= (@admission_details["ADMISSION DATE"] + " " +  @admission_details["ADMISSION TIME"]) %>
+                  : <%= (@admission_details["ADMISSION DATE"] + " " +  @admission_details["ADMISSION TIME"]) rescue nil %>
                 </td>
 
                 <td class="cell-group inner-cell">
@@ -437,7 +435,7 @@
                   Heart Beat
                 </td>
                 <td class="cell-group inner-cell">
-                  : <%=  @admission_details["HEART BEAT"].titleize%>
+                  : <%=  @admission_details["HEART BEAT"].titleize rescue nil%>
                 </td>
               </tr>
               <tr>

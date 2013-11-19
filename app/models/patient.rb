@@ -622,7 +622,7 @@ class Patient < ActiveRecord::Base
     result["HIV STATUS"] = self.hiv_status
 
     vxam = {}
-    vxam_enc =  Observation.find(:first,
+    vxam_enc =  Observation.find(:last,
       :conditions => ["person_id = ? AND concept_id = ? AND voided = 0 AND DATE(obs_datetime) > ?",
         self.id,  ConceptName.find_by_name("MEMBRANES").concept_id, (today - 8.months).to_date]).encounter rescue []
     

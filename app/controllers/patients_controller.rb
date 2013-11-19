@@ -37,7 +37,7 @@ class PatientsController < ApplicationController
 
     if @patient.age(session_date) < 10
       return_ip = "http://#{request.raw_host_with_port}/?user_id=#{session[:user_id] || params[:user_id]}&location_id=#{session[:location_id]}";
-      redirect_to "/encounters/not_female?return_ip=#{return_ip}" and return
+      redirect_to "/encounters/not_female?return_ip=#{return_ip}" and return unless session[:baby_id].present?
     end
     
     @next_user_task = []
@@ -62,63 +62,29 @@ class PatientsController < ApplicationController
 
     @last_location = @patient.recent_location.location_id rescue nil
     @current_location_name = Location.find(session[:location_id]).name rescue nil
-  
-    if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
-      redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
-    end
     
-    if params[:from_search].present? && @last_location.blank?
-      redirect_to "/two_protocol_patients/referral?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
+    #************************************GENERIC DECLARATIONS****************************************************************
+    @links = {}
+    @task_status_map = {}
+    @hash_check = {}
+    @groupings = {}
+    @label_encounter_map = {}
+
+    @project = get_global_property_value("project.name") rescue "Unknown"
+    @project = "<span style='color: violet;'>Mat-Baby</span>" if session[:baby_id].present?
+    @demographics_url = get_global_property_value("patient.registration.url") rescue nil
+    
+    if !@demographics_url.nil?
+      @demographics_url = @demographics_url + "/demographics/#{@patient.id}?user_id=#{@user.id}&ext=true"
     end
     
     @task = TaskFlow.new(params[:user_id], @patient.id, session_date.to_date)
-
-    @undischarged_baby = @patient.next_undischarged_baby rescue nil
- 
-    unless  @undischarged_baby.blank?
-      
-      @baby = Patient.find(@undischarged_baby.person_b) rescue nil
-     
-      name = @baby.name.delete("^a-z\sA-Z0-9") rescue "...  "
-     
-      national_id = @baby.national_id rescue " NOT FOUND"
-      if ((@baby.person.dead == 1 || @baby.person.dead == true) rescue false)
-        @value = "Dead"
-      else
-        @value = ""
-      end
-      
-      @next_user_task = ["#{name} Discharge Outcome",
-        "/two_protocol_patients/baby_discharge_outcome?patient_id=#{@patient.id}&user_id=#{@user.id}&value=#{@value}&baby_name=#{name}&baby_national_id=#{national_id}"
-      ]
-      redirect_to @next_user_task[1] #and return if (session[:autoflow] == "true")
-      
-    end if @patient.is_discharged_mother?
-
-    if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
-
-      @next_user_task = ["Social History",
-        "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}"
-      ]
-
-      social_history = 0
-
-      redirect_to @next_user_task[1] and return if (session[:autoflow] == "true")
-
-    else
-
-      social_history = 1
-      
-    end
-
-    @links = {}
-
+    
+   
     if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
       map = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
         }"]["label.encounter.map"].split(",") rescue []
     end
-
-    @label_encounter_map = {}
 
     map.each{ |tie|
       label = tie.split("|")[0]
@@ -127,10 +93,6 @@ class PatientsController < ApplicationController
       @label_encounter_map[label] = encounter if !label.blank? && !encounter.blank?
 
     }
-    
-    @task_status_map = {}
-
-    @hash_check = {}
 
     @task.display_tasks.each{|task|
       
@@ -187,182 +149,232 @@ class PatientsController < ApplicationController
 
     }
 
-    @task_status_map["SOCIAL HISTORY"] = "done" if social_history == 1
-   
-    @links.delete_if{|key, link|
-      @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
-    }
-     
-    @links["Give Drugs"] = "/encounters/give_drugs?patient_id=#{@patient.id}&user_id=#{@user.id}"
-    @links["Baby Outcomes"]["Give Drugs"] = "/encounters/baby_drugs_route?patient_id=#{@patient.id}&user_id=#{@user.id}" rescue nil
-   
-    @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
-    
-    @project = get_global_property_value("project.name") rescue "Unknown"
-
-    @demographics_url = get_global_property_value("patient.registration.url") rescue nil
-
-    if !@demographics_url.nil?
-      @demographics_url = @demographics_url + "/demographics/#{@patient.id}?user_id=#{@user.id}&ext=true"
-    end
-
-    @task.next_task
-    @links.keys.each{|key|
-      if key.match(/Natal Exams/i)
-        ret = key.downcase.gsub(/\s/, "-").gsub(/-exams/, "")
-        @links[key]["Admissions Note"] = "/patients/admissions_note?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=#{ret}"
-
-        if @links[key]["Ante Natal Patient History"].present?
-          @links[key]["Ante Natal Patient History"] = @links[key]["Ante Natal Patient History"].gsub(/two\_protocol\_|ante\_natal\_/, "") + "&ret=ante-natal"
-        elsif @links[key]["Post Natal Patient History"].present?
-          @links[key]["Post Natal Patient History"] = @links[key]["Post Natal Patient History"].gsub(/two\_protocol\_|post\_natal\_/, "") + "&ret=post-natal"
-        end
+    #****************************************END OF MOTHEE WORK FLOW***********************************************************
+    #**************************************************************************************************************************
+    if session[:baby_id].blank?
+      if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
+        redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
       end
-    }
- 
-    @links = @links.delete_if{|key, val| key.match(/hiv/i)}
 
-    @groupings = {}
-    @groupings["Ante Natal Exams"] = ["ante_natal_admission_details", "ante_natal_vitals", "ante_natal_patient_history", "ante natal pmtct", "physical_exam", "ante_natal_vaginal_examination", "general_body_exam", "admission_diagnosis", "ante natal notes", "admissions_note"]
-    @groupings["Post Natal Exams"] = ["post_natal_admission_details", "abdominal examination", "post natal pmtct", "post_natal_patient_history", "post_natal_vitals", "post_natal_vaginal_examination", "post natal notes", "admissions_note"]
-    @groupings["Update Outcome"] = ["delivered", "discharged", "referred_out", "absconded", "patient_died"]
-    @groupings["Baby Outcomes"] = ["baby_examination", "admit_baby", "refer_baby", "kangaroo_review_visit", "give_drugs", "Notes", "Baby Admission Note"]
-    @groupings["Baby Outcomes"].delete_if{|outcome| 
-      !@task.current_user_activities.collect{|ts| ts.upcase.strip}.include?(outcome.gsub(/\_/, " ").upcase)
-    }
-    @first_level_order = ["Ante Natal Exams", "Update Outcome"]
-    @first_level_order << "Post Natal Exams" if ((@patient.recent_delivery_count > 0) rescue false)
-    @first_level_order << "Baby Outcomes" if !((@patient.recent_babies.to_i < 1) rescue false)  
-    @first_level_order << "Social History" if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("SOCIAL HISTORY")
-    @first_level_order << "Give Drugs" if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("GIVE DRUGS")
+      if params[:from_search].present? && @last_location.blank?
+        redirect_to "/two_protocol_patients/referral?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
+      end
 
-    @first_level_order.insert(1, @first_level_order.delete_at(@first_level_order.index("Post Natal Exams"))) rescue nil if @first_level_order.include?("Post Natal Exams")
-    
-    @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
+      @undischarged_baby = @patient.next_undischarged_baby rescue nil
 
-    #disable tasks for some wrong entries
-    @first_level_order = [] if @patient.age(session_date) < 10 || !@patient.gender.match(/f/i)
+      unless  @undischarged_baby.blank?
 
-    @first_level_order.delete_if{|order|
-      ((@patient.recent_babies.to_i < 1 && order.match(/Baby Outcomes/i)) rescue false)
-    }
+        @baby = Patient.find(@undischarged_baby.person_b) rescue nil
 
-    if ((all_recent_babies_entered?(@patient) == true) rescue false)
-      prefix = (@patient.recent_babies.to_i + 1) rescue 0
+        name = @baby.name.delete("^a-z\sA-Z0-9") rescue "...  "
 
-      @prefix = "Baby"
-     
-      unless (@patient.recent_delivery_count.to_i == 1 rescue false)
-        case prefix
-        when 1
-          @prefix = "1<sup>st</sup> " + @prefix
-        when 2
-          @prefix = "2<sup>nd</sup> " + @prefix
-        when 3
-          @prefix = "3<sup>rd</sup> " + @prefix
+        national_id = @baby.national_id rescue " NOT FOUND"
+        if ((@baby.person.dead == 1 || @baby.person.dead == true) rescue false)
+          @value = "Dead"
         else
-          @prefix = "#{prefix}<sup>th</sup> " + @prefix
+          @value = ""
         end
+
+        @next_user_task = ["#{name} Discharge Outcome",
+          "/two_protocol_patients/baby_discharge_outcome?patient_id=#{@patient.id}&user_id=#{@user.id}&value=#{@value}&baby_name=#{name}&baby_national_id=#{national_id}"
+        ]
+        redirect_to @next_user_task[1] #and return if (session[:autoflow] == "true")
+
+      end if @patient.is_discharged_mother?
+
+      if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
+
+        @next_user_task = ["Social History",
+          "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}"
+        ]
+
+        social_history = 0
+
+        redirect_to @next_user_task[1] and return if (session[:autoflow] == "true")
+
+      else
+
+        social_history = 1
+
       end
-      
-      @next_user_task = ["#{@prefix} Delivery",
-        "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}&prefix=#{@prefix}#{@ret}"
-      ]
-      redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}&prefix=#{@prefix}#{@ret}" and return  if (session[:autoflow].to_s == "true" rescue false)
 
-    else
-      
-      #watch for the following encounters, if done
-      @route = ""
-      ["blood transfusion"].each do |concept|
-        @check = @patient.encounters.find(:first, :joins => [:observations],
-          :conditions => ["DATE(encounter.encounter_datetime) > ?  AND encounter.encounter_type = ? AND obs.concept_id = ?",
-            ((session[:datetime].to_date rescue Date.today) - 1.month), EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name(concept).concept_id])
-
-        next if !@route.blank?
-        if @check.blank?
-
-          route = {"blood transfusion" => "mother_delivery_details",
-            "procedure done" => "delivery_procedures"
-          }
-          
-          @route = route[concept.downcase]
-          
-          @next_user_task = ["#{@route.titleize}",
-            "/two_protocol_patients/#{@route}?patient_id=#{@patient.id}&user_id=#{@user.id}"
-          ]
-          
-        end
-        
-      end if (@patient.recent_delivery_count > 0 rescue false)
-
-    end
-    
-    @groupings["Ante Natal Exams"].each do |encounter|
-
-      next if !@next_user_task.blank? || ((@patient.recent_babies.to_i > 0) rescue true)
-      next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(encounter.titleize.upcase)
+      @task_status_map["SOCIAL HISTORY"] = "done" if social_history == 1
+   
+      @links.delete_if{|key, link|
+        @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
+      }   
      
-      scope = @task.task_scopes[encounter.downcase][:scope].upcase rescue nil
-      scope = "TODAY" if scope.blank?
-      encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
-      concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
-
-      # next if encounter.match(/note/i)
-      
-      if done_ret(scope, encounter_name, "ante-natal", concept) == "notdone"
-        display_task_name = encounter.match(/natal/i)? encounter : ("ante natal " + encounter).humanize
-        @next_user_task = [display_task_name.gsub(/examinations|examination/i, "Exam"),
-          "/two_protocol_patients/#{encounter.downcase.gsub(/\s/, "_")}?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=ante-natal"]
-
-        if ((@next_user_task && @next_user_task[0].match(/patient\_history/)) rescue false)
-
-          @next_user_task[1] = @next_user_task[1].gsub(/two\_protocol\_|ante\_natal\_|post\_natal\_/, "")
-
-        end
-        redirect_to @next_user_task[1]  and return  if (session[:autoflow].to_s == "true" rescue false)
-          
-      end
-    end
-    
-    if @next_user_task.blank?
-      @next_user_task = ["Delivery Outcome",
-        "/two_protocol_patients/delivered?patient_id=#{@patient.id}&user_id=#{@user.id}"
-      ] if (@patient.recent_babies.to_i == 0  rescue false)
-
-      @groupings["Post Natal Exams"].each do |encounter|
+   
+      @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
         
-        next if !@next_user_task.blank? || (@patient.recent_babies.to_i == 0  rescue true)
-        next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(encounter.titleize.upcase)
+
+      @task.next_task
+      @links.keys.each{|key|
+        if key.match(/Natal Exams/i)
+          ret = key.downcase.gsub(/\s/, "-").gsub(/-exams/, "")
+          @links[key]["Admissions Note"] = "/patients/admissions_note?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=#{ret}"
+
+          if @links[key]["Ante Natal Patient History"].present?
+            @links[key]["Ante Natal Patient History"] = @links[key]["Ante Natal Patient History"].gsub(/two\_protocol\_|ante\_natal\_/, "") + "&ret=ante-natal"
+          elsif @links[key]["Post Natal Patient History"].present?
+            @links[key]["Post Natal Patient History"] = @links[key]["Post Natal Patient History"].gsub(/two\_protocol\_|post\_natal\_/, "") + "&ret=post-natal"
+          end
+        end
+      }
+
+      @links["Baby Outcomes"] = "/two_protocol_patients/baby_outcomes?patient_id=#{@patient.id}&user_id=#{@user.id}"
+      @links = @links.delete_if{|key, val| key.match(/hiv/i)}
+
+      @groupings["Ante Natal Exams"] = ["ante_natal_admission_details", "ante_natal_vitals", "ante_natal_patient_history", "ante natal pmtct", "physical_exam", "ante_natal_vaginal_examination", "general_body_exam", "admission_diagnosis", "ante natal notes", "admissions_note"]
+      @groupings["Post Natal Exams"] = ["post_natal_admission_details", "abdominal examination", "post natal pmtct", "post_natal_patient_history", "post_natal_vitals", "post_natal_vaginal_examination", "post natal notes", "admissions_note"]
+      @groupings["Update Outcome"] = ["delivered", "discharged", "referred_out", "absconded", "patient_died"]
+           
+      @first_level_order = ["Ante Natal Exams", "Update Outcome"]
+      @first_level_order << "Post Natal Exams" if ((@patient.recent_delivery_count > 0) rescue false)
+      @first_level_order << "Baby Outcomes" if !((@patient.recent_babies.to_i < 1) rescue false)
+      @first_level_order << "Social History" if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("SOCIAL HISTORY")
+      
+      @first_level_order.insert(1, @first_level_order.delete_at(@first_level_order.index("Post Natal Exams"))) rescue nil if @first_level_order.include?("Post Natal Exams")
+    
+      @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
+
+      #disable tasks for some wrong entries
+      @first_level_order = [] if @patient.age(session_date) < 10 || !@patient.gender.match(/f/i)
+
+      @first_level_order.delete_if{|order|
+        ((@patient.recent_babies.to_i < 1 && order.match(/Baby Outcomes/i)) rescue false)
+      }
+
+      if ((all_recent_babies_entered?(@patient) == true) rescue false)
+        prefix = (@patient.recent_babies.to_i + 1) rescue 0
+
+        @prefix = "Baby"
+     
+        unless (@patient.recent_delivery_count.to_i == 1 rescue false)
+          case prefix
+          when 1
+            @prefix = "1<sup>st</sup> " + @prefix
+          when 2
+            @prefix = "2<sup>nd</sup> " + @prefix
+          when 3
+            @prefix = "3<sup>rd</sup> " + @prefix
+          else
+            @prefix = "#{prefix}<sup>th</sup> " + @prefix
+          end
+        end
+      
+        @next_user_task = ["#{@prefix} Delivery",
+          "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}&prefix=#{@prefix}#{@ret}"
+        ]
+        redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}&prefix=#{@prefix}#{@ret}" and return  if (session[:autoflow].to_s == "true" rescue false)
+
+      else
+      
+        #watch for the following encounters, if done
+        @route = ""
+        ["blood transfusion"].each do |concept|
+          @check = @patient.encounters.find(:first, :joins => [:observations],
+            :conditions => ["DATE(encounter.encounter_datetime) > ?  AND encounter.encounter_type = ? AND obs.concept_id = ?",
+              ((session[:datetime].to_date rescue Date.today) - 1.month), EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name(concept).concept_id])
+
+          next if !@route.blank?
+          if @check.blank?
+
+            route = {"blood transfusion" => "mother_delivery_details",
+              "procedure done" => "delivery_procedures"
+            }
           
+            @route = route[concept.downcase]
+          
+            @next_user_task = ["#{@route.titleize}",
+              "/two_protocol_patients/#{@route}?patient_id=#{@patient.id}&user_id=#{@user.id}"
+            ]
+          
+          end
+        
+        end if (@patient.recent_delivery_count > 0 rescue false)
+
+      end
+    
+      @groupings["Ante Natal Exams"].each do |encounter|
+
+        next if !@next_user_task.blank? || ((@patient.recent_babies.to_i > 0) rescue true)
+        next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(encounter.titleize.upcase)
+     
         scope = @task.task_scopes[encounter.downcase][:scope].upcase rescue nil
         scope = "TODAY" if scope.blank?
         encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
         concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
-        #next if encounter.match(/note/i)
-        
-        if done_ret(scope, encounter_name, "post-natal", concept) == "notdone"
 
-          display_task_name = encounter.match(/natal/i)? encounter : ("post natal " + encounter).humanize
+        # next if encounter.match(/note/i)
+      
+        if done_ret(scope, encounter_name, "ante-natal", concept) == "notdone"
+          display_task_name = encounter.match(/natal/i)? encounter : ("ante natal " + encounter).humanize
           @next_user_task = [display_task_name.gsub(/examinations|examination/i, "Exam"),
-            "/two_protocol_patients/#{encounter.downcase.gsub(/\s/, "_")}?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=post-natal"]
-        
+            "/two_protocol_patients/#{encounter.downcase.gsub(/\s/, "_")}?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=ante-natal"]
+
           if ((@next_user_task && @next_user_task[0].match(/patient\_history/)) rescue false)
 
             @next_user_task[1] = @next_user_task[1].gsub(/two\_protocol\_|ante\_natal\_|post\_natal\_/, "")
 
           end
           redirect_to @next_user_task[1]  and return  if (session[:autoflow].to_s == "true" rescue false)
-
+          
         end
-     
       end
+    
+      if @next_user_task.blank?
+        @next_user_task = ["Delivery Outcome",
+          "/two_protocol_patients/delivered?patient_id=#{@patient.id}&user_id=#{@user.id}"
+        ] if (@patient.recent_babies.to_i == 0  rescue false)
+
+        @groupings["Post Natal Exams"].each do |encounter|
+        
+          next if !@next_user_task.blank? || (@patient.recent_babies.to_i == 0  rescue true)
+          next if !@task.current_user_activities.collect{|ts| ts.upcase}.include?(encounter.titleize.upcase)
+          
+          scope = @task.task_scopes[encounter.downcase][:scope].upcase rescue nil
+          scope = "TODAY" if scope.blank?
+          encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
+          concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
+          #next if encounter.match(/note/i)
+        
+          if done_ret(scope, encounter_name, "post-natal", concept) == "notdone"
+
+            display_task_name = encounter.match(/natal/i)? encounter : ("post natal " + encounter).humanize
+            @next_user_task = [display_task_name.gsub(/examinations|examination/i, "Exam"),
+              "/two_protocol_patients/#{encounter.downcase.gsub(/\s/, "_")}?patient_id=#{@patient.id}&user_id=#{@user.id}&ret=post-natal"]
+        
+            if ((@next_user_task && @next_user_task[0].match(/patient\_history/)) rescue false)
+
+              @next_user_task[1] = @next_user_task[1].gsub(/two\_protocol\_|ante\_natal\_|post\_natal\_/, "")
+
+            end
+            redirect_to @next_user_task[1]  and return  if (session[:autoflow].to_s == "true" rescue false)
+
+          end
+     
+        end
+      end
+
+      if ((@next_user_task && @next_user_task[0].match(/patient\_history/)) rescue false)
+
+        @next_user_task[1] = @next_user_task[1].gsub(/two\_protocol\_|ante\_natal\_|post\_natal\_/, "")
+
+      end
+
+      #****************************************END OF MOTHEE WORK FLOW***********************************************************
+      #**************************************************************************************************************************
+    else
+      
+      @first_level_order = ["Baby Examination", "Admit Baby", "Refer Baby", "Kangaroo Review Visit", "Notes"]
+      @links = @links["Baby Outcomes"]
+      
     end
 
-    if ((@next_user_task && @next_user_task[0].match(/patient\_history/)) rescue false)
-
-      @next_user_task[1] = @next_user_task[1].gsub(/two\_protocol\_|ante\_natal\_|post\_natal\_/, "") 
-
+    if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("GIVE DRUGS")
+      @first_level_order << "Give Drugs"
+      @links["Give Drugs"] = "/encounters/give_drugs?patient_id=#{@patient.id}&user_id=#{@user.id}"
     end
 
     @assign_serial_numbers = get_global_property_value("assign_serial_numbers").to_s == "true" rescue false

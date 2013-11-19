@@ -323,7 +323,11 @@ end
       <select id="tabs">
         <option value='/patients/current_visit/<%= @patient.id %>?user_id=<%= @user.id %>'>Current Visit</option>
         <option value='/patients/visit_history/<%= @patient.id %>?user_id=<%= @user.id %>'>Visit History</option>
-        <option value='/patients/children/<%= @patient.id %>?user_id=<%= @user.id %>'>Children</option>
+
+        <%if session[:baby_id].blank?%>
+          <option value='/patients/children/<%= @patient.id %>?user_id=<%= @user.id %>'>Children</option>
+        <%end%>
+
       </select>
 
       <select id="links">
@@ -366,7 +370,7 @@ end
       </select>
 
       <%
-      unless (@patient.age(session_date) < 10 || !@patient.gender.match(/f/i)) %>
+      unless ((@patient.age(session_date) < 10 || !@patient.gender.match(/f/i))) && session[:baby_id].present? %>
         <select id="navigation_links">
           <% id = params[:patient_id].blank?? params[:id] : params[:patient_id] %>
           <% if !@demographics_url.nil? %>
@@ -385,6 +389,18 @@ end
 
         </select>
       <%  end %>
+
+      <%if session[:baby_id].present? %>
+        <select id="navigation_links">
+
+          <%if @patient.recent_admission(session_date).present?%>
+            <option link="<%= "/patients/baby_admissions_note?identifier=#{@patient.national_id}&patient_id=#{params[:patient_id]}&user_id=#{session[:user_id] || params[:user_id]}" %>" ttSize = "200px">
+              Admission Note
+            </option>
+          <%end%>
+
+        </select>
+      <%end%>
 
       <input type='submit' value='Finish' />
     </form>

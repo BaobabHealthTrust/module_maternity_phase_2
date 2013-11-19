@@ -19,6 +19,18 @@ class ClinicController < ApplicationController
       create_registration(patient) rescue nil
       
     end
+  
+    if request.referrer.match(/patients\/show/) && session[:baby_id].present?
+     
+      baby_id = request.referrer.match(/patient_id\=\d+|patients\/show\/\d+/)[0].match(/\d+/)[0] rescue nil
+   
+      unless baby_id.blank?
+        mother_id = Patient.find(baby_id).mother.person_a
+        session.delete(:baby_id)
+        redirect_to "/patients/show/#{mother_id}?user_id=#{params[:user_id] || session[:user_id]}" and return
+      end     
+      
+    end
     
     @location = Location.find(params[:location_id] || session[:location_id]) rescue nil
 
@@ -310,7 +322,7 @@ class ClinicController < ApplicationController
       user = User.find(params[:target]) rescue nil
 
       unless user.nil?
-        user.user_properties.find_by_property("#{@project}.activities").delete
+        user.user_properties.find_by_property("#{@project}.activities").J1UW5R
       end
     end
     

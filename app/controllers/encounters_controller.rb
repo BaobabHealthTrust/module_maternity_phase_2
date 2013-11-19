@@ -42,15 +42,7 @@ class EncountersController < ApplicationController
         } rescue []
         
       end
-
-      adm_note = !my_baby.blank? && request.referrer.match(/BABY\_ADMISSION\_NOTE/i)
-    
-      if adm_note && my_baby.last.patient.recent_admission(session_date).present?
-        redirect_to "/patients/baby_admissions_note?identifier=#{params['concept']['Baby identifier']}&patient_id=#{params[:patient_id]}&user_id=#{session[:user_id] || params[:user_id]}" and return
-      elsif adm_note
-        redirect_to "/encounters/missing_admission" and return
-      end
-    
+          
       if ((my_baby.blank? || !my_children.include?(my_baby.last.patient.patient_id)) rescue true)        
         redirect_to "/encounters/missing_baby?national_id=#{params['concept']['Baby identifier']}&ward=" and return
                
@@ -59,9 +51,16 @@ class EncountersController < ApplicationController
       if !my_baby.blank? && my_baby.length == 1
         fake_identifier =  params['concept']['Baby identifier']
         params["concept"].delete("Baby identifier")
-        params[:person_id] = my_baby.first.patient.patient_id
+        params[:person_id] = my_baby.last.patient.patient_id
       end
-      
+
+      if params[:concept].blank?
+     
+        session[:baby_id] = params[:person_id]
+
+        redirect_to "/patients/show?patient_id=#{session[:baby_id]}&user_id=#{session[:user_id] || params[:user_id]}" and return
+
+      end
     end
     
     patient = Patient.find(params[:person_id]) rescue nil if params[:person_id]
@@ -887,14 +886,8 @@ class EncountersController < ApplicationController
   def give_drugs
 
     @return_url = params[:return_url] || request.referrer
-    
-    @baby = PatientIdentifier.find_all_by_identifier_and_identifier_type(params[:identifier],
-      PatientIdentifierType.find_by_name("National id").patient_identifier_type_id).first.patient rescue nil
-    
-    if params[:identifier].present? && (@baby.blank? ||
-          !((Patient.find(params[:patient_id]).babies_national_ids.split("|").include?(params[:identifier])) rescue false))
-      redirect_to "/encounters/missing_baby?national_id=#{params[:identifier]}&ward=" and return
-    end
+
+    @baby = Patient.find(session[:baby_id]) rescue nil
     
     if @baby
       @patient = @baby

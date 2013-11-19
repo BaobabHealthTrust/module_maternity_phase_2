@@ -99,25 +99,6 @@ class TwoProtocolPatientsController < ApplicationController
 
 	end
 
-	def baby_admission_note
-
-	@patient = Patient.find(params[:patient_id]) rescue nil
-
-	@session_date = session[:datetime] rescue nil 
-
-	redirect_to '/encounters/no_patient' and return if @patient.nil?
-
-	if params[:user_id].nil?
-	redirect_to '/encounters/no_user' and return
-	end
-
-	@user = User.find(params[:user_id]) rescue nil?
-
-	redirect_to '/encounters/no_patient' and return if @user.nil?
-	
-
-	end
-
 	def ante_natal_vaginal_examination
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
@@ -727,25 +708,6 @@ class TwoProtocolPatientsController < ApplicationController
 	end
 
 	def baby_examination
-
-	@patient = Patient.find(params[:patient_id]) rescue nil
-
-	@session_date = session[:datetime] rescue nil 
-
-	redirect_to '/encounters/no_patient' and return if @patient.nil?
-
-	if params[:user_id].nil?
-	redirect_to '/encounters/no_user' and return
-	end
-
-	@user = User.find(params[:user_id]) rescue nil?
-
-	redirect_to '/encounters/no_patient' and return if @user.nil?
-	
-
-	end
-
-	def update_baby_outcome
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 
