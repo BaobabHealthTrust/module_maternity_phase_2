@@ -2,7 +2,7 @@
   tstUsername = "";
   tt_cancel_destination = '/user_logout/<%= params[:user_id] %>?location_id=<%= session[:location_id] || params[:location_id] %>';
   tt_cancel_show = '<%= @patient_registration %>/scan?user_id=<%= params[:user_id]
-%>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>';
+%>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>&app_name=<%= @project %>&gender=female&<%=  @selected.join("=true&") + (@selected.length > 0 ? "=true" : "") %>';
 </script>
 <div id="home">
   <div id="project_name">

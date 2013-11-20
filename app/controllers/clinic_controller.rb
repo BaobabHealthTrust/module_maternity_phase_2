@@ -6,7 +6,7 @@ class ClinicController < ApplicationController
     :set_datetime, :update_datetime, :reset_datetime]
 
   def index
-    
+   
     if session[:user_id].blank? || params[:user_id].blank?
       reset_session
       
@@ -57,8 +57,7 @@ class ClinicController < ApplicationController
     end
 
     @selected = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
-        }"]["demographic.fields"].split(",") rescue []
-
+        }"]["demographic.fields"].split(",") rescue []      
   end
 
   def create_registration(patient)

@@ -799,5 +799,5 @@ class Patient < ActiveRecord::Base
       :conditions => ["encounter_type = ? AND voided = 0",
         EncounterType.find_by_name("KANGAROO REVIEW VISIT").id]).length > 0 ? "Yes" : "No"
   end
-  
+   
 end

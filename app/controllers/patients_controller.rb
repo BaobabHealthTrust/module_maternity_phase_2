@@ -70,8 +70,8 @@ class PatientsController < ApplicationController
     @groupings = {}
     @label_encounter_map = {}
 
-    @project = get_global_property_value("project.name") rescue "Unknown"
-    @project = "<span style='color: violet;'>Mat-Baby</span>" if session[:baby_id].present?
+    @project = get_global_property_value("project.name")
+    @project = "#{@project}<br /><span style='color: violet; font-size: 30px; important; font-weight: bold;'>Baby Mode</span>" if session[:baby_id].present?
     @demographics_url = get_global_property_value("patient.registration.url") rescue nil
     
     if !@demographics_url.nil?
