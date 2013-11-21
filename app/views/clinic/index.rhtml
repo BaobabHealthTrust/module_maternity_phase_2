@@ -2,7 +2,7 @@
   tstUsername = "";
   tt_cancel_destination = '/user_logout/<%= params[:user_id] %>?location_id=<%= session[:location_id] || params[:location_id] %>';
   tt_cancel_show = '<%= @patient_registration %>/scan?user_id=<%= params[:user_id]
-%>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>&app_name=<%= @project %>&gender=female&<%=  @selected.join("=true&") + (@selected.length > 0 ? "=true" : "") %>';
+%>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>&min_date=<%= ((session[:datetime].to_date rescue Date.today) - 55.years) %>&max_date=<%= ((session[:datetime].to_date rescue Date.today) - 10.years) %>&app_name=<%= @project %>&gender=female&<%=  @selected.join("=true&") + (@selected.length > 0 ? "=true" : "") %>';
 </script>
 <div id="home">
   <div id="project_name">
@@ -67,7 +67,7 @@
   </select>
 
   <form id="register" action="<%= @patient_registration %>/search?search_by=name&user_id=<%= (params[:user_id] || session[:user]["user_id"])
-      %>&ext=true&gender=Female&app_name=<%= @project %>&location_id=<%= session[:location_id] || params[:location_id] %>" method="post">
+      %>&ext=true&gender=Female&app_name=<%= @project %>&location_id=<%= session[:location_id] || params[:location_id] %>&min_date=<%= ((session[:datetime].to_date rescue Date.today) - 55.years) %>&max_date=<%= ((session[:datetime].to_date rescue Date.today) - 10.years) %>" method="post">
 
     <% @selected.each do |item| %>
 
