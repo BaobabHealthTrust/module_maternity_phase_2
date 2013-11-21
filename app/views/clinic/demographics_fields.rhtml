@@ -405,8 +405,8 @@
 
         if (hash[i]){
 
-          var key = i.replace(/\ /g, "_");
-          var val = hash[i].replace(/\ /g, "_");
+          var key = i.replace(/\s+/g, "_");
+          var val = hash[i].replace(/\s+/g, "_");
           try{
             li.setAttribute(key, val)
           }catch(ex){}
