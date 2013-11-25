@@ -21,7 +21,7 @@ function showGeneralConditionControl(labelsMap){
     $('page' + tstCurrentPage).appendChild(scoreWindow);
    
     labels = Object.keys(labelsMap);
-
+    
     // clear all previous selections
     try{
         
@@ -93,11 +93,10 @@ function createField(id, name, classes, type, value){
     }else if (classes.match(/value/)){
         node.innerHTML = value;
         node.style.background = "url('/images/btn_blue.png')";
-        node.style.color = "white";
-                
+        node.style.color = "white";              
         //open event
         node.onclick = function(){
-
+           
             this.style.background = "url('/images/click_btn.png')";
             this.setAttribute("selected", "true");
 
@@ -148,13 +147,14 @@ function updateFields(){
 
     var nodes = document.getElementsByClassName("input");
 
-    $('touchscreenInput'+tstCurrentPage).setAttribute("optional", true)
+    $('touchscreenInput'+tstCurrentPage).setAttribute("optional", "true")
 
     for (var k = 0; k < nodes.length; k ++){
 
         if (nodes[k].value.length == 0){
 
-            $('touchscreenInput'+tstCurrentPage).removeAttribute("optional")
+            $('touchscreenInput'+tstCurrentPage).setAttribute("optional", null)
+
 
         }
     }
@@ -163,13 +163,13 @@ function updateFields(){
         
         clearInput();
 
-        $('touchscreenInput'+tstCurrentPage).removeAttribute("optional");
+        $('touchscreenInput'+tstCurrentPage).setAttribute("optional", null)
+
 
         var nodes = document.getElementsByClassName("input");
         
         for (var k = 0; k < nodes.length; k ++){
 
-            var nodes = document.getElementsByClassName("input");
             nodes[k].value = "";
 
         }

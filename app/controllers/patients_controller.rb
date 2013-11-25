@@ -113,7 +113,7 @@ class PatientsController < ApplicationController
         encounter_name = @label_encounter_map[task.upcase]rescue nil
         concept = @task.task_scopes[task][:concept].upcase rescue nil
        
-        @task_status_map[task] = done_ret(scope, encounter_name, "", concept) #unless task.upcase.match(/notes/i)
+        @task_status_map[task] = done_ret(scope, encounter_name, "", concept) unless task.upcase.match(/notes/i)
    
         @links[task.titleize] = "/#{ctrller}/#{task.downcase.gsub(/\s/, "_")}?patient_id=#{
         @patient.id}&user_id=#{params[:user_id]}" + (task.downcase == "update baby outcome" ?
@@ -139,7 +139,7 @@ class PatientsController < ApplicationController
           concept = @task.task_scopes[t.downcase][:concept].upcase rescue nil
           ret = task[0].titleize.match(/ante natal|post natal/i)[0].gsub(/\s/, "-").downcase rescue ""
        
-          @task_status_map[t] = done_ret(scope, encounter_name, ret, concept)# unless t.upcase.match(/notes/i)
+          @task_status_map[t] = done_ret(scope, encounter_name, ret, concept) unless t.upcase.match(/notes/i)
         
           @links[task[0].titleize][t.titleize] = "/#{ctrller}/#{t.downcase.gsub(/\s/, "_").downcase}?patient_id=#{
           @patient.id}&user_id=#{params[:user_id]}"
@@ -149,7 +149,7 @@ class PatientsController < ApplicationController
 
     }
 
-    #****************************************END OF MOTHEE WORK FLOW***********************************************************
+    #****************************************END OF MOTHER WORK FLOW***********************************************************
     #**************************************************************************************************************************
     if session[:baby_id].blank?
       if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
@@ -306,7 +306,7 @@ class PatientsController < ApplicationController
         encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
         concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
 
-        # next if encounter.match(/note/i)
+        next if encounter.match(/note/i)
       
         if done_ret(scope, encounter_name, "ante-natal", concept) == "notdone"
           display_task_name = encounter.match(/natal/i)? encounter : ("ante natal " + encounter).humanize
@@ -337,7 +337,7 @@ class PatientsController < ApplicationController
           scope = "TODAY" if scope.blank?
           encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
           concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
-          #next if encounter.match(/note/i)
+          next if encounter.match(/note/i)
         
           if done_ret(scope, encounter_name, "post-natal", concept) == "notdone"
 
@@ -368,6 +368,9 @@ class PatientsController < ApplicationController
     else
       
       @first_level_order = ["Baby Examination", "Admit Baby", "Refer Baby", "Kangaroo Review Visit", "Notes"]
+      location_name = Location.find(session[:location_id]).name rescue ""   
+      @first_level_order.delete("Kangaroo Review Visit") #unless location_name.match(/kangaroo/i)
+      
       @links = @links["Baby Outcomes"]
       
     end

@@ -1,4 +1,4 @@
-P.1. Kangaroo review visit [program: UNDER 5 PROGRAM, pos: 9, parent: 2]
+P.1. Kangaroo review visit [program: UNDER 5 PROGRAM, pos: 9, scope: TODAY, parent: 2, concept: Return visit date]
 C.1. Given a baby that passed through Kangaroo ward, when they come for a review visit:
 
 Q.1.2. Weight (grams) [concept: Weight, pos: 1, field_type: number, absoluteMin: 100, min: 500, max: 5000, tt_onLoad: try{__$("category").style.display = "none"}catch(ex){}, condition: try{wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() == "kangaroo"}catch(ex){false}, absoluteMax: 10000, tt_pageStyleClass: NumbersOnlyWithDecimal]

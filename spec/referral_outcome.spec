@@ -1,4 +1,4 @@
-P.1. REFERRAL [program: UNDER 5 PROGRAM, pos: 39, label: Refer Baby, parent: 2]
+P.1. REFERRAL [program: UNDER 5 PROGRAM, scope: RECENT, concept: Reason for referral, pos: 39, label: Refer Baby, parent: 2]
 C.1.1. When referring to another ward a mother and her baby from labour ward to another ward, capture the outcome details of the baby based on mother's HIV status as follows:
 
 Q.1.1.2. Referral Type [pos: 1, disabled: disabled]

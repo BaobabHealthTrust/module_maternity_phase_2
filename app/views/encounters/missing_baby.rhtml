@@ -1,6 +1,6 @@
 <div style="width: 100%; padding-top: 120px; text-align: center;">
   <%if params[:message].blank?%>
-    <h1>Mother Has No Baby With Barcode <i style="color: blue;"><%= (params[:national_id].upcase rescue "......") + "</i>" + (params[:ward].blank?? "" : ("  In " + params[:ward].humanize + " Ward"))  %>!</h1>
+    <h1>Baby Not Admitted In Kangaroo Ward</h1>
 
   <%else%>
     <h1><%= params[:message].titleize rescue "Error"  %>!</h1>
@@ -11,5 +11,5 @@
   <br />
   <br />
   <br />
-  <a href="<%= request.referrer%>" style="font-size: 3em;">Back</a>
+  <a href="/patients/show/<%= session[:baby_id] %>?user_id=<%= (params[:user_id] || session[:user_id])%>&autoflow=<%= params[:autoflow]%>" style="font-size: 3em;">Back</a>
 </div>
