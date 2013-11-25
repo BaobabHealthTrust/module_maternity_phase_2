@@ -558,7 +558,7 @@ class PatientsController < ApplicationController
         p.to_s,
         p.program_encounter_types.collect{|e|
           next if e.encounter.blank?
-          labl = label(e.encounter_id, @label_encounter_map) || e.encounter.type.name
+          labl = session[:baby_id].blank? ? (label(e.encounter_id, @label_encounter_map) || e.encounter.type.name) : e.encounter.type.name
           [
             e.encounter_id, labl,
             e.encounter.encounter_datetime.strftime("%H:%M"),

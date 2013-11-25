@@ -630,8 +630,12 @@ class EncountersController < ApplicationController
       result = program.program_encounter_types.find(:all, :joins => [:encounter],
         :order => ["encounter_datetime DESC"]).collect{|e|
         next if e.encounter.blank?
-        labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil if params[:baby].blank?
-        labl = label2_4baby(e.encounter_id, @label_encounter_map).titleize rescue nil if !params[:baby].blank?
+
+        if session[:baby_id].blank?
+          labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil if params[:baby].blank?
+          labl = label2_4baby(e.encounter_id, @label_encounter_map).titleize rescue nil if !params[:baby].blank?
+        end
+
         labl = e.encounter.type.name.titleize if labl.blank?
         # labl = "Delivered" if labl == "Discharged"
         [
