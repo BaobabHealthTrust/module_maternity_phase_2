@@ -32,6 +32,7 @@
     min-height: 50px;
     min-width: 280px;
     margin: 0px;
+    margin-top: 20px;
     margin-bottom: 5px;
     font-size: 1.2em;
     background-color: #6281a7;
@@ -70,38 +71,55 @@
     <tr>
 
       <td style="height: 70px;">
-        <button class="btn" onclick="window.parent.location='/report/report_limits?reportType=0&user_id=<%= session[:user]["user_id"] rescue params["user_id"]%>&location_id=<%= session[:location_id] || params[:location_id] %>&type=monthly_report'">
-          <span>
-            Maternity Monthly Report
-          </span>
-        </button>
-      </td>
-    </tr>
-    <tr>
-      <td style="height: 70px;">
         <button class="btn" onclick="window.parent.location='/cohort_report/report_limits?reportType=1&user_id=<%=  session[:user]["user_id"] rescue params["user_id"]%>&location=<%params[:location]%>&type=endof_shift_report'">
           <span>
             End Of Shift Report
           </span>
         </button>
       </td>
+
+      <td style="height: 70px;">
+        <button class="btn" onclick="window.parent.location='/cohort_report/select_cohort?reportType=4&user_id=<%= session[:user]["user_id"] rescue params["user_id"]%>&location_id=<%= session[:location_id] || params[:location_id] %>&type=birth_report'">
+          <span>
+            Birth Cohort
+          </span>
+        </button>
+      </td>
+
     </tr>
     <tr>
+
       <td style="height: 70px;">
         <button class="btn" onclick="window.parent.location='/cohort_report/report_limits?reportType=2&user_id=<%=  session[:user]["user_id"] rescue params["user_id"]%>&location=<%params[:location]%>&type=diagnoses_report'">
           <span>
             Diagnoses Report
           </span>
         </button>
-      </td
+      </td>
+
+      <td style="height: 70px;">
+        <button class="btn" onclick="window.parent.location='/report/report_limits?reportType=0&user_id=<%= session[:user]["user_id"] rescue params["user_id"]%>&location_id=<%= session[:location_id] || params[:location_id] %>&type=monthly_report'">
+          <span>
+            Maternity Monthly Report
+          </span>
+        </button>
+      </td>
+
     </tr>
+
     <tr>
+
+      <td style="height: 70px;">
+
+      </td>
+
       <td style="height: 70px;">
         <button class="btn" onclick="window.parent.location='/report/report_limits?reportType=3&user_id=<%= session[:user]["user_id"] rescue params["user_id"]%>&location_id=<%= session[:location_id] || params[:location_id] %>&type=babies_matrix'">
           <span>
             Babies Matrix
           </span>
         </button>
+      </td>
     </tr>
 
   </table>

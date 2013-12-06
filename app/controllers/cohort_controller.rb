@@ -610,5 +610,26 @@ class CohortController < ActionController::Base # < ApplicationController
     # raise @patients.to_yaml
     render :layout => false
   end
+
+  def matrix_decompose
+		@patients = Patient.find(:all, :conditions => ["patient_id IN (?)", params[:patients].split(",")]).uniq rescue [  ]
+
+    if @patients.blank? && session[:drill_down_data].present? & params[:group].present?
+
+      ids = []
+
+      if session[:drill_down_data]["#{params[:group]}"].class.to_s.match(/Array/i)
+        ids = session[:drill_down_data]["#{params[:group]}"]
+      elsif params[:key].present?
+        ids = (session[:drill_down_data]["#{params[:group]}"]["#{params[:key].upcase.strip}"] +
+            ((session[:drill_down_data]["#{params[:group]}"]["FE_#{params[:key].gsub(/male\_/i, '').upcase.strip}"] || []) rescue []) +
+            ((session[:drill_down_data]["#{params[:group]}"]["F_#{params[:key].gsub(/male\_/i, '').upcase.strip}"] || []) rescue [])).uniq rescue []
+      end
+      @patients = Patient.find(:all, :conditions => ["patient_id IN (?)", ids]).uniq if ids.present?
+
+    end
+
+		render :layout => false
+  end
   
 end

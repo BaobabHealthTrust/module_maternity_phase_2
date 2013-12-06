@@ -12,7 +12,10 @@ class ClinicController < ApplicationController
       
       user_login and return
     end
-
+    
+    #in case routing has come from a report drill down, we need to delete irrelevent session variables
+    session.delete(:drill_down_data) rescue nil if session[:drill_down_data].present?
+    
     if params[:ext_patient_id]
       
       patient = Patient.find(params[:ext_patient_id])
@@ -183,7 +186,6 @@ class ClinicController < ApplicationController
   end
 
   def my_account
-
     @link = get_global_property_value("user.management.url").to_s rescue nil
 
     if @link.nil?
