@@ -15,7 +15,7 @@
 				Weight (grams) 
 			</td>
 			<td>
-<input type='text' id='1.2'  name='concept[Weight]' helpText='Weight (grams) '  condition='try{wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  absoluteMax='10000'  max='5000'  pos='1'  tt_onLoad='try{__$("category").style.display = "none"}catch(ex){}'  min='500'  tt_pageStyleClass='NumbersOnlyWithDecimal'  field_type='number'  absoluteMin='100' />
+<input type='text' id='1.2'  name='concept[Weight]' helpText='Weight (grams) '  absoluteMin='100'  max='5000'  min='500'  absoluteMax='10000'  tt_onLoad='try{__$("category").style.display = "none"}catch(ex){}'  condition='try{wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  pos='1'  tt_pageStyleClass='NumbersOnlyWithDecimal'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Return visit date 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Return visit date ]' helpText='Return visit date '  tt_onUnLoad='if (wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() != "kangaroo"){__$("1.3").value = ""}'  ajaxCalendarUrl='/patients/number_of_booked_patients?date='  condition='try{wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  value='<%= Date.today.strftime("%Y-%m-%d") %>'  pos='2'  tt_onLoad='showCategory("Return visit date")'  field_type='calendar' />
+<input type='text' id='1.3'  name='concept[Return visit date ]' helpText='Return visit date '  tt_onUnLoad='if (wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() != "kangaroo"){__$("1.3").value = ""}'  value='<%= Date.today.strftime("%Y-%m-%d") %>'  ajaxCalendarUrl='/patients/number_of_booked_patients?date='  tt_onLoad='showCategory("Return visit date")'  condition='try{wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  pos='2'  field_type='calendar' />
 			</td>
 		</tr>
 	</table>

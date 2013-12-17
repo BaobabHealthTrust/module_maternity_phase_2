@@ -754,11 +754,19 @@ class EncountersController < ApplicationController
     render :text => "<li></li><li>" + @religions.join("</li><li>") + "</li>"
   end
   def diagnoses
+    
     search_string = (params[:search_string] || '').upcase
-    filter_list = params[:filter_list].split(/, */) rescue []
-    outpatient_diagnosis = ConceptName.find_by_name("DIAGNOSIS").concept
-
-    diagnosis_concept_set = ConceptName.find_by_name("MATERNITY DIAGNOSIS LIST").concept
+    filter_list = params[:filter_list].split(/, */) rescue []   
+    previous_answers = []
+    
+    if params[:set].blank?
+      outpatient_diagnosis = ConceptName.find_by_name("DIAGNOSIS").concept
+      diagnosis_concept_set = ConceptName.find_by_name("MATERNITY DIAGNOSIS LIST").concept
+      previous_answers = Observation.find_most_common(outpatient_diagnosis, search_string)
+    else      
+      diagnosis_concept_set = ConceptName.find_by_name(params[:set].titleize).concept     
+    end
+    
     diagnosis_concepts = Concept.find(:all, :joins => :concept_sets,
       :conditions => ['concept_set = ?', diagnosis_concept_set.id])
 
@@ -768,7 +776,7 @@ class EncountersController < ApplicationController
     }.compact
     previous_answers = []
     # TODO Need to check global property to find out if we want previous answers or not (right now we)
-    previous_answers = Observation.find_most_common(outpatient_diagnosis, search_string)
+   
     @suggested_answers = (previous_answers + valid_answers.sort!).reject{|answer| filter_list.include?(answer) }.uniq[0..10]
     @suggested_answers = @suggested_answers - params[:search_filter].split(',') rescue @suggested_answers
 

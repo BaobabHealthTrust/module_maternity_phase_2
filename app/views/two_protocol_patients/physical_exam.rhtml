@@ -15,7 +15,7 @@
 				Fundus (weeks) 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[FUNDUS]' helpText='Fundus (weeks) '  value='<%= @patient.fundus_by_lmp - 1 rescue nil%>'  pos='0'  max='<%= (@patient.fundus_by_lmp) rescue 42%>'  min='<%= (@patient.fundus_by_lmp - 2) rescue 42%>'  tt_pageStyleClass='NumbersOnly na'  field_type='number' />
+<input type='text' id='1.1.1'  name='concept[FUNDUS]' helpText='Fundus (weeks) '  max='<%= (@patient.fundus_by_lmp + 2) rescue 42%>'  min='<%= (@patient.fundus_by_lmp ) rescue 42%>'  value='<%= @patient.fundus_by_lmp + 1 rescue nil%>'  absoluteMax='52'  pos='0'  tt_pageStyleClass='NumbersOnly na'  field_type='number'  absolutMin='1' />
 			</td>
 		</tr>
 		<tr>
@@ -143,7 +143,7 @@
 				Contractions Level 
 			</td>
 			<td>
-<input type='text' id='1.1.10'  name='concept[CONTRACTIONS LEVEL]' helpText='Contractions Level '  condition='__$("1.1.9").value.trim().toUpperCase() != "NIGGLING" && __$("1.1.8").value.trim().toUpperCase() == "YES"'  absoluteMax='5'  pos='9'  tt_onLoad='changeIds()'  tt_pageStyleClass='NumbersOnly na'  field_type='number'  absoluteMin='1' />
+<input type='text' id='1.1.10'  name='concept[CONTRACTIONS LEVEL]' helpText='Contractions Level '  absoluteMin='1'  absoluteMax='5'  tt_onLoad='changeIds()'  pos='9'  condition='__$("1.1.9").value.trim().toUpperCase() != "NIGGLING" && __$("1.1.8").value.trim().toUpperCase() == "YES"'  tt_pageStyleClass='NumbersOnly na'  field_type='number' />
 			</td>
 		</tr>
 		<tr>
@@ -168,7 +168,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.12'   helpText='Next URL '  value='ante-natal'  pos='11'  name='ret'  type='hidden' />
+<input  id='1.1.12'   helpText='Next URL '  type='hidden'  value='ante-natal'  name='ret'  pos='11' />
 			</td>
 		</tr>
 	</table>

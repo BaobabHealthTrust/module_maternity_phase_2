@@ -9,9 +9,9 @@ Q.1.5. Baby weight at admission (grams) [concept: Baby weight at admission, pos:
 
 Q.1.6. Baby temperature (<sup>o</sup>C) [concept: temperature, pos: 5,  tt_pageStyleClass: Numeric NumbersOnlyWithDecimal, field_type: number,  min: 36, max: 38, absoluteMin: 0, absoluteMax: 70]
 
-Q.1.7. Reason for admission [pos: 6, name: concept[Reason for admission][], ajaxUrl: /encounters/diagnoses?&search_string=]
+Q.1.7. Reason for admission [pos: 6, name: concept[Reason for admission][], ajaxUrl: /encounters/diagnoses?set=nursery_admission_diagnoses&search_string=]
 
-Q.1.8. Next reason for admission (Optional) [optional: true, pos: 7, name: concept[Reason for admission][], ajaxUrl: /encounters/diagnoses?&search_string=]
+Q.1.8. Next reason for admission (Optional) [optional: true, pos: 7, name: concept[Reason for admission][], ajaxUrl: /encounters/diagnoses?set=nursery_admission_diagnoses&search_string=]
 
 Q.1.9. Blood sugar (mg/dL) [pos: 8, name: concept[Blood sugar], min: 30, max: 150, field_type: number]
 

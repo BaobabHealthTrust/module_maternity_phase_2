@@ -17,7 +17,7 @@
 				PMTCT Status 
 			</td>
 			<td>
-<select id='1.1.1' name='concept[HIV STATUS]' helpText='PMTCT Status ' pos='0'  tt_BeforeUnload='checkHIVTestUnkown("1.1.1"); checkArtData("<%= @patient.national_id%>")'  tt_pageStyleClass='LongSelectList'  field_type='text' >
+<select id='1.1.1' name='concept[HIV STATUS]' helpText='PMTCT Status ' pos='0'  tt_pageStyleClass='LongSelectList'  tt_BeforeUnload='checkHIVTestUnkown("1.1.1"); checkArtData("<%= @patient.national_id%>")'  field_type='text' >
 <option></option>
 <option value='Unknown'>Unknown</option>
  <option value='Reactive'>Reactive</option>
@@ -38,7 +38,7 @@
 				On ARVs 
 			</td>
 			<td>
-<select id='1.1.3' name='concept[ON ARVS]'  condition='__$("1.1.1").value.trim().toUpperCase() == "REACTIVE"'  pos='2'  field_type='text'  tt_BeforeUnLoad='checkARTStart("1.1.3")'  helpText='On ART?' >
+<select id='1.1.3' name='concept[ON ARVS]'  tt_BeforeUnLoad='checkARTStart("1.1.3")'  condition='__$("1.1.1").value.trim().toUpperCase() == "REACTIVE"'  pos='2'  field_type='text'  helpText='On ART?' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -79,7 +79,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.1.7'   helpText='Next URL '  value='ante-natal'  pos='6'  name='ret'  type='hidden' />
+<input  id='1.1.7'   helpText='Next URL '  type='hidden'  value='ante-natal'  name='ret'  pos='6' />
 			</td>
 		</tr>
 	</table>
