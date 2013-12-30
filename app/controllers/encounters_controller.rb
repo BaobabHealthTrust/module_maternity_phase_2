@@ -103,7 +103,7 @@ class EncountersController < ApplicationController
         "#{(!mother.nil? ? (mother.names.first.family_name rescue "Unknown") :
         "Unknown")}", params["concept"]["Gender"], birth_date).to_s.strip #rescue nil
       
-      redirect_to "/encounters/missing_baby?message=failed_to_create_baby_for_#{patient.name}" and return if baby_id.blank?
+      redirect_to "/encounters/missing_baby?message=culdn't_find_baby_for_#{patient.name}" and return if baby_id.blank?
 
       my_baby = PatientIdentifier.find_by_sql("SELECT * FROM patient_identifier WHERE identifier = #{baby_id}
           AND identifier_type = (SELECT patient_identifier_type_id FROM patient_identifier_type WHERE name = 'National id')
