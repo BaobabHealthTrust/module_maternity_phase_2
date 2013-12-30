@@ -72,7 +72,7 @@ class EncountersController < ApplicationController
         p.split("--")[0].upcase if p.split("--")[1].match(/kangaroo/i)
       }.compact.include?(fake_identifier.upcase) rescue false
 
-      redirect_to "/encounters/missing_baby?national_id=#{fake_identifier}&ward=kangaroo" and return if !admitted_in_kangaroo
+      redirect_to "/encounters/missing_baby?message=baby_not_admitted_in_kangaroo_ward&national_id=#{fake_identifier}&ward=kangaroo" and return if !admitted_in_kangaroo
       
     end
     
