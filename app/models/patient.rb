@@ -621,6 +621,18 @@ class Patient < ActiveRecord::Base
         (session_date.to_date - 3.months)]) rescue nil
   end
 
+  def recent_kangaroo_admission(session_date = Date.today)
+
+    @kroo_location = Location.find_by_name("Kangaroo Ward")
+
+    return nil if @kroo_location.blank?
+    
+    self.encounters.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
+      :conditions => ["encounter.encounter_location = ? AMD encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ?",
+        @kroo_location.id, EncounterType.find_by_name("ADMIT PATIENT").id, ConceptName.find_by_name("ADMISSION DATE").concept_id,
+        (session_date.to_date - 3.months)]) rescue nil
+  end
+
   def maternal_history(today = Date.today)
     result = {}
     enc = Encounter.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations],

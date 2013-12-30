@@ -610,6 +610,9 @@ class EncountersController < ApplicationController
   
     @task = TaskFlow.new(params[:user_id], program.patient_id)
 
+    @current_location_name = Location.find(session[:location_id]).name
+    @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
+
     if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
       map = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
         }"]["label.encounter.map"].split(",") rescue []
@@ -631,7 +634,7 @@ class EncountersController < ApplicationController
         :order => ["encounter_datetime DESC"]).collect{|e|
         next if e.encounter.blank?
 
-        if session[:baby_id].blank?
+        if (session[:baby_id].blank? && !@baby_location)
           labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil if params[:baby].blank?
           labl = label2_4baby(e.encounter_id, @label_encounter_map).titleize rescue nil if !params[:baby].blank?
         end

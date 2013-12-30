@@ -16,8 +16,14 @@ class PatientsController < ApplicationController
     session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
  
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
-    
+   
+    @current_location_name = Location.find(session[:location_id]).name rescue nil
+    @last_location = @patient.recent_location.location_id rescue nil
+    @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
+     
     #check if we are supposed to enroll any babies in EID program
+    ###########################################################################################################################
+       
     if (@patient.hiv_status.match(/positive/i) rescue false)
 
       @babies = @patient.recent_baby_relations rescue []
@@ -25,9 +31,8 @@ class PatientsController < ApplicationController
       @babies.each do |baby|
 
         @baby_patient = Patient.find(baby.person_b) rescue nil
-        next if @baby_patient.blank?
-        
         baby_programs = @baby_patient.patient_programs.collect{|pr| pr.program.name} rescue []
+        next if @baby_patient.blank?        
        
         create_registration(@baby_patient, "EARLY INFANT DIAGNOSIS PROGRAM") if !baby_programs.include?("EARLY INFANT DIAGNOSIS PROGRAM")
 
@@ -35,9 +40,19 @@ class PatientsController < ApplicationController
 
     end
 
+    baby_programs = @patient.patient_programs.collect{|pr| pr.program.name} rescue []
+      
+    if @patient.age < 3 && @baby_location && baby_programs.length == 0
+    
+      create_registration(@patient, "UNDER 5 PROGRAM")
+      
+    end
+    
+    ###########################################################################################################################
+
     if @patient.age(session_date) < 10
       return_ip = "http://#{request.raw_host_with_port}/?user_id=#{session[:user_id] || params[:user_id]}&location_id=#{session[:location_id]}";
-      redirect_to "/encounters/not_female?return_ip=#{return_ip}" and return unless session[:baby_id].present?
+      redirect_to "/encounters/not_female?return_ip=#{return_ip}" and return unless (session[:baby_id].present? || @baby_location)
     end
     
     @next_user_task = []
@@ -59,9 +74,6 @@ class PatientsController < ApplicationController
     @user = User.find(params[:user_id]) rescue nil
     
     redirect_to "/encounters/no_user" and return if @user.nil?
-
-    @last_location = @patient.recent_location.location_id rescue nil
-    @current_location_name = Location.find(session[:location_id]).name rescue nil
     
     #************************************GENERIC DECLARATIONS****************************************************************
     @links = {}
@@ -69,9 +81,10 @@ class PatientsController < ApplicationController
     @hash_check = {}
     @groupings = {}
     @label_encounter_map = {}
-
+    @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
+    
     @project = get_global_property_value("project.name")
-    @project = "#{@project}<br /><span style='color: violet; font-size: 30px; important; font-weight: bold;'>Baby Mode</span>" if session[:baby_id].present?
+    @project = "#{@project}<br /><span style='color: violet; font-size: 30px; important; font-weight: bold;'>Baby Mode</span>" if (session[:baby_id].present? || @baby_location)
     @demographics_url = get_global_property_value("patient.registration.url") rescue nil
     
     if !@demographics_url.nil?
@@ -151,7 +164,7 @@ class PatientsController < ApplicationController
 
     #****************************************END OF MOTHER WORK FLOW***********************************************************
     #**************************************************************************************************************************
-    if session[:baby_id].blank?
+    if (session[:baby_id].blank? && !@baby_location)
       if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
         redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
       end
@@ -368,8 +381,9 @@ class PatientsController < ApplicationController
     else
       
       @first_level_order = ["Baby Examination", "Admit Baby", "Refer Baby", "Kangaroo Review Visit", "Notes"]
-      location_name = Location.find(session[:location_id]).name rescue ""   
-      @first_level_order.delete("Kangaroo Review Visit") #unless location_name.match(/kangaroo/i)
+      #raise @patient.recent_kangaroo_admission.to_yaml
+      @first_level_order.delete("Kangaroo Review Visit") unless (@current_location_name.match(/kangaroo ward/i) || 
+          @patient.recent_kangaroo_admission(session_date).blank?)
       
       @links = @links["Baby Outcomes"]
       
@@ -388,6 +402,7 @@ class PatientsController < ApplicationController
     @groupings.delete_if{|key, links|
       @groupings[key].blank?
     }
+    
     @babies = @patient.current_babies rescue []
     
   end
@@ -534,6 +549,9 @@ class PatientsController < ApplicationController
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
 
     @task = TaskFlow.new(params[:user_id], @patient.id)
+
+    @current_location_name = Location.find(session[:location_id]).name
+    @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
         
     if File.exists?("#{Rails.root}/config/protocol_task_flow.yml")
       map = YAML.load_file("#{Rails.root}/config/protocol_task_flow.yml")["#{Rails.env
@@ -558,7 +576,7 @@ class PatientsController < ApplicationController
         p.to_s,
         p.program_encounter_types.collect{|e|
           next if e.encounter.blank?
-          labl = session[:baby_id].blank? ? (label(e.encounter_id, @label_encounter_map) || e.encounter.type.name) : e.encounter.type.name
+          labl = (session[:baby_id].blank? && !@baby_location) ? (label(e.encounter_id, @label_encounter_map) || e.encounter.type.name) : e.encounter.type.name
           [
             e.encounter_id, labl,
             e.encounter.encounter_datetime.strftime("%H:%M"),
@@ -1211,8 +1229,8 @@ class PatientsController < ApplicationController
 
     @program = Program.find_by_concept_id(ConceptName.find_by_name(program).concept_id) rescue nil
 
-    @program_encounter = ProgramEncounter.find_by_program_id(@program.id,
-      :conditions => ["patient_id = ? AND DATE(date_time) = ?",
+    @program_encounter = ProgramEncounter.find(:first,
+      :conditions => ["program_id = ? AND patient_id = ? AND DATE(date_time) = ?", @program.id,
         patient.id,  (session[:datetime].to_time rescue Time.now).to_date.strftime("%Y-%m-%d")])
 
     if @program_encounter.blank?

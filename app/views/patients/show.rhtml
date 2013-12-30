@@ -324,7 +324,7 @@ end
         <option value='/patients/current_visit/<%= @patient.id %>?user_id=<%= @user.id %>'>Current Visit</option>
         <option value='/patients/visit_history/<%= @patient.id %>?user_id=<%= @user.id %>'>Visit History</option>
 
-        <%if session[:baby_id].blank?%>
+        <%if (session[:baby_id].blank? && !@baby_location) %>
           <option value='/patients/children/<%= @patient.id %>?user_id=<%= @user.id %>'>Children</option>
         <%end%>
 
@@ -370,7 +370,7 @@ end
       </select>
 
       <%
-      unless ((@patient.age(session_date) < 10 || !@patient.gender.match(/f/i))) && session[:baby_id].present? %>
+      unless ((@patient.age(session_date) < 10 || !@patient.gender.match(/f/i))) && (session[:baby_id].present? || @baby_location) %>
         <select id="navigation_links">
           <% id = params[:patient_id].blank?? params[:id] : params[:patient_id] %>
           <% if !@demographics_url.nil? %>
@@ -390,14 +390,24 @@ end
         </select>
       <%  end %>
 
-      <%if session[:baby_id].present? %>
+      <%if (session[:baby_id].present? || @baby_location) %>
         <select id="navigation_links">
 
+          <% if !@demographics_url.nil? %>
+            <option link="<%= @demographics_url %>" ttSize = "160px">
+              Demographics
+            </option>
+          <% end %>
+
           <%if @patient.recent_admission(session_date).present?%>
-            <option link="<%= "/patients/baby_admissions_note?identifier=#{@patient.national_id}&patient_id=#{params[:patient_id]}&user_id=#{session[:user_id] || params[:user_id]}" %>" ttSize = "200px">
+            <option link="<%= "/patients/baby_admissions_note?identifier=#{@patient.national_id}&patient_id=#{params[:patient_id] || @patient.id}&user_id=#{session[:user_id] || params[:user_id]}" %>" ttSize = "200px">
               Admission Note
             </option>
           <%end%>
+
+          <option link= "<%=  "/patients/band_print?user_id=#{params[:user_id]}&patient_id=#{@patient.patient_id}&baby_id=#{@patient.patient_id}&cat=baby"%>">
+            Print Wrist Band
+          </option>
 
         </select>
       <%end%>

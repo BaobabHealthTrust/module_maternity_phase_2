@@ -60,11 +60,29 @@ class ClinicController < ApplicationController
     end
 
     @selected = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
-        }"]["demographic.fields"].split(",") rescue []      
+        }"]["demographic.fields"].split(",") rescue []
+
+    @current_location_name = Location.find(session[:location_id]).name rescue nil
+    @baby_location = (@current_location_name || "").match(/kangaroo ward|nursery ward/i) ? true : false
+
+    #figure out min and max registration years
+    unless @baby_location
+      @min_date = (session[:datetime].to_date rescue Date.today) - 55.years
+      @max_date = (session[:datetime].to_date rescue Date.today) - 10.years
+      @gender = "female"
+    else
+      @min_date = (session[:datetime].to_date rescue Date.today) - 2.years
+      @max_date = (session[:datetime].to_date rescue Date.today) - 0.years
+      @gender = ""
+    end
+    
   end
 
   def create_registration(patient)
-
+    
+    @current_location_name = Location.find(session[:location_id]).name rescue nil
+    @baby_location = (@current_location_name || "").match(/kangaroo ward|nursery ward/i) ? true : false
+    
     if (!patient.encounters.collect{|enc| enc.name.upcase.strip rescue nil}.include?("REGISTRATION") rescue false)
 
       @encounter = Encounter.create(:patient_id => patient.patient_id,
@@ -82,12 +100,16 @@ class ClinicController < ApplicationController
         :encounter_id => @encounter.id,
         :creator => (session[:user_id] || params[:user_id]),
         :obs_datetime => (session[:datetime] || Time.now)
-      ) 
+      )
 
-      @program = Program.find_by_concept_id(ConceptName.find_by_name("MATERNITY PROGRAM").concept_id) rescue nil
-
-      @program_encounter = ProgramEncounter.find_by_program_id(@program.id,
-        :conditions => ["patient_id = ? AND DATE(date_time) = ?",
+      if @baby_location
+        @program = Program.find_by_concept_id(ConceptName.find_by_name("UNDER 5 PROGRAM").concept_id) rescue nil
+      else
+        @program = Program.find_by_concept_id(ConceptName.find_by_name("MATERNITY PROGRAM").concept_id) rescue nil
+      end
+      
+      @program_encounter = ProgramEncounter.find(:last,
+        :conditions => ["program_id = ? AND patient_id = ? AND DATE(date_time) = ?", @program.id,
           patient.id,  (session[:datetime].to_time rescue Time.now).to_date.strftime("%Y-%m-%d")])
 
       if @program_encounter.blank?
