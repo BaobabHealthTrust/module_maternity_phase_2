@@ -24,7 +24,7 @@
 @return_url = @return_url.sub("baby_admission_note", "show").sub("two_protocol_patients", "patients")
 @return_url +=  @return_url.match(/user_id\=/)? "" : "&user_id=#{session[:user_id]}"
 %>
-<iframe id="main" src="/patients/baby_admissions_note_printable?baby_id=<%= @patient.id %>&mother_id=<%= @mother.id %>&user_id=<%= (params[:user_id] || session[:user_id])%>"></iframe>
+<iframe id="main" src="/patients/baby_admissions_note_printable?baby_id=<%= @patient.id %>&mother_id=<%= (@mother.id rescue nil) %>&user_id=<%= (params[:user_id] || session[:user_id])%>"></iframe>
 <div id="nav">
   
   <button class="green" onclick="window.location = '/patients/show?user_id=<%= session[:user_id] || params[:user_id]%>&patient_id=<%= params[:patient_id] %>'"

@@ -379,11 +379,11 @@ class PatientsController < ApplicationController
       #****************************************END OF MOTHEE WORK FLOW***********************************************************
       #**************************************************************************************************************************
     else
-      
+      #raise @patient.recent_kangaroo_admission(session_date).to_yaml
       @first_level_order = ["Baby Examination", "Admit Baby", "Refer Baby", "Kangaroo Review Visit", "Notes"]
       #raise @patient.recent_kangaroo_admission.to_yaml
-      @first_level_order.delete("Kangaroo Review Visit") unless (@current_location_name.match(/kangaroo ward/i) || 
-          @patient.recent_kangaroo_admission(session_date).blank?)
+      @first_level_order.delete("Kangaroo Review Visit") unless (@current_location_name.match(/kangaroo ward/i) &&
+          @patient.recent_kangaroo_admission(session_date).present?)
       
       @links = @links["Baby Outcomes"]
       
@@ -1269,7 +1269,7 @@ class PatientsController < ApplicationController
     pids = PatientIdentifier.find_all_by_identifier(params[:identifier])
     
     @patient = pids.last.patient
-    @mother = Patient.find(@patient.mother.person_a)
+    @mother = Patient.find(@patient.mother.person_a) rescue nil
     @return_url = request.referrer
     
   end
@@ -1277,7 +1277,7 @@ class PatientsController < ApplicationController
   def baby_admissions_note_printable
 
     @baby = Patient.find(params[:baby_id])
-    @mother =  Patient.find(@baby.mother.person_a)
+    @mother =  Patient.find(@baby.mother.person_a) rescue nil
     @user = (params[:user_id] || session[:user_id])
     @user_name = User.find(@user).name rescue nil if @user.present?
 
@@ -1285,11 +1285,11 @@ class PatientsController < ApplicationController
 
     @facility = get_global_property_value("facility.name") rescue ""
 
-    @maternal_history = @mother.maternal_history
+    @maternal_history = @mother.maternal_history rescue {}
    
-    @birth_history = @baby.birth_history
+    @birth_history = @baby.birth_history rescue {}
 
-    @maternal_complications = @mother.maternal_complications
+    @maternal_complications = @mother.maternal_complications rescue {}
 
     @birth_complications = @baby.birth_complications
 
@@ -1318,7 +1318,7 @@ class PatientsController < ApplicationController
     
 
     @baby.create_barcode("baby_id")
-    @mother.create_barcode
+    @mother.create_barcode rescue nil
 
   end
   

@@ -99,7 +99,9 @@
                   <br /> <img src="/images/baby_id.png" alt="National Id" /><br><span>Baby: &nbsp&nbsp&nbsp <%= @baby.person.name  %>  (<%= @baby.national_id_with_dashes %>)</span>
                 </td>
                 <td colspan="2" align="center" rowspan="7">
-                  <br /> <img src="/images/baby_id.png" alt="National Id" /><br><span>Mother: &nbsp&nbsp&nbsp <%= @mother.person.name  %>  (<%= @mother.national_id_with_dashes %>)</span>
+                  <% if @mother.present? %>
+                    <br /> <img src="/images/patient_id.png" alt="National Id" /><br><span>Mother: &nbsp&nbsp&nbsp <%= @mother.person.name  %>  (<%= @mother.national_id_with_dashes %>)</span>
+                  <%end%>
                 </td>
               </tr>
 
@@ -133,7 +135,7 @@
 
             &nbsp<br />
             &nbsp<br />
-            
+
             Reasons for referral:   &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span style=""> <%= @referral_details["REASON FOR REFERRAL"]%></span>
           </td>
 
@@ -186,7 +188,7 @@
                   Liquor
                 </td>
                 <td class="cell-group">
-                  : <%= @maternal_history["VXAM"]["COLOUR OF LIQOUR"] %>
+                  : <%= @maternal_history["VXAM"]["COLOUR OF LIQOUR"]  rescue nil%>
                 </td>
 
               </tr>
@@ -216,7 +218,7 @@
                   Delivery time
                 </td>
                 <td class="cell-group" style="width: 65%">
-                  : <%= @birth_history["DATE OF CONFINEMENT"].titleize %> &nbsp&nbsp&nbsp&nbsp <%= @birth_history["TIME OF DELIVERY"].titleize %>
+                  : <%= @birth_history["DATE OF CONFINEMENT"].titleize rescue nil %> &nbsp&nbsp&nbsp&nbsp <%= @birth_history["TIME OF DELIVERY"].titleize rescue nil %>
                 </td>
               </tr>
               <tr>
@@ -453,7 +455,7 @@
                   : <%= @admission_details["REASON FOR ADMISSION"]%>
                 </td>
 
-                <%if @mother.hiv_status.match(/positive/i)%>
+                <%if (@mother.hiv_status.match(/positive/i) rescue false)%>
                   <td class="cell-group inner-cell">
                     NVP Initiated
                   </td>
