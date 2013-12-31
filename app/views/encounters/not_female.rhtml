@@ -1,5 +1,9 @@
 <div style="width: 100%; padding-top: 120px; text-align: center;">
-  <h1>Sorry, System location meant for the aged!</h1>
+  <% if params[:message] %>
+    <h1><%= params[:message].humanize %>!</h1>
+  <%else%>
+    <h1>Sorry, System location allows older patients!</h1>
+  <%end%>
   <br />
   <br />
   <br />

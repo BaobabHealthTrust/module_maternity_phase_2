@@ -20,7 +20,12 @@ class PatientsController < ApplicationController
     @current_location_name = Location.find(session[:location_id]).name rescue nil
     @last_location = @patient.recent_location.location_id rescue nil
     @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
-     
+
+    if @baby_location && @patient.age(session_date) >= 3
+      return_ip = "http://#{request.raw_host_with_port}/?user_id=#{session[:user_id] || params[:user_id]}&location_id=#{session[:location_id]}";
+      redirect_to "/encounters/not_female?message=Location_allows_babies only&return_ip=#{return_ip}" and return
+    end
+    
     #check if we are supposed to enroll any babies in EID program
     ###########################################################################################################################
        
@@ -50,7 +55,7 @@ class PatientsController < ApplicationController
     
     ###########################################################################################################################
 
-    if @patient.age(session_date) < 10
+    if (@patient.age(session_date) < 10)
       return_ip = "http://#{request.raw_host_with_port}/?user_id=#{session[:user_id] || params[:user_id]}&location_id=#{session[:location_id]}";
       redirect_to "/encounters/not_female?return_ip=#{return_ip}" and return unless (session[:baby_id].present? || @baby_location)
     end
@@ -504,7 +509,7 @@ class PatientsController < ApplicationController
             e.encounter.encounter_datetime.strftime("%H:%M"),
             e.encounter.creator
           ]
-        }.uniq,
+        }.uniq.compact,
         p.date_time.strftime("%d-%b-%Y")
       ]
     } if !@patient.blank?
@@ -582,7 +587,7 @@ class PatientsController < ApplicationController
             e.encounter.encounter_datetime.strftime("%H:%M"),
             e.encounter.creator
           ] rescue []
-        }.uniq,
+        }.uniq.compact,
         p.date_time.strftime("%d-%b-%Y")
       ]
     } if !@patient.nil?
