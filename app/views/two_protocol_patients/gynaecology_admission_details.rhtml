@@ -78,10 +78,18 @@
 		</tr>
 		<tr>
 			<td>
-				Next URL 
+				Select reason for admission 
 			</td>
 			<td>
-<input  id='1.1.7'   helpText='Next URL '  pos='6'  type='hidden'  value='ante-natal'  name='ret' />
+<input type='text' id='1.1.7'   helpText='Select reason for admission '  pos='6'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  allowFreeText='true' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next reason for admission 
+			</td>
+			<td>
+<input type='text' id='1.1.8'   helpText='Select next reason for admission '  pos='7'  optional='true'  name='concept[Diagnosis][]'  ajaxURL='/encounters/diagnoses?search_string='  allowFreeText='true' />
 			</td>
 		</tr>
 	</table>

@@ -19,6 +19,7 @@ class PatientsController < ApplicationController
    
     @current_location_name = Location.find(session[:location_id]).name rescue nil
     @last_location = @patient.recent_location.location_id rescue nil
+    @gynae = Location.find(session[:location_id]).name.match(/Gynaecology/i)[0] rescue ""
     @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
 
     if @baby_location && @patient.age(session_date) >= 3
@@ -167,9 +168,10 @@ class PatientsController < ApplicationController
 
     }
 
+    
     #****************************************END OF MOTHER WORK FLOW***********************************************************
     #**************************************************************************************************************************
-    if (session[:baby_id].blank? && !@baby_location)
+    if (session[:baby_id].blank? && !@baby_location && @gynae.blank?) # Normal Maternity Flow
       if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
         redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
       end
@@ -324,7 +326,7 @@ class PatientsController < ApplicationController
         encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
         concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
 
-        next if encounter.match(/note/i)
+        next if encounter.match(/note/i) # i.e skip Notes encounter and admission note :: not recommended
       
         if done_ret(scope, encounter_name, "ante-natal", concept) == "notdone"
           display_task_name = encounter.match(/natal/i)? encounter : ("ante natal " + encounter).humanize
@@ -355,7 +357,7 @@ class PatientsController < ApplicationController
           scope = "TODAY" if scope.blank?
           encounter_name = @label_encounter_map[encounter.humanize.upcase] rescue nil
           concept = @task.task_scopes[encounter.titleize.downcase][:concept].upcase rescue nil
-          next if encounter.match(/note/i)
+          next if encounter.match(/note/i) # i.e skip Notes encounter and admission note :: not recommended
         
           if done_ret(scope, encounter_name, "post-natal", concept) == "notdone"
 
@@ -381,19 +383,55 @@ class PatientsController < ApplicationController
 
       end
 
-      #****************************************END OF MOTHEE WORK FLOW***********************************************************
+      #****************************************END OF MOTHER WORK FLOW***********************************************************
       #**************************************************************************************************************************
+    elsif  @gynae.present?     
+
+      if @task.current_user_activities.include?("social history")
+        if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
+
+          @next_user_task = ["Social History",
+            "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}"
+          ]
+
+          social_history = 0
+
+          redirect_to @next_user_task[1] and return if (session[:autoflow] == "true")
+
+        else
+
+          social_history = 1
+
+        end
+
+        @task_status_map["SOCIAL HISTORY"] = "done" if (social_history == 1)
+      end
+      
+      @replacement_var =  @gynae.downcase
+      
+      @links = {"Admission Details" => "/two_protocol_patients/#{@replacement_var}_admission_details?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Vitals" => "/two_protocol_patients/#{@replacement_var}_vitals?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Social History" => "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Notes" => "/two_protocol_patients/#{@replacement_var}_notes?patient_id=#{@patient.id}&user_id=#{@user.id}"
+      }
+      
+      @first_level_order = ["Admission Details", "Vitals", "Notes", "Social History"].delete_if{|tsk|
+        
+        tsk = "#{@replacement_var} #{tsk}" unless tsk.downcase == "social history"
+       
+        !@task.current_user_activities.include?(tsk.downcase)
+      }
+      
     else
-      #raise @patient.recent_kangaroo_admission(session_date).to_yaml
-      @first_level_order = ["Baby Examination", "Admit Baby", "Refer Baby", "Kangaroo Review Visit", "Notes"]
-      #raise @patient.recent_kangaroo_admission.to_yaml
+       
+      @first_level_order = ["Baby Examination", "Admit Baby", "Refer Baby", "Kangaroo Review Visit", "Notes"]   
       @first_level_order.delete("Kangaroo Review Visit") unless (@current_location_name.match(/kangaroo ward/i) &&
           @patient.recent_kangaroo_admission(session_date).present?)
       
       @links = @links["Baby Outcomes"]
       
     end
-
+  
     if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("GIVE DRUGS")
       @first_level_order << "Give Drugs"
       @links["Give Drugs"] = "/encounters/give_drugs?patient_id=#{@patient.id}&user_id=#{@user.id}"

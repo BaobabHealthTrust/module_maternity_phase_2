@@ -14,10 +14,12 @@ class EncountersController < ApplicationController
       serial_num = SerialNumber.find(:first, :conditions => ["national_id IS NULL"]) rescue nil
       redirect_to "/encounters/no_serial_number"  and return  if serial_num.blank?
     end
-    
+
+    @gynae = Location.find(session[:location_id]).name.match(/Gynaecology/i)[0] rescue ""
+      
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
     params[:concept] = extract_concepts(params[:observations]) rescue {} if params[:concept].blank?
-   
+      
     if params[:autoflow].present? && params[:autoflow].to_s == "true"
       session[:autoflow] = "true"
     elsif params[:autoflow].present? && params[:autoflow].to_s == "false"
@@ -307,10 +309,12 @@ class EncountersController < ApplicationController
                 
               end
 
-              if params[:ret] && !params[:ret].blank?
-
-                obs.comments = params[:ret]
-
+              if (params[:ret] && !params[:ret].blank?) || @gynae.present?
+                if @gynae.blank?
+                  obs.comments = params[:ret]
+                else
+                  obs.comments = @gynae
+                end
               end
 
               if (concept == ConceptName.find_by_name("ADMISSION SECTION").concept_id && params[:encounter_type].downcase.strip == "admit patient")
@@ -412,10 +416,12 @@ class EncountersController < ApplicationController
 
                 end
 
-                if params[:ret] && !params[:ret].blank?
-
-                  obs.comments = params[:ret]
-
+                if (params[:ret] && !params[:ret].blank?) || @gynae.present?
+                  if @gynae.blank?
+                    obs.comments = params[:ret]
+                  else
+                    obs.comments = @gynae
+                  end
                 end
 
                 if (concept == ConceptName.find_by_name("ADMISSION SECTION").concept_id && params[:encounter_type].downcase.strip == "admit patient")
@@ -640,7 +646,7 @@ class EncountersController < ApplicationController
         end
 
         labl = e.encounter.type.name.titleize if labl.blank?
-        # labl = "Delivered" if labl == "Discharged"
+       
         [
           e.encounter_id, labl,
           e.encounter.encounter_datetime.strftime("%H:%M"),
@@ -662,7 +668,7 @@ class EncountersController < ApplicationController
       next if ((encounter.type.name.match(/update outcome/i) && concept.match(/diagnosis/i)) rescue false)
       lbl = label if (concepts.include?(concept) rescue false)
     }
-
+    lbl
     #lbl.gsub(/examination/i , "exam").gsub(/ante natal|post natal/i, "")
   end
   
@@ -677,7 +683,11 @@ class EncountersController < ApplicationController
       lbl = label if (concepts.include?(concept) rescue false)
     }
 
-    ret = encounter.observations.collect{|ob| ob.comments }.delete_if{|ret| ret.blank?}.first.titleize rescue ""
+    ret = encounter.observations.collect{|ob| ob.comments }.compact.first.titleize rescue ""
+    
+    replc = lbl.gsub(/Ante Natal|Post Natal/i, " ")
+    return encounter.name if encounter.name.match(/Admit Patient|Is Patient referred\?/i)
+    lbl = "#{ret} #{replc}" if (ret.match(/Gynaecology/) rescue false)
     lbl = lbl.titleize.gsub("Post Natal", "Ante Natal") if ret.match(/ante/i)
     lbl = lbl.titleize.gsub("Ante Natal", "Post Natal") if ret.match(/post/i)
    

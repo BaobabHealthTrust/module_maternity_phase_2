@@ -51,7 +51,7 @@ class CohortReportController < ApplicationController
     render :layout => "menu"
   end
 
-   def print_birth_cohort
+  def print_birth_cohort
     location = request.remote_ip rescue ""
     @start_date = params[:start_date] + " " + params[:start_time]
     @end_date = params[:end_date] + " " + params[:end_time]
@@ -278,11 +278,11 @@ class CohortReportController < ApplicationController
       link = ""
       
       if get_global_property_value("extended_diagnoses_report").to_s == "true"
-      link = "/cohort/#{ (@reportType.to_i == 2 ? "diagnoses_report_extended" : "report") }" + 
-        "?start_date=#{@start_date}+#{@start_time}&end_date=#{@end_date}+#{@end_time}&reportType=#{@reportType}"
+        link = "/cohort/#{ (@reportType.to_i == 2 ? "diagnoses_report_extended" : "report") }" +
+          "?start_date=#{@start_date}+#{@start_time}&end_date=#{@end_date}+#{@end_time}&reportType=#{@reportType}"
       else
-	link = "/cohort/#{ (@reportType.to_i == 2 ? "diagnoses_report" : "report") }" + 
-        "?start_date=#{@start_date}+#{@start_time}&end_date=#{@end_date}+#{@end_time}&reportType=#{@reportType}"
+        link = "/cohort/#{ (@reportType.to_i == 2 ? "diagnoses_report" : "report") }" +
+          "?start_date=#{@start_date}+#{@start_time}&end_date=#{@end_date}+#{@end_time}&reportType=#{@reportType}"
       end
       
       t1 = Thread.new{
