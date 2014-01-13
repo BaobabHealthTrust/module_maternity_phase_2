@@ -87,21 +87,21 @@
 
     <script type="text/javascript">
 
-  function voiding(node) {
+      function voiding(node) {
 
-    confirmYesNo("Void this person?", function() {
-      hideConfirmation();
+        confirmYesNo("Void this person?", function() {
+          hideConfirmation();
 
-      $.post('/patients/void/?id=' + node.attr('relationship')+ '&type=' + node.attr('type'), {}, function(data, status) {
-        if (status == 'success') node.remove();
-        window.parent.location = "/patients/general_demographics/<%= @patient.id %>?patient_id=<%= @patient.id%>&user_id=<%= @user_id%>";
+          $.post('/patients/void/?id=' + node.attr('relationship')+ '&type=' + node.attr('type'), {}, function(data, status) {
+            if (status == 'success') node.remove();
+            window.parent.location = "/patients/general_demographics/<%= @patient.id %>?patient_id=<%= @patient.id%>&user_id=<%= @user_id%>";
+          })
+        }, function() { hideConfirmation(); });
+      }
+
+      jQuery(document).ready(function($) {
+        $('div.void').click(function() { voiding($(this)); return false; });
       })
-    }, function() { hideConfirmation(); });
-  }
-
-  jQuery(document).ready(function($) {
-    $('div.void').click(function() { voiding($(this)); return false; });
-  })
     </script>
   </head>
   <body id="mateme">
@@ -153,7 +153,8 @@
                   <td>
 
                     <%if @maternity_patient.husband.nil?%>
-                      <button style="min-width: 300px;" onclick="window.location='<%= @patient_registration %>/search?user_id=<%= @user_id%>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>cat=husband&patient_id=<%=@patient.id%>&gender=M'">
+                      <% selected_fields = @selected.join("=true&") + (@selected.length > 0 ? "=true" : "") %>
+                      <button style="min-width: 300px;" onclick="window.location='<%= @patient_registration %>/search?user_id=<%= @user_id%>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>cat=husband&patient_id=<%=@patient.id%>&gender=M&<%= selected_fields %>'">
                       <%else%>
                         <%
                         @demographics_url = get_global_property_value("patient.registration.url") rescue nil

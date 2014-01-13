@@ -78,9 +78,9 @@ class PatientsController < ApplicationController
     end
 
     @user = User.find(params[:user_id]) rescue nil
-    
+   
     redirect_to "/encounters/no_user" and return if @user.nil?
-    
+         
     #************************************GENERIC DECLARATIONS****************************************************************
     @links = {}
     @task_status_map = {}
@@ -428,10 +428,14 @@ class PatientsController < ApplicationController
       @first_level_order.delete("Kangaroo Review Visit") unless (@current_location_name.match(/kangaroo ward/i) &&
           @patient.recent_kangaroo_admission(session_date).present?)
       
-      @links = @links["Baby Outcomes"]
+      @links = {"Baby Examination" => "/two_protocol_patients/baby_examination?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Admit Baby" => "/two_protocol_patients/admit_baby?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Refer Baby" => "/two_protocol_patients/refer_baby?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Notes" => "/two_protocol_patients/notes?patient_id=#{@patient.id}&user_id=#{@user.id}"
+      }
       
     end
-  
+
     if @task.current_user_activities.collect{|ts| ts.upcase.strip}.include?("GIVE DRUGS")
       @first_level_order << "Give Drugs"
       @links["Give Drugs"] = "/encounters/give_drugs?patient_id=#{@patient.id}&user_id=#{@user.id}"
@@ -786,8 +790,12 @@ class PatientsController < ApplicationController
     @children = @patient.current_babies rescue []
     @anc_patient = ANCService::ANC.new(@patient)
     @maternity_patient = MaternityService::Maternity.new(@patient) rescue nil
-    @patient_registration = get_global_property_value("patient.registration.url") rescue ""
+    
+    @selected = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
+        }"]["demographic.fields"].split(",").uniq rescue []
 
+    @patient_registration = get_global_property_value("patient.registration.url") rescue ""
+    
     if params[:ext_patient_id]
 
       relationship = RelationshipType.find_by_b_is_to_a("Spouse/Partner").id
@@ -990,6 +998,10 @@ class PatientsController < ApplicationController
   def void
     @relationship = Relationship.find(params[:id])
     @relationship.void
+    if @relationship.void == 0 # i.e void failed
+      @relationship.void = 1
+      @relationship.save
+    end
     head :ok
   end
 

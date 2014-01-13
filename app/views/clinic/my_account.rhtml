@@ -74,7 +74,7 @@
     <tr>
       <td rowspan="4" >
         <iframe height="300" src="<%= @link
-      %>/user_demographics?ext=true&user_id=<%= params[:user_id]
+      %>/user_demographics?ext=true&user_id=<%= (params[:user_id] || session[:user_id])
               %>&location_id=<%= session[:location_id] || params[:location_id] %>"
               style="border: 1px solid #ccc; width: 100%;">
         </iframe>

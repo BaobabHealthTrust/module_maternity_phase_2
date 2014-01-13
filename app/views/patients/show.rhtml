@@ -1,8 +1,8 @@
 <script type="text/javascript" language="javascript" src="/touchscreentoolkit/lib/javascripts/standard.js" defer ></script>
 <script type='text/javascript' language='javascript'>
   <!--
-  tt_cancel_show = '/clinic?user_id=<%= params[:user_id] %>';
-  tt_cancel_destination = '/clinic?user_id=<%= params[:user_id] %>';
+  tt_cancel_show = '/clinic?user_id=<%= (params[:user_id] || session[:user_id]) %>&location_id=<%= (params[:location_id] || session[:location_id]) %>';
+  tt_cancel_destination = '/clinic?user_id=<%= (params[:user_id] ||  session[:user_id]) %>&location_id=<%= (params[:location_id] || session[:location_id]) %>';
   no_baby_found = "<%=  params[:no_baby]? params[:no_baby] : 'false'%>";
   alerted = false;
 
