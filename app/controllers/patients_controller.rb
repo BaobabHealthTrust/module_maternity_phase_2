@@ -1376,6 +1376,31 @@ class PatientsController < ApplicationController
     @mother.create_barcode rescue nil
 
   end
+
+  def father_demographics
+
+    @patient = Patient.find(params[:patient_id])
+
+    @selected_fields = YAML.load_file("#{Rails.root}/config/application.yml")["#{Rails.env
+        }"]["demographic.fields"].split(",").uniq rescue []
+
+    @patient_registration = get_global_property_value("patient.registration.url") rescue ""
+
+    if params[:ext_patient_id]
+
+      relationship = RelationshipType.find_by_b_is_to_a("Spouse/Partner").id
+
+      Relationship.create(
+        :person_a => @patient.id,
+        :person_b => params[:ext_patient_id],
+        :relationship => relationship)
+
+      redirect_to "/patients/general_demographics/#{@patient.id}?patient_id=#{@patient.id}&ext=true&location_id=#{params[:location_id] ||
+      session[:location_id]}&user_id=#{params[:user_id] || session[:user_id]}" and return
+
+    end
+    
+  end
   
   protected
 
