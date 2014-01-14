@@ -634,6 +634,7 @@ class EncountersController < ApplicationController
       key  = encounter + "|" + concept
       @label_encounter_map[key] = label if !label.blank? && !encounter.blank?
     }
+    
     # raise  @label_encounter_map.to_yaml
     unless program.nil?
       result = program.program_encounter_types.find(:all, :joins => [:encounter],
@@ -646,7 +647,8 @@ class EncountersController < ApplicationController
         end
 
         labl = e.encounter.type.name.titleize if labl.blank?
-       
+        labl = "Notes" if (labl.downcase.strip == "observations" rescue false)
+        
         [
           e.encounter_id, labl,
           e.encounter.encounter_datetime.strftime("%H:%M"),
@@ -660,7 +662,7 @@ class EncountersController < ApplicationController
   end
   def label2_4baby(encounter_id, hash)
     encounter = Encounter.find(encounter_id)
-    concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase}
+    concepts = encounter.observations.collect{|ob| ob.concept.name.name.downcase}.delete_if{|conc| conc.match(/clinician notes/i)}
 
     lbl = ""
     hash.each{|val, label|
@@ -668,6 +670,7 @@ class EncountersController < ApplicationController
       next if ((encounter.type.name.match(/update outcome/i) && concept.match(/diagnosis/i)) rescue false)
       lbl = label if (concepts.include?(concept) rescue false)
     }
+    
     lbl
     #lbl.gsub(/examination/i , "exam").gsub(/ante natal|post natal/i, "")
   end
