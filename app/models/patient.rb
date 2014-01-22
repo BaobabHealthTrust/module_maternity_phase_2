@@ -628,7 +628,7 @@ class Patient < ActiveRecord::Base
     return nil if @kroo_location.blank?
     
     self.encounters.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
-      :conditions => ["encounter.encounter_location = ? AMD encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ?",
+      :conditions => ["encounter.encounter_location = ? AND encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ?",
         @kroo_location.id, EncounterType.find_by_name("ADMIT PATIENT").id, ConceptName.find_by_name("ADMISSION DATE").concept_id,
         (session_date.to_date - 3.months)]) rescue nil
   end
@@ -878,6 +878,19 @@ class Patient < ActiveRecord::Base
         self.id, ConceptName.find_by_name("APGAR MINUTE FIVE").concept_id]).answer_string.to_i rescue "?"
 
     return "(#{apgar1}, #{apgar2})"
+  end
+
+  def delivery_details
+    result = {}
+    self.encounters.all(:conditions => ["encounter_type = ?",
+        EncounterType.find_by_name("BABY DELIVERY").id]).each do |encounter|
+      encounter.observations.each do |observation|
+        result[observation.concept.name.name] = observation.answer_string
+      end
+    end
+
+    result
+    
   end
   
 end

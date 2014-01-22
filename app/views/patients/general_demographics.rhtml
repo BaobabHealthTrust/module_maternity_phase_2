@@ -155,10 +155,10 @@
                     <%if @maternity_patient.husband.nil?%>
                       <%
                       selected_fields = @selected.join("=true&") + (@selected.length > 0 ? "=true" : "")
-                      @father_demographics_url = "/patients/father_demographics?patient_id=#{@patient.id}&ext=true&location_id=#{session[:location_id] || params[:location_id]}&user_id=#{session[:user_id]}"
+                      @parent_demographics_url = "/patients/parent_demographics?patient_id=#{@patient.id}&ext=true&cat=husband&location_id=#{session[:location_id] || params[:location_id]}&user_id=#{session[:user_id]}"
                     %>
                       
-                      <button style="min-width: 300px;" onclick="window.location='<%= @father_demographics_url %>'">
+                      <button style="min-width: 300px;" onclick="window.location='<%= @parent_demographics_url %>'">
                       <%else%>
                         <%
                         @demographics_url = get_global_property_value("patient.registration.url") rescue nil

@@ -536,6 +536,25 @@ class TwoProtocolPatientsController < ApplicationController
 
 	end
 
+	def theater_vitals
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	@session_date = session[:datetime] rescue nil 
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+	if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
 	def abdominal_examination
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
@@ -822,6 +841,44 @@ class TwoProtocolPatientsController < ApplicationController
 	end
 
 	def gynaecology_admission_details
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	@session_date = session[:datetime] rescue nil 
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+	if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def thaeter_notes
+
+	@patient = Patient.find(params[:patient_id]) rescue nil
+
+	@session_date = session[:datetime] rescue nil 
+
+	redirect_to '/encounters/no_patient' and return if @patient.nil?
+
+	if params[:user_id].nil?
+	redirect_to '/encounters/no_user' and return
+	end
+
+	@user = User.find(params[:user_id]) rescue nil?
+
+	redirect_to '/encounters/no_patient' and return if @user.nil?
+	
+
+	end
+
+	def theater_admission_details
 
 	@patient = Patient.find(params[:patient_id]) rescue nil
 

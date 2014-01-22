@@ -1,0 +1,30 @@
+<script type='text/javascript' language='javascript'>
+<!--
+	tt_cancel_show = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
+	tt_cancel_destination = '/patients/show/<%= @patient.id %>?user_id=<%= session[:user_id] %>';
+	</script>
+
+<form method='post' action='/encounters/create'>
+	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
+	<input type='hidden' name='encounter_type' value='Observations ' />
+	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
+	<input type='hidden' name='user_id' value='<%= session[:user_id] %>' />
+	<table>
+		<tr>
+			<td>
+				Impression 
+			</td>
+			<td>
+<textarea type='text' id='1.1.1'  name='concept[IMPRESSION]' helpText='Impression '  optional='true'  pos='0'  field_type='textarea'  allowFreeText='true' > </textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Plan 
+			</td>
+			<td>
+<textarea type='text' id='1.1.2'  name='concept[PLAN]' helpText='Plan '  optional='true'  tt_pageStyleClass='textarea'  pos='1'  field_type='textarea'  allowFreeText='true' > </textarea>
+			</td>
+		</tr>
+	</table>
+</form>

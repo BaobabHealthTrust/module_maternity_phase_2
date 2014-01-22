@@ -15,8 +15,13 @@ class EncountersController < ApplicationController
       redirect_to "/encounters/no_serial_number"  and return  if serial_num.blank?
     end
 
-    @gynae = Location.find(session[:location_id]).name.match(/Gynaecology/i)[0] rescue ""
-      
+    
+    @current_location_name = Location.find(session[:location_id]).name rescue nil
+    @gynae = @current_location_name.match(/Gynaecology/i)[0] rescue ""
+    @theater = @current_location_name.match(/Theater/i)[0] rescue ""
+    @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
+    @baby_id = nil
+    
     @ret = params[:ret].present?? "&ret=#{params[:ret]}" : ""
     params[:concept] = extract_concepts(params[:observations]) rescue {} if params[:concept].blank?
       
@@ -31,7 +36,7 @@ class EncountersController < ApplicationController
       redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}&autoflow=false" and return
     end
     
-    if (params["concept"]["Baby identifier"])
+    if params["concept"]["Baby identifier"] && !params["concept"]["Baby identifier"].blank?
 
       my_baby = PatientIdentifier.find_all_by_identifier_and_identifier_type(params["concept"]["Baby identifier"],
         PatientIdentifierType.find_by_name("National id").patient_identifier_type_id) rescue nil     
@@ -67,7 +72,18 @@ class EncountersController < ApplicationController
     
     patient = Patient.find(params[:person_id]) rescue nil if params[:person_id]
     patient = Patient.find(params[:patient_id]) rescue nil if patient.blank?
-        
+
+    procedures_check = request.referrer.match(/delivery\_procedures/).present?
+    
+    if @baby_location && (params["concept"]["Blood transfusion"].present? || procedures_check)
+      #mother delivery details, switch client to mother for saving observations
+      #@baby_id to be used for switching back to baby client after saving is finished
+      @baby_id = params[:patient_id]
+      mother_id = patient.person.mother.person_a
+      params[:patient_id] = mother_id
+      patient = Patient.find(mother_id)      
+    end
+    
     if params[:encounter_type].downcase.squish == "kangaroo review visit"
 
       admitted_in_kangaroo = Patient.find(params[:patient_id]).wards_hash.split("|").collect{|p|
@@ -79,7 +95,7 @@ class EncountersController < ApplicationController
     end
     
     #create baby given condition
-    if (my_baby.first.patient.patient_id.blank? rescue true) and params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].blank?
+    if (!@baby_location) and (my_baby.first.patient.patient_id.blank? rescue true) and params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].blank?
       
       baby = Baby.new(params[:user_id], params[:patient_id], session[:location_id], session_date)
 
@@ -94,7 +110,7 @@ class EncountersController < ApplicationController
       #Check for duplicate names
       child_names = PersonName.find(:all, :conditions => ["person_id IN (?)", children.collect{|child| child.person_a}]).collect{|name|
         name.given_name rescue nil}.uniq
-
+      
       if child_names.include?(first_name)
         first_name = first_name +"_"+ (session_date.to_date).year.to_s + "/"
       end
@@ -151,18 +167,25 @@ class EncountersController < ApplicationController
         :death_date => session_date)
     end
 
+    if params["concept"]["Condition of baby at admission"].present? && params["concept"]["Condition of baby at admission"].match(/Dead/i)
+      patient.person.update_attributes(:dead => true,
+        :death_date => session_date)
+    end
+
     if params["concept"]["Outcome"].present? && params["concept"]["Outcome"].match(/patient died/i)
       patient.person.update_attributes(:dead => true,
         :death_date => (params["concept"]["DATE OF DEATH"].to_date rescue session_date))
     end
-      
+     
     if !patient.blank?
       
       type = EncounterType.find_by_name(params[:encounter_type]).id rescue nil
 
       if !type.blank?
-    
-        if ((params[:encounter_type].downcase.strip == "update outcome" && patient.recent_delivery_outcome.present?) rescue false)
+        
+        concepts_tag_to_merge = params[:concept].keys.collect{|ky|ky.upcase if ky.match(/Procedure Done|Perineum/i)}.compact
+
+        if (concepts_tag_to_merge.length > 0) && ((params[:encounter_type].downcase.strip == "update outcome" && patient.recent_delivery_outcome.present?) rescue false)
           @encounter = Encounter.find(patient.recent_delivery_outcome(session_date))
         else
           @encounter = Encounter.create(
@@ -309,11 +332,13 @@ class EncountersController < ApplicationController
                 
               end
 
-              if (params[:ret] && !params[:ret].blank?) || @gynae.present?
-                if @gynae.blank?
-                  obs.comments = params[:ret]
-                else
+              if (params[:ret] && !params[:ret].blank?) || @gynae.present? || @theater.present?
+                if !@gynae.blank?
                   obs.comments = @gynae
+                elsif !@theater.blank?
+                  obs.comments = @theater
+                else
+                  obs.comments = params[:ret]
                 end
               end
 
@@ -416,11 +441,13 @@ class EncountersController < ApplicationController
 
                 end
 
-                if (params[:ret] && !params[:ret].blank?) || @gynae.present?
-                  if @gynae.blank?
-                    obs.comments = params[:ret]
+                if (params[:ret] && !params[:ret].blank?) || @gynae.present? || @theater.present?
+                  if !@gynae.blank?
+                    obs.comments =  @gynae
+                  elsif !@theater.present?
+                    obs.comments = @theater
                   else
-                    obs.comments = @gynae
+                    obs.comments = params[:ret]
                   end
                 end
 
@@ -477,17 +504,17 @@ class EncountersController < ApplicationController
         if ((params[:patient_id] != patient.patient_id && params["encounter_type"].to_s.downcase.strip == "baby delivery") rescue false)
 
           print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
-            "/two_protocol_patients/baby_delivery?patient_id=#{params[:patient_id]}&user_id=#{@user_id}&prefix=#{@prefix}#{@ret}") and return
+            "/two_protocol_patients/baby_delivery?patient_id=#{@baby_id || params[:patient_id]}&user_id=#{@user_id}&prefix=#{@prefix}#{@ret}") and return
 
         else
 
-          redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{params[:patient_id]}&user_id=#{@user_id}&prefix=#{@prefix}#{@ret}" and return
+          redirect_to "/two_protocol_patients/baby_delivery?patient_id=#{@baby_id || params[:patient_id]}&user_id=#{@user_id}&prefix=#{@prefix}#{@ret}" and return
  
         end
         
       end
       
-      @task = TaskFlow.new(params[:user_id] || User.first.id, params[:patient_id], session_date)
+      @task = TaskFlow.new(params[:user_id] || session[:user_id] || User.first.id, params[:patient_id], session_date)
       
       unless ((params[:patient_id] != patient.patient_id && params["encounter_type"].to_s.downcase.strip == "baby delivery") rescue false)
         
@@ -497,7 +524,7 @@ class EncountersController < ApplicationController
             params[:next_url] + "#{@ret}")  and return if !params[:next_url].blank?
           
           print_and_redirect("/encounters/label/?encounter_id=#{@encounter.id}",
-            "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}") and return
+            "/patients/show/#{@baby_id || params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}") and return
           
         else
 
@@ -506,9 +533,8 @@ class EncountersController < ApplicationController
          
             redirect_to params[:next_url] + "#{@ret}" and return if !params[:next_url].blank?
             
-          end
-          
-          redirect_to "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}" and return
+          end          
+          redirect_to "/patients/show/#{@baby_id || params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}" and return
         end
         
       else
@@ -516,7 +542,7 @@ class EncountersController < ApplicationController
         print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
           params[:next_url] + "#{@ret}")  and return if !params[:next_url].blank?
         print_and_redirect("/patients/delivery_print?patient_id=#{patient.patient_id}",
-          "/patients/show/#{params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}") and return
+          "/patients/show/#{@baby_id || params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}") and return
         
       end
     end
@@ -641,7 +667,7 @@ class EncountersController < ApplicationController
         :order => ["encounter_datetime DESC"]).collect{|e|
         next if e.encounter.blank?
 
-        if (session[:baby_id].blank? && !@baby_location)
+        if (session[:baby_id].blank? && !@baby_location) || request.referrer.match(/mother\_tab/)
           labl = labell(e.encounter_id, @label_encounter_map).titleize rescue nil if params[:baby].blank?
           labl = label2_4baby(e.encounter_id, @label_encounter_map).titleize rescue nil if !params[:baby].blank?
         end
@@ -690,11 +716,10 @@ class EncountersController < ApplicationController
     
     replc = lbl.gsub(/Ante Natal|Post Natal/i, " ")
     return encounter.name if encounter.name.match(/Admit Patient|Is Patient referred\?/i)
-    lbl = "#{ret} #{replc}" if (ret.match(/Gynaecology/) rescue false)
+    lbl = "#{ret} #{replc}" if (ret.match(/Gynaecology|Theater/) && !lbl.match(/#{ret}/i)rescue false)
     lbl = lbl.titleize.gsub("Post Natal", "Ante Natal") if ret.match(/ante/i)
     lbl = lbl.titleize.gsub("Ante Natal", "Post Natal") if ret.match(/post/i)
-   
-    lbl.gsub(/examination/i , "exam")
+    lbl = lbl.gsub(/Theater/i, "<i>Th.</i>").gsub(/Gynaecology/i, "<i>Gyna.</i>").gsub(/Examination/i , "exam")
     lbl
   end
 

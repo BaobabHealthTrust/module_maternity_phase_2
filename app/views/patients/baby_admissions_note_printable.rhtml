@@ -155,7 +155,7 @@
                   HIV Status
                 </td>
                 <td class="cell-group" style="width: 65%">
-                  : <%= @maternal_history["HIV STATUS"] %>
+                  : <%= @maternal_history["HIV STATUS"]  || "Unknown" %>
                 </td>
               </tr>
               <tr>
@@ -163,7 +163,7 @@
                   VDRL
                 </td>
                 <td class="cell-group">
-                  : <%= @maternal_history["VDRL"] %>
+                  : <%= @maternal_history["VDRL"] || "Unknown" %>
                 </td>
               </tr>
               <tr>
@@ -180,7 +180,7 @@
                   Membranes
                 </td>
                 <td class="cell-group">
-                  : <%=  @maternal_history["ROM"] %>
+                  : <%=  @maternal_history["ROM"]  || "Unknown" %>
                 </td>
               </tr>
               <tr>
@@ -188,7 +188,7 @@
                   Liquor
                 </td>
                 <td class="cell-group">
-                  : <%= @maternal_history["VXAM"]["COLOUR OF LIQOUR"]  rescue nil%>
+                  : <%= (@maternal_history["VXAM"]["COLOUR OF LIQOUR"] || "Unknown" )  rescue nil%>
                 </td>
 
               </tr>
@@ -197,7 +197,7 @@
                   Gestational age
                 </td>
                 <td class="cell-group">
-                  : <%= @prematurity %>
+                  : <%= @prematurity  || "Unknown"  %>
                 </td>
               </tr>
             </table>
@@ -226,7 +226,7 @@
                   Mode of delivery
                 </td>
                 <td class="cell-group">
-                  : <%= @birth_history["DELIVERY MODE"] %>
+                  : <%= @birth_history["DELIVERY MODE"]  || "Unknown"  %>
                 </td>
               </tr>
 
@@ -235,7 +235,7 @@
                   Birth Weight
                 </td>
                 <td class="cell-group">
-                  : <%=  @birth_history["BIRTH WEIGHT"].blank? ? "?" : (@birth_history["BIRTH WEIGHT"].to_i.to_s + " grams")%>
+                  : <%= (@birth_history["BIRTH WEIGHT"].blank? ? "?" : (@birth_history["BIRTH WEIGHT"].to_i.to_s + " grams")) rescue "Unknown"%>
                 </td>
               </tr>
               <tr>
@@ -243,7 +243,7 @@
                   Sex
                 </td>
                 <td class="cell-group">
-                  : <%= @birth_history["GENDER"] %>
+                  : <%= @birth_history["GENDER"]  || "Unknown" %>
                 </td>
 
               </tr>
@@ -252,7 +252,7 @@
                   Place of delivery
                 </td>
                 <td class="cell-group">
-                  : <%= @birth_history["PLACE OF DELIVERY"] %>
+                  : <%= @birth_history["PLACE OF DELIVERY"]  || "Unknown" %>
                 </td>
               </tr>
               <tr>
@@ -260,7 +260,7 @@
                   Rescuscitation
                 </td>
                 <td class="cell-group">
-                  : <%= @birth_history["RESUSCITATION TYPE"]%>
+                  : <%= @birth_history["RESUSCITATION TYPE"]  || "Unknown" %>
                 </td>
               </tr>
               <tr>
@@ -268,7 +268,7 @@
                   APGAR Score
                 </td>
                 <td class="cell-group">
-                  : 1<sup>st</sup> Min = <%= @birth_history["APGAR MINUTE ONE"] %>  &nbsp&nbsp&nbsp 2<sup>nd</sup> Min= <%= @birth_history["APGAR MINUTE FIVE"] %>
+                  : 1<sup>st</sup> Min = <%= @birth_history["APGAR MINUTE ONE"]  || "Unknown" %>  &nbsp&nbsp&nbsp 2<sup>nd</sup> Min= <%= @birth_history["APGAR MINUTE FIVE"] %>
                 </td>
               </tr>
             </table>
@@ -293,7 +293,7 @@
                 </td>
                 <td class="cell-group" style="width: 65%">
 
-                  : <%=  @maternal_complications["DIAGNOSIS"]%>
+                  : <%=  @maternal_complications["DIAGNOSIS"]  || "Unknown" %>
                 </td>
 
               </tr>
@@ -443,7 +443,7 @@
                   Respiration
                 </td>
                 <td class="cell-group inner-cell">
-                  : <%= @admission_details["RESPIRATION"] %>
+                  : <%= @admission_details["RESPIRATION"]  || "Unknown" %>
                 </td>
               </tr>
 
@@ -452,7 +452,7 @@
                   Admission Diagnoses
                 </td>
                 <td class="cell-group inner-cell">
-                  : <%= @admission_details["REASON FOR ADMISSION"]%>
+                  : <%= @admission_details["REASON FOR ADMISSION"]  || "Unknown" %>
                 </td>
 
                 <%if (@mother.hiv_status.match(/positive/i) rescue false)%>
@@ -461,7 +461,7 @@
                   </td>
 
                   <td class="cell-group inner-cell">
-                    : <%= @birth_history["BABY ON NVP?"] %>
+                    : <%= @birth_history["BABY ON NVP?"]  || "Unknown" %>
                   </td>
                 <%else%>
                   <td class="cell-group inner-cell">
@@ -479,14 +479,14 @@
                   Vitamin K given?
                 </td>
                 <td class="cell-group inner-cell">
-                  : <%= @admission_details["VITAMIN K GIVEN?"]%>
+                  : <%= @admission_details["VITAMIN K GIVEN?"]  || "Unknown" %>
                 </td>
 
                 <td class="cell-group inner-cell">
                   Suckling reflex
                 </td>
                 <td class="cell-group inner-cell">
-                  : <%= @admission_details["OBSERVATION ON SUCKLING REFLEX"] %>
+                  : <%= @admission_details["OBSERVATION ON SUCKLING REFLEX"]  || "Unknown" %>
                 </td>
               </tr>
 

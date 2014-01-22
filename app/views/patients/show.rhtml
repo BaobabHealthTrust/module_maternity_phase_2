@@ -30,8 +30,16 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
       }
       for (var i = 0; i < bts.length; i ++){
         if(!bts[i].path && !clas){
-         
+          
           if (bts[i].innerHTML == "Social History" && task_status_map["social history"] == "done"){
+            bts[i].className = "menu_button done";
+          }
+
+          if (bts[i].innerHTML == "Admission Details" && task_status_map["admit patient"] == "done"){
+            bts[i].className = "menu_button done";
+          }
+
+          if (bts[i].innerHTML == "Vitals" && task_status_map["vitals"] == "done"){
             bts[i].className = "menu_button done";
           }
 
@@ -52,9 +60,7 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
               bts[i].className = "menu_button done";
 
               if  (!(text.match(/notes|vitals|admission|pmtct|vaginal|patient\shistory|\sexam/i))){
-                bts[i].onclick = function(){
-                  showMessage("Feature already done. </br> Delete previous entry and try again!", false, false);
-                }
+               
               }
             }
           }catch(eee){}
@@ -116,9 +122,7 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
   setTimeout("setFlags()", 100);
 <% if !next_task.nil? %>
     setTimeout("showNexttask()", 500);
-<% end %>
-
-<%
+<% end 
 
 @registration = (['registration', "labour ward", "gynaecology ward", "ante-natal ward"].include?(Location.find(session[:location_id]).name.downcase)) rescue false
 
@@ -328,6 +332,10 @@ end
           <option value='/patients/children/<%= @patient.id %>?user_id=<%= @user.id %>'>Children</option>
         <%end%>
 
+        <%if (session[:baby_id] || @baby_location) && @mother_patient.present?%>
+          <option value='/patients/visit_history/<%= @mother_patient.id %>?user_id=<%= @user.id %>&mother_tab=true'>Mother History</option>
+        <%end%>
+
       </select>
 
       <select id="links">
@@ -393,9 +401,15 @@ end
       <%if (session[:baby_id].present? || @baby_location) %>
         <select id="navigation_links">
 
-          <% if !@demographics_url.nil? %>
+          <% if !@demographics_url.blank? %>
             <option link="<%= @demographics_url %>" ttSize = "160px">
               Demographics
+            </option>
+          <% end %>
+
+          <% if !@demographics_url_mum.blank? %>
+            <option link="<%= @demographics_url_mum %>" ttSize = "160px">
+              Mother Demographics
             </option>
           <% end %>
 
@@ -408,6 +422,10 @@ end
           <option link= "<%=  "/patients/band_print?user_id=#{params[:user_id]}&patient_id=#{@patient.patient_id}&baby_id=#{@patient.patient_id}&cat=baby"%>">
             Print Wrist Band
           </option>
+
+          <% if @next_user_task.present? && @next_user_task[1] != "/patients/show/#{@patient.id}?user_id=#{@user.id}" %>
+            <option link="<%=  @next_user_task[1] + "&autoflow=true"  %>" ttSize = "160px">Continue</option>
+          <% end %>
 
         </select>
       <%end%>

@@ -14,13 +14,21 @@ class PatientsController < ApplicationController
     d = (session[:datetime].to_date rescue Date.today)
     t = Time.now
     session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
+
+    if params[:autoflow].present? && params[:autoflow].to_s == "true"
+      session[:autoflow] = "true"
+    elsif params[:autoflow].present? && params[:autoflow].to_s == "false"
+      session[:autoflow] = "false"
+    end
  
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
    
     @current_location_name = Location.find(session[:location_id]).name rescue nil
     @last_location = @patient.recent_location.location_id rescue nil
-    @gynae = Location.find(session[:location_id]).name.match(/Gynaecology/i)[0] rescue ""
+    @gynae = @current_location_name.match(/Gynaecology/i)[0] rescue ""
+    @theater = @current_location_name.match(/Theater/i)[0] rescue ""
     @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
+    @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id] || session[:user_id]}&patient_id=#{@patient.id}"
 
     if @baby_location && @patient.age(session_date) >= 3
       return_ip = "http://#{request.raw_host_with_port}/?user_id=#{session[:user_id] || params[:user_id]}&location_id=#{session[:location_id]}";
@@ -62,13 +70,7 @@ class PatientsController < ApplicationController
     end
     
     @next_user_task = []
-    
-    if params[:autoflow].present? && params[:autoflow].to_s == "true"
-      session[:autoflow] = "true"
-    elsif params[:autoflow].present? && params[:autoflow].to_s == "false"
-      session[:autoflow] = "false"
-    end
-  
+     
     if @patient.nil?
       redirect_to "/encounters/no_patient" and return
     end
@@ -94,6 +96,7 @@ class PatientsController < ApplicationController
     @demographics_url = get_global_property_value("patient.registration.url") rescue nil
     
     if !@demographics_url.nil?
+      @demographics_url_mum = (@demographics_url + "/demographics/#{@patient.mother.person_a}?user_id=#{@user.id}&ext=true") rescue nil
       @demographics_url = @demographics_url + "/demographics/#{@patient.id}?user_id=#{@user.id}&ext=true"
     end
     
@@ -169,9 +172,9 @@ class PatientsController < ApplicationController
     }
 
     
-    #****************************************END OF MOTHER WORK FLOW***********************************************************
+    #****************************************MOTHER WORK FLOW***********************************************************
     #**************************************************************************************************************************
-    if (session[:baby_id].blank? && !@baby_location && @gynae.blank?) # Normal Maternity Flow
+    if (session[:baby_id].blank? && !@baby_location && @gynae.blank? && @theater.blank?) # Normal* Maternity Flow
       if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
         redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
       end
@@ -198,7 +201,7 @@ class PatientsController < ApplicationController
         @next_user_task = ["#{name} Discharge Outcome",
           "/two_protocol_patients/baby_discharge_outcome?patient_id=#{@patient.id}&user_id=#{@user.id}&value=#{@value}&baby_name=#{name}&baby_national_id=#{national_id}"
         ]
-        redirect_to @next_user_task[1] #and return if (session[:autoflow] == "true")
+        redirect_to @next_user_task[1] and return and return if (session[:autoflow] == "true")
 
       end if @patient.is_discharged_mother?
 
@@ -222,12 +225,8 @@ class PatientsController < ApplicationController
    
       @links.delete_if{|key, link|
         @links[key].class.to_s.upcase == "HASH" && @links[key].blank?
-      }   
-     
-   
-      @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
-        
-
+      }
+      
       @task.next_task
       @links.keys.each{|key|
         if key.match(/Natal Exams/i)
@@ -299,17 +298,13 @@ class PatientsController < ApplicationController
 
           next if !@route.blank?
           if @check.blank?
-
             route = {"blood transfusion" => "mother_delivery_details",
               "procedure done" => "delivery_procedures"
-            }
-          
-            @route = route[concept.downcase]
-          
+            }          
+            @route = route[concept.downcase]          
             @next_user_task = ["#{@route.titleize}",
               "/two_protocol_patients/#{@route}?patient_id=#{@patient.id}&user_id=#{@user.id}"
-            ]
-          
+            ]          
           end
         
         end if (@patient.recent_delivery_count > 0 rescue false)
@@ -382,9 +377,7 @@ class PatientsController < ApplicationController
         @next_user_task[1] = @next_user_task[1].gsub(/two\_protocol\_|ante\_natal\_|post\_natal\_/, "")
 
       end
-
-      #****************************************END OF MOTHER WORK FLOW***********************************************************
-      #**************************************************************************************************************************
+     
     elsif  @gynae.present?     
 
       if @task.current_user_activities.include?("social history")
@@ -408,22 +401,119 @@ class PatientsController < ApplicationController
       end
       
       @replacement_var =  @gynae.downcase
-      
+
+      update_outcome = @links["Update Outcome"]
+           
       @links = {"Admission Details" => "/two_protocol_patients/#{@replacement_var}_admission_details?patient_id=#{@patient.id}&user_id=#{@user.id}",
         "Vitals" => "/two_protocol_patients/#{@replacement_var}_vitals?patient_id=#{@patient.id}&user_id=#{@user.id}",
         "Social History" => "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}",
         "Notes" => "/two_protocol_patients/#{@replacement_var}_notes?patient_id=#{@patient.id}&user_id=#{@user.id}"
       }
-      
+
+      @links["Update Outcome"] = update_outcome.delete_if{|key, value|
+        !@task.current_user_activities.include?(key.downcase) || value.blank?
+      }
+
       @first_level_order = ["Admission Details", "Vitals", "Notes", "Social History"].delete_if{|tsk|
         
         tsk = "#{@replacement_var} #{tsk}" unless tsk.downcase == "social history"
        
         !@task.current_user_activities.include?(tsk.downcase)
       }
+      @first_level_order << "Update Outcome"
+      @task_status_map["VITALS"] =  done_ret("TODAY", "VITALS", "THEATER", "DIASTOLIC BLOOD PRESSURE")
+      @task_status_map["ADMIT PATIENT"] =  done_ret("TODAY", "OBSERVATIONS", "THEATER", "ADMISSION DATE")
+
+    elsif !@theater.blank?
       
+      if @task.current_user_activities.include?("social history")
+        if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
+
+          @next_user_task = ["Social History",
+            "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}"
+          ]
+
+          social_history = 0
+
+          redirect_to @next_user_task[1] and return if (session[:autoflow] == "true")
+
+        else
+
+          social_history = 1
+
+        end
+
+        @task_status_map["SOCIAL HISTORY"] = "done" if (social_history == 1)
+      end
+
+      @replacement_var =  @theater.downcase
+
+      #Reserve some important links before overwrite
+      
+      update_outcome = @links["Update Outcome"]
+      @links = {"Admission Details" => "/two_protocol_patients/#{@replacement_var}_admission_details?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Vitals" => "/two_protocol_patients/#{@replacement_var}_vitals?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Social History" => "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Notes" => "/two_protocol_patients/#{@replacement_var}_notes?patient_id=#{@patient.id}&user_id=#{@user.id}"
+      }
+      
+      @links["Update Outcome"] = update_outcome.delete_if{|key, value| 
+        !@task.current_user_activities.include?(key.downcase) || value.blank?
+      }
+
+      @first_level_order = ["Admission Details", "Vitals", "Notes", "Social History"].delete_if{|tsk|
+        
+        tsk = "#{@replacement_var} #{tsk}" unless tsk.downcase == "social history" 
+
+        !@task.current_user_activities.include?(tsk.downcase)
+      }
+      @first_level_order << "Update Outcome" #will be automatically removed when it has 0 items remaining
+      @task_status_map["VITALS"] =  done_ret("TODAY", "VITALS", "THEATER", "DIASTOLIC BLOOD PRESSURE")
+      @task_status_map["ADMIT PATIENT"] =  done_ret("TODAY", "OBSERVATIONS", "THEATER", "ADMISSION DATE")
+      
+      #****************************************END OF MOTHER WORK FLOW ***********************************************************
+      #**************************************************************************************************************************
     else
-       
+
+      if @baby_location
+        
+        @mother_patient = Patient.find(@patient.person.mother.person_a) rescue nil
+
+        if @mother_patient.blank?
+          @next_user_task = ["Mother Registration",
+            "/patients/parent_demographics?patient_id=#{@patient.id}&ext=true&cat=mother&gender=Female&location_id=#{session[:location_id] || params[:location_id]}&user_id=#{session[:user_id]}"
+          ]
+                  
+        elsif @patient.delivery_details.blank?
+          @next_user_task = ["Baby Delivery Details",
+            "/two_protocol_patients/baby_delivery?patient_id=#{@patient.id}&user_id=#{@user.id}"
+          ]
+
+        else
+          #check for mother delivery details, every delivery detail has Q on blood transfusion. We check for encounter with BT
+          
+          @route = ""
+          ["blood transfusion"].each do |concept|
+            @check = @mother_patient.encounters.find(:first, :joins => [:observations],
+              :conditions => ["DATE(encounter.encounter_datetime) > ?  AND encounter.encounter_type = ? AND obs.concept_id = ?",
+                ((session[:datetime].to_date rescue Date.today) - 9.months), EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name(concept).concept_id])
+
+            next if !@route.blank?
+            if @check.blank?
+              route = {"blood transfusion" => "mother_delivery_details",
+                "procedure done" => "delivery_procedures"
+              }
+              @route = route[concept.downcase]
+              @next_user_task = ["#{@route.titleize}",
+                "/two_protocol_patients/#{@route}?patient_id=#{@patient.id}&user_id=#{@user.id}"
+              ]
+            end
+          end
+          
+        end
+        redirect_to @next_user_task[1] and return if @next_user_task.present? && (session[:autoflow] == "true")
+      end
+      
       @first_level_order = ["Baby Examination", "Admit Baby", "Refer Baby", "Kangaroo Review Visit", "Notes"]   
       @first_level_order.delete("Kangaroo Review Visit") unless (@current_location_name.match(/kangaroo ward/i) &&
           @patient.recent_kangaroo_admission(session_date).present?)
@@ -1377,7 +1467,7 @@ class PatientsController < ApplicationController
 
   end
 
-  def father_demographics
+  def parent_demographics
 
     @patient = Patient.find(params[:patient_id])
 
@@ -1386,22 +1476,40 @@ class PatientsController < ApplicationController
 
     @patient_registration = get_global_property_value("patient.registration.url") rescue ""
 
+    person_a = nil
+    person_b = nil
+    
     if params[:ext_patient_id]
 
-      relationship = RelationshipType.find_by_b_is_to_a("Spouse/Partner").id
+      if params[:cat] == "husband"
+        relationship = RelationshipType.find_by_b_is_to_a("Spouse/Partner").id
+        person_a = @patient.id
+        person_b = params[:ext_patient_id]
+      else
+        #main/dashboard patient here is child
+        person_a = params[:ext_patient_id]
+        person_b = @patient.id
+        relationship = RelationshipType.find_by_b_is_to_a_and_a_is_to_b("Child", "Parent").id
+      end
 
       Relationship.create(
-        :person_a => @patient.id,
-        :person_b => params[:ext_patient_id],
+        :person_a => person_a,
+        :person_b => person_b,
         :relationship => relationship)
 
-      redirect_to "/patients/general_demographics/#{@patient.id}?patient_id=#{@patient.id}&ext=true&location_id=#{params[:location_id] ||
-      session[:location_id]}&user_id=#{params[:user_id] || session[:user_id]}" and return
-
+      if params[:cat] == "husband"
+        redirect_to "/patients/general_demographics/#{@patient.id}?patient_id=#{@patient.id}&ext=true&location_id=#{params[:location_id] ||
+        session[:location_id]}&user_id=#{params[:user_id] || session[:user_id]}&cat=#{params[:cat]}" and return
+      else
+        redirect_to "/patients/show/#{@patient.id}?patient_id=#{@patient.id}&location_id=#{params[:location_id] ||
+        session[:location_id]}&user_id=#{params[:user_id] || session[:user_id]}" and return
+      end
+       
     end
     
   end
-  
+
+   
   protected
 
   def sync_user
