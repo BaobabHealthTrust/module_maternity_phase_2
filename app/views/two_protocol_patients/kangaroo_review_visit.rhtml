@@ -15,7 +15,7 @@
 				Weight (grams) 
 			</td>
 			<td>
-<input type='text' id='1.2'  name='concept[Weight]' helpText='Weight (grams) '  min='500'  tt_pageStyleClass='NumbersOnlyWithDecimal'  max='5000'  condition='try{wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  field_type='number'  pos='1'  tt_onLoad='try{__$("category").style.display = "none"}catch(ex){}'  absoluteMax='10000'  absoluteMin='100' />
+<input type='text' id='1.2'  name='concept[Weight]' helpText='Weight (grams) '  absoluteMax='10000'  max='5000'  tt_onLoad='try{__$("category").style.display = "none"}catch(ex){}'  condition='try{wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  pos='1'  min='500'  field_type='number'  tt_pageStyleClass='NumbersOnlyWithDecimal'  absoluteMin='100' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Return visit date 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Return visit date ]' helpText='Return visit date '  condition='try{wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  tt_onUnLoad='if (wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() != "kangaroo"){__$("1.3").value = ""}'  field_type='calendar'  pos='2'  tt_onLoad='showCategory("Return visit date")'  value='<%= Date.today.strftime("%Y-%m-%d") %>'  ajaxCalendarUrl='/patients/number_of_booked_patients?date=' />
+<input type='text' id='1.3'  name='concept[Return visit date ]' helpText='Return visit date '  ajaxCalendarUrl='/patients/number_of_booked_patients?date='  tt_onLoad='showCategory("Return visit date")'  condition='try{wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() == "kangaroo"}catch(ex){false}'  pos='2'  field_type='calendar'  tt_onUnLoad='if (wardsHash("<%= @patient.wards_hash%>")[<%= @patient.national_id%>].toLowerCase().trim() != "kangaroo"){__$("1.3").value = ""}'  value='<%= Date.today.strftime("%Y-%m-%d") %>' />
 			</td>
 		</tr>
 	</table>

@@ -201,7 +201,7 @@ class PatientsController < ApplicationController
         @next_user_task = ["#{name} Discharge Outcome",
           "/two_protocol_patients/baby_discharge_outcome?patient_id=#{@patient.id}&user_id=#{@user.id}&value=#{@value}&baby_name=#{name}&baby_national_id=#{national_id}"
         ]
-        redirect_to @next_user_task[1] and return and return if (session[:autoflow] == "true")
+        redirect_to @next_user_task[1] and return #and return if (session[:autoflow] == "true")
 
       end if @patient.is_discharged_mother?
 
@@ -450,25 +450,27 @@ class PatientsController < ApplicationController
 
       #Reserve some important links before overwrite
       
-      update_outcome = @links["Update Outcome"]
+      
       @links = {"Admission Details" => "/two_protocol_patients/#{@replacement_var}_admission_details?patient_id=#{@patient.id}&user_id=#{@user.id}",
         "Vitals" => "/two_protocol_patients/#{@replacement_var}_vitals?patient_id=#{@patient.id}&user_id=#{@user.id}",
         "Social History" => "/two_protocol_patients/social_history?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Procedures" => @links["Theater Procedures"],
+        "Update Outcome" => @links["Update Outcome"].delete_if{|key, value|
+          !@task.current_user_activities.include?(key.downcase) || value.blank?
+        },
         "Notes" => "/two_protocol_patients/#{@replacement_var}_notes?patient_id=#{@patient.id}&user_id=#{@user.id}"
       }
-      
-      @links["Update Outcome"] = update_outcome.delete_if{|key, value| 
-        !@task.current_user_activities.include?(key.downcase) || value.blank?
-      }
-
-      @first_level_order = ["Admission Details", "Vitals", "Notes", "Social History"].delete_if{|tsk|
+     
+      @first_level_order = ["Admission Details", "Vitals", "Notes", "Social History", "Procedures"].delete_if{|tsk|
         
         tsk = "#{@replacement_var} #{tsk}" unless tsk.downcase == "social history" 
 
         !@task.current_user_activities.include?(tsk.downcase)
       }
+      
       @first_level_order << "Update Outcome" #will be automatically removed when it has 0 items remaining
       @task_status_map["VITALS"] =  done_ret("TODAY", "VITALS", "THEATER", "DIASTOLIC BLOOD PRESSURE")
+      @task_status_map["PROCEDURES"] =  done_ret("TODAY", "PROCEDURES DONE", "THEATER", "TX GROUP")
       @task_status_map["ADMIT PATIENT"] =  done_ret("TODAY", "OBSERVATIONS", "THEATER", "ADMISSION DATE")
       
       #****************************************END OF MOTHER WORK FLOW ***********************************************************
@@ -534,8 +536,9 @@ class PatientsController < ApplicationController
     @assign_serial_numbers = get_global_property_value("assign_serial_numbers").to_s == "true" rescue false
     
     @pending_birth_reports = BirthReport.pending(@patient)
+    
     @user_unsent_birth_reports = BirthReport.unsent_babies(session[:user_id], @patient.id).map(& :person_b) if session[:user_id].present?
- 
+
     @groupings.delete_if{|key, links|
       @groupings[key].blank?
     }

@@ -176,7 +176,11 @@ class EncountersController < ApplicationController
       patient.person.update_attributes(:dead => true,
         :death_date => (params["concept"]["DATE OF DEATH"].to_date rescue session_date))
     end
-     
+    
+    if params["concept"]["TREATMENT GROUP"].present?
+      params["concept"]["TREATMENT GROUP"] = params["concept"]["TREATMENT GROUP"].delete_if{|val| val.blank?}.join(", ")
+    end
+    
     if !patient.blank?
       
       type = EncounterType.find_by_name(params[:encounter_type]).id rescue nil

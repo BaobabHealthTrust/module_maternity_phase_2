@@ -15,7 +15,7 @@
 				Referral Type 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[Referral Type ]' helpText='Referral Type ' disabled='disabled'  pos='1' >
+<select id='1.1.2' name='concept[Referral Type ]' helpText='Referral Type ' pos='1'  disabled='disabled' >
 <option></option>
 <option value='Internal Referral'>Internal Referral</option>
  <option value='Other Health Facility'>Other Health Facility</option>
@@ -42,7 +42,7 @@
 				Facility Referred To? 
 			</td>
 			<td>
-<input type='text' id='1.1.4'   helpText='Facility Referred To? '  condition='__$("1.1.2").value.toLowerCase().trim() == "other health facility"'  pos='3'  allowFreeText='true'  fieldtype='text'  ajaxURL='/encounters/static_locations?search_string='  name='concept[CLINIC PATIENT WAS REFERRRED]' />
+<input type='text' id='1.1.4'   helpText='Facility Referred To? '  name='concept[CLINIC PATIENT WAS REFERRRED]'  condition='__$("1.1.2").value.toLowerCase().trim() == "other health facility"'  pos='3'  ajaxURL='/encounters/static_locations?search_string='  allowFreeText='true'  fieldtype='text' />
 			</td>
 		</tr>
 		<tr>
@@ -50,7 +50,7 @@
 				Referral Out Date 
 			</td>
 			<td>
-<input type='text' id='1.1.5'  name='concept[Referral Out Date ]'   min='<%= (Date.today - 3.months)%>'  field_type='date'  pos='4'  helpText='Date referred' />
+<input type='text' id='1.1.5'  name='concept[Referral Out Date ]'   pos='4'  field_type='date'  min='<%= (Date.today - 3.months)%>'  helpText='Date referred' />
 			</td>
 		</tr>
 		<tr>
@@ -58,7 +58,7 @@
 				Referral Out Time 
 			</td>
 			<td>
-<input type='text' id='1.1.6'  name='concept[Referral Out Time ]'   field_type='advancedTime'  pos='5'  helpText='Time referred' />
+<input type='text' id='1.1.6'  name='concept[Referral Out Time ]'   pos='5'  field_type='advancedTime'  helpText='Time referred' />
 			</td>
 		</tr>
 		<tr>

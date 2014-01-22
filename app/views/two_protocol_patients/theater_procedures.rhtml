@@ -6,7 +6,7 @@
 
 <form method='post' action='/encounters/create'>
 	<input type='hidden' name='program' value='MATERNITY PROGRAM' />
-	<input type='hidden' name='encounter_type' value='Update Outcome ' />
+	<input type='hidden' name='encounter_type' value='PROCEDURES DONE ' />
 	<input type='hidden' name='patient_id' value='<%= @patient.id %>' />
 	<input type='hidden' name='user_id' value='<%= session[:user_id] %>' />
 	<table>
@@ -132,18 +132,90 @@
 		</tr>
 		<tr>
 			<td>
-				Next URL 
+				Select team member involved 
 			</td>
 			<td>
-<input  id='1.1.16'   helpText='Next URL '  name='next_url'  pos='15'  type='hidden'  value='/two_protocol_patients/delivery_procedures?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>' />
+<input type='text' id='1.1.16'   helpText='Select team member involved '  pos='15'  name='concept[TREATMENT GROUP][]'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
 			</td>
 		</tr>
 		<tr>
 			<td>
-				Procedure Check 
+				Select next team member involved (Optional) 
 			</td>
 			<td>
-<input  id='1.1.17'   helpText='Procedure Check '  name='proc_check'  pos='16'  type='hidden'  value='true' />
+<input type='text' id='1.1.17'   helpText='Select next team member involved (Optional) '  pos='16'  name='concept[TREATMENT GROUP][]'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next team member involved (Optional) 
+			</td>
+			<td>
+<input type='text' id='1.1.18'   helpText='Select next team member involved (Optional) '  pos='17'  name='concept[TREATMENT GROUP][]'  condition='try{$("1.1.17").value.length > 0}catch(e){false}'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next team member involved (Optional) 
+			</td>
+			<td>
+<input type='text' id='1.1.19'   helpText='Select next team member involved (Optional) '  pos='18'  name='concept[TREATMENT GROUP][]'  condition='try{$("1.1.18").value.length > 0}catch(e){false}'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next team member involved (Optional) 
+			</td>
+			<td>
+<input type='text' id='1.1.20'   helpText='Select next team member involved (Optional) '  pos='19'  name='concept[TREATMENT GROUP][]'  condition='try{$("1.1.19").value.length > 0}catch(e){false}'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next team member involved (Optional) 
+			</td>
+			<td>
+<input type='text' id='1.1.21'   helpText='Select next team member involved (Optional) '  pos='20'  name='concept[TREATMENT GROUP][]'  condition='try{$("1.1.20").value.length > 0}catch(e){false}'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next team member involved (Optional) 
+			</td>
+			<td>
+<input type='text' id='1.1.22'   helpText='Select next team member involved (Optional) '  pos='21'  name='concept[TREATMENT GROUP][]'  condition='try{$("1.1.21").value.length > 0}catch(e){false}'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next team member involved (Optional)
+			</td>
+			<td>
+<input type='text' id='1.1.23'   helpText='Select next team member involved (Optional)'  pos='22'  name='concept[TREATMENT GROUP][]'  condition='try{$("1.1.22").value.length > 0}catch(e){false}'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next team member involved (Optional) 
+			</td>
+			<td>
+<input type='text' id='1.1.24'   helpText='Select next team member involved (Optional) '  pos='23'  name='concept[TREATMENT GROUP][]'  condition='try{$("1.1.23").value.length > 0}catch(e){false}'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next team member involved (Optional) 
+			</td>
+			<td>
+<input type='text' id='1.1.25'   helpText='Select next team member involved (Optional) '  pos='24'  name='concept[TREATMENT GROUP][]'  condition='try{$("1.1.24").value.length > 0}catch(e){false}'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select next team member involved (Optional) 
+			</td>
+			<td>
+<input type='text' id='1.1.26'   helpText='Select next team member involved (Optional) '  pos='25'  name='concept[TREATMENT GROUP][]'  condition='try{$("1.1.25").value.length > 0}catch(e){false}'  optional='true'  ajaxURL='/clinic/users?user_id=<%= params["user_id"]%>&search_string=' />
 			</td>
 		</tr>
 	</table>

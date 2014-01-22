@@ -77,14 +77,15 @@ class BirthReport < ActiveRecord::Base
 
   end
 
-  def self.pending(patient)
+  def self.pending(patient) 
     Relationship.find_by_sql("SELECT * FROM relationship r
       INNER JOIN person p ON p.person_id = r.person_b AND p.dead = 0 AND r.voided = 0
       WHERE r.person_a = #{patient.patient_id} AND (SELECT COUNT(*) FROM birth_report WHERE person_id = r.person_b) = 0
       AND (SELECT value_datetime FROM obs WHERE person_id = r.person_b AND concept_id = (SELECT concept_id FROM concept_name
-      WHERE name = 'Date Of Delivery' LIMIT 1)) >= DATE_ADD(NOW(), INTERVAL -14 DAY)
+      WHERE name = 'Date Of Delivery' LIMIT 1)) >= DATE_ADD(NOW(), INTERVAL - 14 DAY)
       AND r.relationship = (SELECT relationship_type_id FROM relationship_type WHERE a_is_to_b = 'Parent' AND b_is_to_a = 'Child')
       ") rescue []
   end
 
+  
 end

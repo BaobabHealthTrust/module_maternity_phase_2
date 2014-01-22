@@ -775,6 +775,17 @@ class ClinicController < ApplicationController
 
   end
 
+  def users
+
+    @results = User.all.collect{|user|
+      status = user.user_properties.find_by_property("Status").property_value
+      next if status.upcase.strip != "ACTIVE"
+      user.name if user.name.match(/#{params[:search_string]}/i)}.compact
+
+    render :text => "<li></li>" + "<li>" + @results.join("</li><li>") + "</li>"
+    
+  end
+
   protected
 
   def sync_user
