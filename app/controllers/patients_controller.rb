@@ -24,7 +24,8 @@ class PatientsController < ApplicationController
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
    
     @current_location_name = Location.find(session[:location_id]).name rescue nil
-    @last_location = @patient.recent_location.location_id rescue nil
+    @last_location = @patient.recent_location(session_date).location_id rescue nil
+    
     @gynae = @current_location_name.match(/Gynaecology/i)[0] rescue ""
     @theater = @current_location_name.match(/Theater/i)[0] rescue ""
     @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
