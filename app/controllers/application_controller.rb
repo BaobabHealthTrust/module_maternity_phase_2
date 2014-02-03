@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   before_filter :start_session
 
   before_filter :check_user, :except => [:user_login, :user_logout, :missing_program, :baby_admissions_note_printable, :admissions_note_printable, :birth_report_printable,
-    :missing_concept, :missing_admission, :no_user, :print_birth_cohort, :birth_cohort, :no_serial_number, :no_patient, :project_users_list, :check_role_activities]
+    :missing_concept, :missing_admission, :no_user, :print_birth_cohort, :birth_cohort, :issue_birth_report, :no_serial_number, :no_patient, :project_users_list, :check_role_activities]
   
   def get_global_property_value(global_property)
 		property_value = Settings[global_property]
