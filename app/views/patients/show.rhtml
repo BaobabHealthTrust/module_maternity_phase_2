@@ -60,7 +60,9 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
               bts[i].className = "menu_button done";
 
               if  (!(text.match(/notes|vitals|admission|pmtct|vaginal|patient\shistory|\sexam/i))){
-               
+                bts[i].onclick = function(){
+                  showMessage("Feature Already Done", false, false)
+                }
               }
             }
           }catch(eee){}
@@ -124,7 +126,7 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
     setTimeout("showNexttask()", 500);
 <% end 
 
-@registration = (['registration', "labour ward", "gynaecology ward", "ante-natal ward"].include?(Location.find(session[:location_id]).name.downcase)) rescue false
+@registration = (['registration', "labour ward", "theater", "gynaecology ward", "ante-natal ward"].include?(Location.find(session[:location_id]).name.downcase)) rescue false
 
 if !@registration && @assign_serial_numbers && @pending_birth_reports.length > 0
   params[:lock] = "true"

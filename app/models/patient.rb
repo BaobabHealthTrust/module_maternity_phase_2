@@ -892,5 +892,21 @@ class Patient < ActiveRecord::Base
     result
     
   end
+
+  def location_changes(session_date = Date.today)
+    result = {}
+    self.encounters.all(:select => ["location_id , DATE(encounter_datetime) date"], :order => ["encounter_datetime ASC"],
+      :conditions => ["voided = 0 AND DATE(encounter_datetime) >= ?", (session_date.to_date - 1.month)]).each{|obj|
+
+      (result["#{obj.date}"] << obj.location_id) rescue (result["#{obj.date}"] = [obj.location_id] )
+
+    }
+
+    result.keys.each do |key|
+      result[key] = result[key].inject([]){|arr, location| arr << location unless arr.last == location; arr}
+    end
+
+    result
+  end
   
 end

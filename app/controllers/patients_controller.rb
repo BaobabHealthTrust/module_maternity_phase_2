@@ -30,7 +30,7 @@ class PatientsController < ApplicationController
     @theater = @current_location_name.match(/Theater/i)[0] rescue ""
     @baby_location = @current_location_name.match(/kangaroo ward|nursery ward/i) ? true : false
     @list_band_url = "/patients/wrist_band?user_id=#{params[:user_id] || session[:user_id]}&patient_id=#{@patient.id}"
-
+    
     if @baby_location && @patient.age(session_date) >= 3
       return_ip = "http://#{request.raw_host_with_port}/?user_id=#{session[:user_id] || params[:user_id]}&location_id=#{session[:location_id]}";
       redirect_to "/encounters/not_female?message=Location_allows_babies only&return_ip=#{return_ip}" and return
@@ -47,7 +47,7 @@ class PatientsController < ApplicationController
 
         @baby_patient = Patient.find(baby.person_b) rescue nil
         baby_programs = @baby_patient.patient_programs.collect{|pr| pr.program.name} rescue []
-        next if @baby_patient.blank?        
+        next if @baby_patient.blank?
        
         create_registration(@baby_patient, "EARLY INFANT DIAGNOSIS PROGRAM") if !baby_programs.include?("EARLY INFANT DIAGNOSIS PROGRAM")
 
@@ -301,11 +301,11 @@ class PatientsController < ApplicationController
           if @check.blank?
             route = {"blood transfusion" => "mother_delivery_details",
               "procedure done" => "delivery_procedures"
-            }          
-            @route = route[concept.downcase]          
+            }
+            @route = route[concept.downcase]
             @next_user_task = ["#{@route.titleize}",
               "/two_protocol_patients/#{@route}?patient_id=#{@patient.id}&user_id=#{@user.id}"
-            ]          
+            ]
           end
         
         end if (@patient.recent_delivery_count > 0 rescue false)
@@ -379,7 +379,7 @@ class PatientsController < ApplicationController
 
       end
      
-    elsif  @gynae.present?     
+    elsif  @gynae.present?
 
       if @task.current_user_activities.include?("social history")
         if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
@@ -464,7 +464,7 @@ class PatientsController < ApplicationController
      
       @first_level_order = ["Admission Details", "Vitals", "Notes", "Social History", "Procedures"].delete_if{|tsk|
         
-        tsk = "#{@replacement_var} #{tsk}" unless tsk.downcase == "social history" 
+        tsk = "#{@replacement_var} #{tsk}" unless tsk.downcase == "social history"
 
         !@task.current_user_activities.include?(tsk.downcase)
       }
@@ -517,7 +517,7 @@ class PatientsController < ApplicationController
         redirect_to @next_user_task[1] and return if @next_user_task.present? && (session[:autoflow] == "true")
       end
       
-      @first_level_order = ["Baby Examination", "Admit Baby", "Refer Baby", "Kangaroo Review Visit", "Notes"]   
+      @first_level_order = ["Baby Examination", "Admit Baby", "Refer Baby", "Kangaroo Review Visit", "Notes"]
       @first_level_order.delete("Kangaroo Review Visit") unless (@current_location_name.match(/kangaroo ward/i) &&
           @patient.recent_kangaroo_admission(session_date).present?)
       
@@ -629,6 +629,7 @@ class PatientsController < ApplicationController
     d = (session[:datetime].to_date rescue Date.today)
     t = Time.now
     session_date = DateTime.new(d.year, d.month, d.day, t.hour, t.min, t.sec)
+    @patient_movements = @patient.location_changes(session_date)
     
     ProgramEncounter.current_date = session_date.to_date
     
@@ -688,7 +689,7 @@ class PatientsController < ApplicationController
 
   def visit_history
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
-
+    @patient_movements = @patient.location_changes((session[:datetime].to_date rescue Date.today))
     @task = TaskFlow.new(params[:user_id], @patient.id)
 
     @current_location_name = Location.find(session[:location_id]).name

@@ -717,14 +717,12 @@ class EncountersController < ApplicationController
     }
 
     ret = encounter.observations.collect{|ob| ob.comments }.compact.first.titleize rescue ""
-    
-    replc = lbl.gsub(/Ante Natal|Post Natal/i, " ")
+    replc = lbl.gsub(/Ante Natal|Post Natal|Gynaecology|Theater/i, " ")
     return encounter.name if encounter.name.match(/Admit Patient|Is Patient referred\?/i)
-    lbl = "#{ret} #{replc}" if (ret.match(/Gynaecology|Theater/) && !lbl.match(/#{ret}/i)rescue false)
-    lbl = lbl.titleize.gsub("Post Natal", "Ante Natal") if ret.match(/ante/i)
-    lbl = lbl.titleize.gsub("Ante Natal", "Post Natal") if ret.match(/post/i)
-    lbl = lbl.gsub(/Theater/i, "<i>Th.</i>").gsub(/Gynaecology/i, "<i>Gyna.</i>").gsub(/Examination/i , "exam")
+    lbl = "<i>#{ret}</i> #{replc}" if (ret.match(/Gynaecology|Theater|Ante Natal|Post Natal/i) && !lbl.match(/#{ret}/i)rescue false)
+    lbl = lbl.gsub(/Theater/i, "<i>Th.</i>").gsub(/Gynaecology/i, "<i>Gyna.</i>").gsub(/Examination/i , "exam").gsub(/Ante Natal/i, "<i>An.</i>").gsub(/Post Natal/i, "<i>Pn.</i>")
     lbl
+    
   end
 
   def static_locations
