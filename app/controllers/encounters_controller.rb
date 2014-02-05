@@ -250,6 +250,12 @@ class EncountersController < ApplicationController
 
         end
 
+        if params[:concept].has_key?("PLAN") &&  params[:concept].has_key?("IMPRESSION")
+          #force these concepts to be saved at all costs
+          params[:concept]["PLAN"] = "None" if params[:concept]["PLAN"].blank?
+          params[:concept]["IMPRESSION"] = "None" if params[:concept]["IMPRESSION"].blank?
+        end
+      
         params[:concept].each do |key, value|
 
           if value.blank?
@@ -537,7 +543,7 @@ class EncountersController < ApplicationController
          
             redirect_to params[:next_url] + "#{@ret}" and return if !params[:next_url].blank?
             
-          end          
+          end
           redirect_to "/patients/show/#{@baby_id || params[:patient_id]}?user_id=#{params[:user_id]}#{@ret}" and return
         end
         
@@ -568,7 +574,7 @@ class EncountersController < ApplicationController
 
     observ.each{|key, val|
       concepts[key] << val if concepts.has_key?(key)
-      concepts[key] = [val] if !concepts.has_key?(key)     
+      concepts[key] = [val] if !concepts.has_key?(key)
     }
    
     concepts
@@ -620,7 +626,7 @@ class EncountersController < ApplicationController
       unless encounter.blank?
         prog.void
         encounter.void
-      end       
+      end
       
       if ((enc_name.match(/update\soutcome/i) &&
               (encounter.observations.collect{|ob| ob.answer_string.upcase.strip}).include?("DELIVERED")) rescue false)
@@ -629,12 +635,12 @@ class EncountersController < ApplicationController
           #void recent delivered babies
           (encounter.patient.recent_baby_relations(session[:datetime] || Date.today) || []).each{|rel|
             rel.void
-          }       
+          }
         end
         
       end
 
-    end    
+    end
 
     render :text => [].to_json
   end
@@ -799,15 +805,15 @@ class EncountersController < ApplicationController
   def diagnoses
     
     search_string = (params[:search_string] || '').upcase
-    filter_list = params[:filter_list].split(/, */) rescue []   
+    filter_list = params[:filter_list].split(/, */) rescue []
     previous_answers = []
     
     if params[:set].blank?
       outpatient_diagnosis = ConceptName.find_by_name("DIAGNOSIS").concept
       diagnosis_concept_set = ConceptName.find_by_name("MATERNITY DIAGNOSIS LIST").concept
       previous_answers = Observation.find_most_common(outpatient_diagnosis, search_string)
-    else      
-      diagnosis_concept_set = ConceptName.find_by_name(params[:set].titleize).concept     
+    else
+      diagnosis_concept_set = ConceptName.find_by_name(params[:set].titleize).concept
     end
     
     diagnosis_concepts = Concept.find(:all, :joins => :concept_sets,
