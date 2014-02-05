@@ -15,7 +15,7 @@
 				Condition at Admission 
 			</td>
 			<td>
-<select id='1.1.2'   name='concept[Condition of baby at admission]'  pos='1'  field_type='text'  helpText='Condition of baby at admission' >
+<select id='1.1.2'   helpText='Condition of baby at admission'  field_type='text'  name='concept[Condition of baby at admission]'  pos='1' >
 <option></option>
 <option value='Stable'>Stable</option>
  <option value='Critical'>Critical</option>
@@ -28,7 +28,7 @@
 				Temperature 
 			</td>
 			<td>
-<input type='text' id='1.1.3'  name='concept[TEMPERATURE]'   absoluteMax='100'  max='38'  tt_onLoad='attribute("1.1.3*validationRule*([0-9]+\\.[0-9])|Unknown$")'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  pos='2'  min='36'  field_type='number'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  helpText='Baby temperature (<sup>o</sup>C)'  absoluteMin='0' />
+<input type='text' id='1.1.3'  name='concept[TEMPERATURE]'   condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  min='36'  tt_onLoad='attribute("1.1.3*validationRule*([0-9]+\\.[0-9])|Unknown$")'  helpText='Baby temperature (<sup>o</sup>C)'  absoluteMax='100'  absoluteMin='0'  max='38'  field_type='number'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  pos='2' />
 			</td>
 		</tr>
 		<tr>
@@ -36,7 +36,7 @@
 				Respiratory Rate 
 			</td>
 			<td>
-<input type='text' id='1.1.4'  name='concept[RESPIRATORY RATE]'   max='80'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  pos='3'  min='0'  field_type='number'  units='bpm'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  helpText='Respiratory rate' />
+<input type='text' id='1.1.4'  name='concept[RESPIRATORY RATE]'   condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  min='0'  helpText='Respiratory rate'  max='80'  field_type='number'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  units='bpm'  pos='3' />
 			</td>
 		</tr>
 		<tr>
@@ -44,7 +44,7 @@
 				Heart Rate 
 			</td>
 			<td>
-<input type='text' id='1.1.5'  name='concept[HEART RATE]'   max='60'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  pos='4'  min='20'  field_type='number'  units='bpm'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  helpText='Heart rate' />
+<input type='text' id='1.1.5'  name='concept[HEART RATE]'   condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  min='20'  helpText='Heart rate'  max='60'  field_type='number'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  units='bpm'  pos='4' />
 			</td>
 		</tr>
 		<tr>
@@ -52,7 +52,7 @@
 				Baby Weight (grams) 
 			</td>
 			<td>
-<input type='text' id='1.1.6'  name='concept[WEIGHT]' helpText='Baby Weight (grams) '  max='5000'  tt_onLoad='attribute("1.1.5*validationRule*([0-9]+\\.[0-9])|Unknown$")'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  pos='5'  min='2500'  field_type='number'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal' />
+<input type='text' id='1.1.6'  name='concept[WEIGHT]' helpText='Baby Weight (grams) '  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  min='2500'  tt_onLoad='attribute("1.1.5*validationRule*([0-9]+\\.[0-9])|Unknown$")'  max='5000'  field_type='number'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  pos='5' />
 			</td>
 		</tr>
 		<tr>
@@ -60,7 +60,7 @@
 				Abdomen 
 			</td>
 			<td>
-<select id='1.1.7' name='concept[ABDOMEN]'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  pos='6'  field_type='text'  helpText='Abdomen' >
+<select id='1.1.7' name='concept[ABDOMEN]'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  helpText='Abdomen'  field_type='text'  pos='6' >
 <option></option>
 <option value='Distended'>Distended</option>
  <option value='Soft'>Soft</option>
@@ -72,7 +72,7 @@
 				Cord Tied 
 			</td>
 			<td>
-<select id='1.1.8' name='concept[CORD TIED]'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  pos='7'  field_type='text'  helpText='Cord Tied' >
+<select id='1.1.8' name='concept[CORD TIED]'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  helpText='Cord Tied'  field_type='text'  pos='7' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -84,7 +84,7 @@
 				Any Abnormalities 
 			</td>
 			<td>
-<select id='1.1.9' name='concept[Any abnormalities]'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  pos='8'  field_type='text'  helpText='Any abnormalities'  disabled='disabled' >
+<select id='1.1.9' name='concept[Any abnormalities]'  condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"'  helpText='Any abnormalities'  field_type='text'  pos='8'  disabled='disabled' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -96,7 +96,7 @@
 				Specify Abnormalities 
 			</td>
 			<td>
-<input type='text' id='1.1.10'  name='concept[SPECIFY]'   condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"; __$("1.1.9").value.trim().toUpperCase() == "YES"'  pos='9'  field_type='text'  helpText='Specify abnormality(s)' />
+<input type='text' id='1.1.10'  name='concept[SPECIFY]'   condition='__$("1.1.2").value.trim().toUpperCase() != "DEAD"; __$("1.1.9").value.trim().toUpperCase() == "YES"'  helpText='Specify abnormality(s)'  field_type='text'  pos='9' />
 			</td>
 		</tr>
 	</table>

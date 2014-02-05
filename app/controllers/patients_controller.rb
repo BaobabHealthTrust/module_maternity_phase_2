@@ -176,7 +176,7 @@ class PatientsController < ApplicationController
     #****************************************MOTHER WORK FLOW***********************************************************
     #**************************************************************************************************************************
     if (session[:baby_id].blank? && !@baby_location && @gynae.blank? && @theater.blank?) # Normal* Maternity Flow
-      if !@last_location.blank? && ((session[:location_id].to_i != @last_location) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
+      if !@last_location.blank? && ((session[:location_id].to_i != @last_location.to_i) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
         redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
       end
 
@@ -381,6 +381,10 @@ class PatientsController < ApplicationController
      
     elsif  @gynae.present?
 
+      if !@last_location.blank? && ((session[:location_id].to_i != @last_location.to_i) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
+        redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
+      end
+      
       if @task.current_user_activities.include?("social history")
         if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
 
@@ -426,6 +430,10 @@ class PatientsController < ApplicationController
       @task_status_map["ADMIT PATIENT"] =  done_ret("TODAY", "OBSERVATIONS", "THEATER", "ADMISSION DATE")
 
     elsif !@theater.blank?
+
+      if !@last_location.blank? && ((session[:location_id].to_i != @last_location.to_i) rescue false) && (!@current_location_name.match(/registration|labour ward/i) rescue false)
+        redirect_to "/two_protocol_patients/admit_to_ward?patient_id=#{@patient.id}&user_id=#{@user.id}&location_id=#{session[:location_id]}"
+      end
       
       if @task.current_user_activities.include?("social history")
         if done_ret("RECENT", "SOCIAL HISTORY", "", "GUARDIAN FIRST NAME") != "done"
@@ -1528,6 +1536,92 @@ class PatientsController < ApplicationController
     
   end
 
+  def patient_dashboard
+    @session_date = session[:datetime].to_date rescue Date.today
+    @person = Person.find(params[:id] || params[:patient_id])
+    
+    patient = @person.patient
+    @user_roles = User.find(params[:user_id]).user_roles.collect{|role| role.role}
+
+    @show_history = @user_roles - ["Nurse", "Doctor", "Program Manager", "System Developer"] != @user_roles
+   
+    @encounters = {}
+    @encounter_dates = []
+
+    if @show_history
+      last_visit_date = patient.encounters.last.encounter_datetime.to_date rescue Date.today
+      latest_encounters = Encounter.find(:all,
+        :order => "encounter_datetime ASC,date_created ASC",
+        :conditions => ["patient_id = ? AND
+        encounter_datetime >= ? AND encounter_datetime <= ?",patient.patient_id,
+          last_visit_date.strftime('%Y-%m-%d 00:00:00'),
+          last_visit_date.strftime('%Y-%m-%d 23:59:59')])
+
+      (latest_encounters || []).each do |encounter|
+        next if encounter.name.match(/TREATMENT/i)
+        @encounters[encounter.name.upcase] = {:data => nil,
+          :time => encounter.encounter_datetime.strftime('%H:%M:%S')}
+        @encounters[encounter.name.upcase][:data] = encounter.observations.collect{|obs|
+          next if obs.to_s.match(/Workstation/i)
+          obs.to_s
+        }.compact
+      end
+
+      @encounters = @encounters.sort_by { |name, values| values[:time] }
+
+      @encounter_dates = patient.encounters.collect{|e|e.encounter_datetime.to_date}.uniq
+      @encounter_dates = (@encounter_dates || []).sort{|a,b|b <=> a}
+
+      parameters = ""
+      params.keys.uniq.each do |key|
+        next if key.match(/action|controller/) || parameters.match(/#{key}\=/) || key == "id"
+        parameters += "&#{key}=#{params[key]}"
+      end
+
+      @next_destination = "/patients/show?patient_id=#{patient.patient_id}#{parameters}"
+       
+    end
+    
+  end
+
+  def pdash_summary
+    latest_encounters = Encounter.find(:all,
+      :order => "encounter_datetime ASC,date_created ASC",
+      :conditions => ["patient_id = ? AND
+      encounter_datetime >= ? AND encounter_datetime <= ?",params[:patient_id],
+        params[:date].to_date.strftime('%Y-%m-%d 00:00:00'),
+        params[:date].to_date.strftime('%Y-%m-%d 23:59:59')])
+
+    @encounters = {}
+
+    (latest_encounters || []).each do |encounter|
+      next if encounter.name.match(/TREATMENT/i)
+      @encounters[encounter.name.upcase] = {:data => nil,
+        :time => encounter.encounter_datetime.strftime('%H:%M:%S')}
+      @encounters[encounter.name.upcase][:data] = encounter.observations.collect{|obs|
+        next if obs.to_s.match(/Workstation/i)
+        obs.to_s
+      }.compact
+    end
+
+    @html = ''
+    @encounters = @encounters.sort_by { |name, values| values[:time] }
+
+    @encounters.each do |name,values|
+      @html+="<div class='data'>"
+      @html+="<b>#{name}<span class='time'>#{values[:time]}</span></b><br />"
+      values[:data].each do |value|
+        if value.match(/Referred from:/i)
+          @html+= 'Referred from: ' + Location.find(value.sub('Referred from:','').to_i).name rescue value
+        else
+          @html+="#{value}<br />"
+        end
+      end
+      @html+="</div><br />"
+    end
+
+    render :text => @html.to_s
+  end
    
   protected
 

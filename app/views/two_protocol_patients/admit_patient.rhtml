@@ -15,7 +15,7 @@
 				Gravida 
 			</td>
 			<td>
-<input type='text' id='1.1'  name='concept[Gravida ]' helpText='Gravida '  absoluteMax='20'  max='10'  pos='0'  field_type='number'  tt_pageStyleClass='NumbersOnly'  absoluteMin='1' />
+<input type='text' id='1.1'  name='concept[Gravida ]' helpText='Gravida '  absoluteMax='20'  max='10'  absoluteMin='1'  field_type='number'  tt_pageStyleClass='NumbersOnly'  pos='0' />
 			</td>
 		</tr>
 		<tr>
@@ -23,7 +23,7 @@
 				Parity 
 			</td>
 			<td>
-<input type='text' id='1.2'  name='concept[Parity ]' helpText='Parity '  absoluteMax='20'  max='10'  condition='__$("1.1").value > 1'  pos='1'  field_type='number'  tt_pageStyleClass='NumbersOnly'  absoluteMin='1' />
+<input type='text' id='1.2'  name='concept[Parity ]' helpText='Parity '  condition='__$("1.1").value > 1'  absoluteMax='20'  max='10'  absoluteMin='1'  field_type='number'  tt_pageStyleClass='NumbersOnly'  pos='1' />
 			</td>
 		</tr>
 		<tr>
@@ -31,7 +31,7 @@
 				Gestation weeks 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Gestation weeks ]' helpText='Gestation weeks '  absoluteMax='45'  max='42'  pos='2'  min='36'  field_type='number'  tt_pageStyleClass='NumbersOnly'  absoluteMin='1' />
+<input type='text' id='1.3'  name='concept[Gestation weeks ]' helpText='Gestation weeks '  min='36'  absoluteMax='45'  max='42'  absoluteMin='1'  field_type='number'  tt_pageStyleClass='NumbersOnly'  pos='2' />
 			</td>
 		</tr>
 		<tr>
@@ -77,7 +77,7 @@
 				Date antiretrovirals started 
 			</td>
 			<td>
-<select id='1.5.2.1' name='concept[Date antiretrovirals started ]'  condition='__$("1.5").value == "Yes"'  pos='6'  helpText='When was ART started?' >
+<select id='1.5.2.1' name='concept[Date antiretrovirals started ]'  condition='__$("1.5").value == "Yes"'  helpText='When was ART started?'  pos='6' >
 <option></option>
 <option value='On ART during labour'>On ART during labour</option>
  <option value='On ART since third trimester'>On ART since third trimester</option>

@@ -1,0 +1,286 @@
+<style>
+  div {
+    -moz-user-select: none;
+  }
+
+  .main-container {
+    border-style: solid;
+    border-width: 0px 0px 0px 0px;
+    border-width-color: black;
+    height: 626px;
+    margin: 5px;
+  }
+
+
+  .left-container {
+    width: 20%;
+    padding: 5px 0px 5px 0px;
+    float: left;
+    overflow: auto;
+    height: 626px;
+  }
+
+  .links {
+    padding: 0px 0px 5px 0px;
+    text-align: center;
+    border-style: solid;
+    border-width: 1px;
+    height: 70px;
+  }
+
+  .links-heading {
+    text-align: left;
+    font-size: 15px;
+    color: white;
+    background-color: teal;
+    padding-left: 5px;
+  }
+
+  .links-btn-img {
+    float: right;
+    position: relative;
+    top: -48px;
+    width: 20%;
+    padding-right: 5px;
+  }
+
+  .links-btn-date {
+    width: 60%;
+    position: relative;
+    top: 8px;
+    padding-left: 5px;
+  }
+
+  .right-container {
+    width: 78%;
+    padding: 5px;
+    float: right;
+    background-color: lightgrey;
+    height: 625px;
+  }
+
+  .demographics {
+  }
+
+  .data {
+    -moz-border-radius: 15px;
+    border-radius: 5px;
+    width: 98%;
+    border-style: solid;
+    border-width: 1px;
+    padding-left: 5px;
+    background-color: white;
+  }
+
+  .data-main {
+    height: 460px;
+    overflow: auto;
+    padding: 5px 0px 5px 0px;
+    border-style: solid;
+    border-width: 1px 0px 1px 0px;
+  }
+
+  .main-caption {
+    text-align: center;
+    background-color: black;
+    color: white;
+  }
+
+  .links-btn a {
+    color: blue;
+    text-decoration: none;
+  }
+
+  .time {
+    float: right;
+    padding-right: 15px;
+  }
+
+  .gender {
+    position: relative;
+    top: 4px;
+  }
+
+  .btn-date {
+    background-color: #669999;
+    border-bottom: 1px outset black;
+    border-radius: 7px 7px 7px 7px;
+    border-style: outset;
+    border-top: 1px outset black;
+    color: white;
+    display: block;
+    padding: 10px 16px 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    height: 15px;
+    width: 93px;
+  }
+  .buttonDiv {
+    position: absolute;
+    background-color: #333333;
+    display: block;
+    height: 82px;
+    margin: 0px;
+    width: 100%;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+  }
+
+  #finishButton{
+    width: 170px;
+  }
+  #cancelButton{
+    width: 170px;
+    float: left;
+  }
+</style>
+
+<script>
+  tt_cancel_destination = "/clinic";
+
+  function changeAttributes(){
+    finishButton = document.getElementById("finishButton");
+    finishButton.innerHTML = "<span>Continue</span>";
+    tt_cancel_destination="<%= @next_destination %>"
+
+    btnDIV = document.getElementById('buttons');
+    btnDIV.innerHTML+="<button id='btnCancel' class='red left' value='Cancel' onclick='if (tt_cancel_destination) window.location = tt_cancel_destination;'><span>Cancel</span></button>";
+  }
+
+</script>
+
+<body onload = "setTimeout('changeAttributes()',500);">
+
+  <div class="main-caption" id = "caption">
+    <%=@encounter_dates.first.strftime('%A %d %B %Y') rescue nil%>
+  </div>
+
+  <div class="main-container">
+
+    <div class="left-container">
+      <%(@encounter_dates || []).each do |date|%>
+        <div class='links'>
+          <div class='links-heading'>
+            <%=date.strftime('%A')%>
+          </div>
+          <div class='links-btn'>
+            <div class='links-btn-date'>
+              <a href="javascript:showHistory('<%=date%>','<%=date.strftime('%A %d %B %Y')%>')"><span class='btn-date'><%=date.strftime('%d  %b %Y')%></span></a>&nbsp;
+            </div>
+            <div class='links-btn-img'>
+              <a href="javascript:showHistory('<%=date%>','<%=date.strftime('%A %d %B %Y')%>')"><%= image_tag("forward.png", :class => "arrows") %></a>
+            </div></a>
+          </div>
+        </div><br />
+      <%end%>
+
+
+      <%if @encounter_dates.blank?%>
+        <div class="data" style="width: 189px;">
+          <%unless @show_history %>
+            <b>Maternity<br /><%=Location.current_location.name%> ....</b>
+          <%else%>
+            <b>Sorry</b><br />
+            There are no encounters yet for this patient ....
+          <%end%>
+        </div><br />
+      <%end%>
+
+
+    </div>
+
+    <div class="right-container">
+      <div class="demographics data">
+        <b>Name:&nbsp;</b><%=@person.name%>&nbsp;
+        <%= image_tag("#{@person.gender.match(/f/i)? 'female' : 'male'}.gif", :class => 'gender') %><br />
+        <b>Birthdate:</b>&nbsp;<%=@person.birthdate.to_date.strftime("%d %b, %Y")%>&nbsp;
+        <b>Age:</b>&nbsp;<%=@person.patient.age(@session_date)%><br />
+        <b>National ID:</b>&nbsp;<%=@person.patient.national_id%><br />
+        <b>Address</b>&nbsp;<%=@person.patient.address%><br /><hr />
+
+      </div><p />
+
+      <div class="data-main" id="records">
+
+        <%@encounters.each do |name,values|%>
+
+          <div class="data">
+            <b><%=name%><span class='time'><%=values[:time]%></span></b><br />
+            <%values[:data].each do |value|
+              if value.match(/Referred from:/i)
+                val = 'Referred from: ' + Location.find(value.sub('Referred from:','').to_i).name rescue value
+              else
+                val ="#{value}"
+              end%>
+              <%=val%><br />
+            <%end%>
+          </div><br />
+
+        <%end%>
+
+        <%if @encounters.blank?%>
+          <div class="data">
+            <b>Demographics ....</b><br />
+            <b>Age in months:</b>&nbsp;<%=@person.patient.age_in_months(@session_date)%><br />
+            <b>Home district:&nbsp;</b><%=@person.home_district%><br />
+            <b>Traditional authority:</b>&nbsp;<%=@patient_bean.traditional_authority%><br />
+            <b>Cell phone number:&nbsp;</b><%=@patient_bean.cell_phone_number%><br />
+            <b>Home phone number:&nbsp;</b><%=@patient_bean.home_phone_number%><br />
+            <b>Office phone number:&nbsp;</b><%=@patient_bean.office_phone_number%><br />
+            <b>Occupation:&nbsp;</b><%=@patient_bean.occupation%><br />
+          </div>
+        <%end%>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="footer" class="buttonDiv">
+    <!--div id="buttons" class="buttonDiv"-->
+    <button id="finishButton" class="button navButton green"
+            onclick="if (tt_cancel_destination) window.location = tt_cancel_destination;">
+      <span>Finish</span>
+    </button>
+
+    <button id="cancelButton" class="button navButton red"
+            onclick="window.location = '/clinic?user_id=<%= params[:user_id] || session[:user_id] %>&location_id=<%= session[:location_id] %>';">
+      <span>Cancel</span>
+    </button>
+    <!--/div-->
+    <div id="tt_extraButtons"/>
+  </div>
+
+</body>
+
+<script>
+
+  var patientID = <%=@person.patient.patient_id%>;
+  var html = '';
+
+  function showHistory(encounterDate,displayDate) {
+    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();                                              
+    }else{// code for IE6, IE5                                                   
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");                            
+    }                                                                            
+                                                                                
+    xmlhttp.onreadystatechange=function() {                                      
+      if (xmlhttp.readyState==4 && xmlhttp.status==200) {                        
+        var results = xmlhttp.responseText;                                      
+        if(results) {                                                  
+          document.getElementById('records').innerHTML = results;
+          document.getElementById('caption').innerHTML = displayDate;
+        }                                                                       
+      }                                                                          
+    }                                                                            
+
+    params = patientID + "&date=" + encounterDate;                                                                                
+    xmlhttp.open("GET","/patients/pdash_summary?patient_id=" + params  , true);                        
+    xmlhttp.send(); 
+  }
+
+
+</script>
