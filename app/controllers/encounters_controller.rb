@@ -454,7 +454,7 @@ class EncountersController < ApplicationController
                 if (params[:ret] && !params[:ret].blank?) || @gynae.present? || @theater.present?
                   if !@gynae.blank?
                     obs.comments =  @gynae
-                  elsif !@theater.present?
+                  elsif !@theater.blank?
                     obs.comments = @theater
                   else
                     obs.comments = params[:ret]
