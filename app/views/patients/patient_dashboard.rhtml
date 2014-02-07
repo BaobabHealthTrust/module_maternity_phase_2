@@ -140,12 +140,9 @@
   tt_cancel_destination = "/clinic";
 
   function changeAttributes(){
-    finishButton = document.getElementById("finishButton");
-    finishButton.innerHTML = "<span>Continue</span>";
+    
     tt_cancel_destination="<%= @next_destination %>"
-
-    btnDIV = document.getElementById('buttons');
-    btnDIV.innerHTML+="<button id='btnCancel' class='red left' value='Cancel' onclick='if (tt_cancel_destination) window.location = tt_cancel_destination;'><span>Cancel</span></button>";
+   
   }
 
 </script>
@@ -179,7 +176,7 @@
       <%if @encounter_dates.blank?%>
         <div class="data" style="width: 189px;">
           <%unless @show_history %>
-            <b>Maternity<br /><%=Location.current_location.name%> ....</b>
+            <b>Maternity<br /><%= Location.find(session[:location_id]) .name%> ....</b>
           <%else%>
             <b>Sorry</b><br />
             There are no encounters yet for this patient ....
@@ -223,12 +220,12 @@
           <div class="data">
             <b>Demographics ....</b><br />
             <b>Age in months:</b>&nbsp;<%=@person.patient.age_in_months(@session_date)%><br />
-            <b>Home district:&nbsp;</b><%=@person.home_district%><br />
-            <b>Traditional authority:</b>&nbsp;<%=@patient_bean.traditional_authority%><br />
-            <b>Cell phone number:&nbsp;</b><%=@patient_bean.cell_phone_number%><br />
-            <b>Home phone number:&nbsp;</b><%=@patient_bean.home_phone_number%><br />
-            <b>Office phone number:&nbsp;</b><%=@patient_bean.office_phone_number%><br />
-            <b>Occupation:&nbsp;</b><%=@patient_bean.occupation%><br />
+            <b>Home district:&nbsp;</b><%=@anc_patient.home_district%><br />
+            <b>Traditional authority:</b>&nbsp;<%=@anc_patient.home_ta%><br />
+            <b>Cell phone number:&nbsp;</b><%=@anc_patient.get_attribute("cell phone number")%><br />
+            <b>Home phone number:&nbsp;</b><%=@anc_patient.get_attribute("home phone number")%><br />
+            <b>Office phone number:&nbsp;</b><%=@anc_patient.get_attribute("office phone number")%><br />
+            <b>Occupation:&nbsp;</b><%=@anc_patient.get_attribute("occupation")%><br />
           </div>
         <%end%>
 
@@ -241,8 +238,8 @@
   <div id="footer" class="buttonDiv">
     <!--div id="buttons" class="buttonDiv"-->
     <button id="finishButton" class="button navButton green"
-            onclick="if (tt_cancel_destination) window.location = tt_cancel_destination;">
-      <span>Finish</span>
+            onclick="window.location = '<%= @next_destination %>';">
+      <span>Continue</span>
     </button>
 
     <button id="cancelButton" class="button navButton red"
@@ -262,24 +259,24 @@
 
   function showHistory(encounterDate,displayDate) {
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-      xmlhttp=new XMLHttpRequest();                                              
-    }else{// code for IE6, IE5                                                   
-      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");                            
-    }                                                                            
+      xmlhttp=new XMLHttpRequest();
+    }else{// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
                                                                                 
-    xmlhttp.onreadystatechange=function() {                                      
-      if (xmlhttp.readyState==4 && xmlhttp.status==200) {                        
-        var results = xmlhttp.responseText;                                      
-        if(results) {                                                  
+    xmlhttp.onreadystatechange=function() {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+        var results = xmlhttp.responseText;
+        if(results) {
           document.getElementById('records').innerHTML = results;
           document.getElementById('caption').innerHTML = displayDate;
-        }                                                                       
-      }                                                                          
-    }                                                                            
+        }
+      }
+    }
 
-    params = patientID + "&date=" + encounterDate;                                                                                
-    xmlhttp.open("GET","/patients/pdash_summary?patient_id=" + params  , true);                        
-    xmlhttp.send(); 
+    params = patientID + "&date=" + encounterDate;
+    xmlhttp.open("GET","/patients/pdash_summary?patient_id=" + params  , true);
+    xmlhttp.send();
   }
 
 

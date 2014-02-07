@@ -796,6 +796,36 @@ class PatientsController < ApplicationController
     render :layout => false
   end
 
+  def treatment_details
+    
+    @patient = Patient.find(params[:id] || params[:patient_id])
+    @user = User.find(session[:user_id] || params[:user_id])
+
+    @drug_dispensations = ProgramEncounterDetail.find_by_sql(["
+      SELECT pr.name program, o.creator, o.creator order_creator, o.order_id, o.date_created, dg.name drug, REPLACE(REPLACE(o.instructions, 'null', ''), CONCAT(dg.name, ':'), '') instructions
+      FROM program_encounter_details details
+          INNER JOIN program pr ON details.program_id = pr.program_id
+          INNER JOIN encounter enc ON details.encounter_id = enc.encounter_id AND enc.voided = 0
+              AND enc.encounter_type = ? AND enc.patient_id = ?
+          INNER JOIN orders o ON enc.encounter_id = o.encounter_id AND o.voided = 0
+          INNER JOIN drug_order do ON o.order_id = do.order_id
+          INNER JOIN drug dg ON do.drug_inventory_id = dg.drug_id           
+      GROUP BY o.order_id
+      ORDER BY o.date_created DESC
+          
+        ", EncounterType.find_by_name("TREATMENT").id, @patient.id]).collect{|data|
+      data.creator = User.find(data.creator).name
+      data
+    }
+    
+    render :layout => false
+  end
+
+  def pregnancy_details
+    
+
+  end
+
   def wrist_band
     @patient = Patient.find(params[:id] || params[:patient_id]) rescue nil
 
@@ -1539,6 +1569,7 @@ class PatientsController < ApplicationController
   def patient_dashboard
     @session_date = session[:datetime].to_date rescue Date.today
     @person = Person.find(params[:id] || params[:patient_id])
+    @anc_patient = ANCService::ANC.new(@person.patient) rescue nil
     
     patient = @person.patient
     @user_roles = User.find(params[:user_id]).user_roles.collect{|role| role.role}
@@ -1572,23 +1603,21 @@ class PatientsController < ApplicationController
       @encounter_dates = patient.encounters.collect{|e|e.encounter_datetime.to_date}.uniq
       @encounter_dates = (@encounter_dates || []).sort{|a,b|b <=> a}
 
-      parameters = ""
-      params.keys.uniq.each do |key|
-        next if key.match(/action|controller/) || parameters.match(/#{key}\=/) || key == "id"
-        parameters += "&#{key}=#{params[key]}"
-      end
-
-      @next_destination = "/patients/show?patient_id=#{patient.patient_id}#{parameters}"
-       
     end
-    
+
+    parameters = ""
+    params.keys.uniq.each do |key|
+      next if key.match(/action|controller|user_id/) || parameters.match(/#{key}\=/) || key == "id"
+      parameters += "&#{key}=#{params[key]}"
+    end 
+    @next_destination = "/patients/show?patient_id=#{patient.patient_id}#{parameters}&user_id=#{session[:user_id] || params[:user_id]}"
   end
 
   def pdash_summary
     latest_encounters = Encounter.find(:all,
       :order => "encounter_datetime ASC,date_created ASC",
       :conditions => ["patient_id = ? AND
-      encounter_datetime >= ? AND encounter_datetime <= ?",params[:patient_id],
+    encounter_datetime >= ? AND encounter_datetime <= ?",params[:patient_id],
         params[:date].to_date.strftime('%Y-%m-%d 00:00:00'),
         params[:date].to_date.strftime('%Y-%m-%d 23:59:59')])
 

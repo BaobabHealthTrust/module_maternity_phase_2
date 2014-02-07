@@ -338,6 +338,9 @@ end
           <option value='/patients/visit_history/<%= @mother_patient.id %>?user_id=<%= @user.id %>&mother_tab=true'>Mother History</option>
         <%end%>
 
+        <option value='/patients/treatment_details/<%= @patient.id %>?user_id=<%= @user.id %>'>Treatment Details</option>
+        <option value='/patients/pregnancy_detailes/<%= @patient.id %>?user_id=<%= @user.id %>'>Pregnancy Details</option>
+
       </select>
 
       <select id="links">

@@ -1274,4 +1274,18 @@ class EncountersController < ApplicationController
     render :text => result.to_s.to_json
   end
 
+  def void_order
+    order = Order.find(params[:order_id])
+
+    if order.present?
+      encounter = order.encounter
+      order.void
+      if encounter.orders.blank? && encounter.name.match(/TREATMENT/i)
+        encounter.void
+      end
+    end
+    
+    return render :text => {"ok" => true}.to_json
+  end
+
 end
