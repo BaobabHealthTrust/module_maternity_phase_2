@@ -19,10 +19,10 @@ next_task = @next_user_task[0].gsub('_',' ') rescue nil
 
 <%}%>
 
-  function paintButtons(clas){   
+  function paintButtons(clas){
 
     try{
-      var bts =  document.getElementsByClassName("menu_button");    
+      var bts =  document.getElementsByClassName("menu_button");
 
       if(bts.length == 0){
         //invoke error
@@ -188,6 +188,31 @@ end
     }
   }
 
+  function updateTabs(element){
+    setCookie("<%= request.remote_ip %>:patient_dashboard", element.id, 1);
+  }
+
+  function checkTabs(){
+    try{
+      var  tabs = document.getElementsByClassName("inactive-tab");
+      // var  tabs_a = document.getElementsByClassName("active-tab");
+      var current_tab = getCookie("<%= request.remote_ip %>:patient_dashboard");
+
+      if (current_tab){
+        __$(current_tab).onclick.apply(__$(current_tab));
+      }
+
+      for (var i = 0; i < tabs.length; i ++){
+        tabs[i].onmousedown = function(){
+          updateTabs(this)
+        }
+      }
+     
+    }catch(ex){
+      setTimeout(function(){checkTabs()}, 10);
+    }
+  }
+
   function lockFinishButton(){
     clickE = "";
     try{
@@ -209,6 +234,7 @@ end
     }
     setTimeout(function(){lockFinishButton()}, 100);
   }
+  setTimeout(function(){checkTabs()}, 1);
 </script>
 
 <style type="text/css">

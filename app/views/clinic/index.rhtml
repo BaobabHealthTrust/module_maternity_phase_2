@@ -3,6 +3,46 @@
   tt_cancel_destination = '/user_logout/<%= params[:user_id] %>?location_id=<%= session[:location_id] || params[:location_id] %>';
   tt_cancel_show = '<%= @patient_registration %>/scan?user_id=<%= params[:user_id]
 %>&ext=true&location_id=<%= session[:location_id] || params[:location_id] %>&min_date=<%= @min_date %>&max_date=<%= @max_date %>&app_name=<%= @project %>&gender=<%= @gender %>&<%=  @selected.join("=true&") + (@selected.length > 0 ? "=true" : "") %>';
+
+  function updateTabs(element){
+    setCookie("<%= request.remote_ip %>:user_dashboard", element.id, 1);
+  }
+
+  function checkTabs(){
+    try{
+      try{
+        var  tabs = __$("tabContainer").getElementsByClassName("inactive-tab");
+      }catch(ex){
+        var tabs = []
+      }
+      
+      try{
+        var  tabs_a = __$("tabContainer").getElementsByClassName("active-tab");
+        tabs_a[0].onmousedown = function(){
+          updateTabs(this)
+        }
+      }catch(ex){
+        var tabs_a = []
+      }
+      
+      var current_tab = getCookie("<%= request.remote_ip %>:user_dashboard");
+
+      if (current_tab){
+        __$(current_tab).onclick.apply(__$(current_tab));
+      }
+
+      for (var i = 0; i < tabs.length; i ++){
+        tabs[i].onmousedown = function(){
+          updateTabs(this)
+        }
+      }
+
+    }catch(ex){
+      setTimeout(function(){checkTabs()}, 10);
+    }
+  }
+
+  setTimeout(function(){checkTabs()}, 10);
 </script>
 <div id="home">
   <div id="project_name">
