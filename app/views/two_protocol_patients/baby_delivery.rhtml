@@ -19,7 +19,7 @@
 				Scan baby barcode (Optional) 
 			</td>
 			<td>
-<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode (Optional) '  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput();'  condition='false'  pos='0'  optional='true' />
+<input type='text' id='1.1.1'  name='concept[Baby identifier]' helpText='Scan baby barcode (Optional) '  pos='0'  tt_onLoad='__$("keyboard").style.display = "none"; checkBarcodeInput();'  condition='false'  optional='true' />
 			</td>
 		</tr>
 		<tr>
@@ -27,7 +27,7 @@
 				Date of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.2'     tt_onLoad='__$("Unknown").style.display = "none"'  min='<%= @patient.recent_admission_date(@session_date || Date.today).to_date rescue nil%>'  field_type='date'  name='concept[Date of delivery]'  pos='1'  helpText='<%= params["prefix"] %> Date of Delivery' />
+<input type='text' id='1.1.2'     pos='1'  min='<%= @patient.recent_admission_date(@session_date || Date.today).to_date rescue nil%>'  helpText='<%= params["prefix"] %> Date of Delivery'  tt_onLoad='__$("Unknown").style.display = "none"'  field_type='date'  name='concept[Date of delivery]' />
 			</td>
 		</tr>
 		<tr>
@@ -35,7 +35,7 @@
 				Time of delivery 
 			</td>
 			<td>
-<input type='text' id='1.1.3'     field_type='advancedTime'  name='concept[Time of delivery]'  pos='2'  helpText='<%= params["prefix"] %> Time of Delivery' />
+<input type='text' id='1.1.3'     pos='2'  helpText='<%= params["prefix"] %> Time of Delivery'  field_type='advancedTime'  name='concept[Time of delivery]' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Place of delivery 
 			</td>
 			<td>
-<select id='1.1.4'   name='concept[Place of delivery]'  pos='3'  helpText='<%= params["prefix"] %> Place of Delivery' >
+<select id='1.1.4'   pos='3'  helpText='<%= params["prefix"] %> Place of Delivery'  name='concept[Place of delivery]' >
 <option></option>
 <option value='Home/TBA'>Home/TBA</option>
  <option value='Other facility'>Other facility</option>
@@ -57,7 +57,7 @@
 				Gender 
 			</td>
 			<td>
-<select id='1.1.5'   name='concept[Gender]'  pos='4'  helpText='<%= params["prefix"] %> Gender' >
+<select id='1.1.5'   pos='4'  helpText='<%= params["prefix"] %> Gender'  name='concept[Gender]' >
 <option></option>
 <option value='Female'>Female</option>
  <option value='Male'>Male</option>
@@ -69,7 +69,7 @@
 				Presentation 
 			</td>
 			<td>
-<input type='text' id='1.1.6'     ajaxURL='/encounters/presentation?search_string='  tt_onLoad='$("keyboard").style.display = "none"'  field_type='text'  name='concept[Presentation]'  pos='5'  helpText='<%= params["prefix"] %> Presentation' />
+<input type='text' id='1.1.6'     pos='5'  helpText='<%= params["prefix"] %> Presentation'  ajaxURL='/encounters/presentation?search_string='  tt_onLoad='$("keyboard").style.display = "none"'  field_type='text'  name='concept[Presentation]' />
 			</td>
 		</tr>
 		<tr>
@@ -77,7 +77,7 @@
 				Delivery Outcome 
 			</td>
 			<td>
-<input type='text' id='1.1.7'     ajaxURL='/encounters/concept_set_options?set=baby_outcome&search_string='  tt_onLoad='$("keyboard").style.display = "none"'  field_type='text'  name='concept[BABY OUTCOME]'  pos='6'  helpText='<%= params["prefix"] %> Delivery Outcome' />
+<input type='text' id='1.1.7'     pos='6'  helpText='<%= params["prefix"] %> Delivery Outcome'  ajaxURL='/encounters/concept_set_options?set=baby_outcome&search_string='  tt_onLoad='$("keyboard").style.display = "none"'  field_type='text'  name='concept[BABY OUTCOME]' />
 			</td>
 		</tr>
 		<tr>
@@ -85,7 +85,7 @@
 				Baby on NVP? 
 			</td>
 			<td>
-<select id='1.1.8'   tt_BeforeUnload='checkNVPStart("1.1.8")'  name='concept[Baby on NVP?]'  condition='__$("1.1.7").value.toLowerCase().trim() == "alive" && <%= (@patient.hiv_status.downcase.strip == "positive" rescue false)%>'  pos='7'  helpText='<%= params["prefix"] %> on NVP?' >
+<select id='1.1.8'   pos='7'  helpText='<%= params["prefix"] %> on NVP?'  tt_BeforeUnload='checkNVPStart("1.1.8")'  condition='__$("1.1.7").value.toLowerCase().trim() == "alive" && <%= (@patient.hiv_status.downcase.strip == "positive" rescue false)%>'  name='concept[Baby on NVP?]' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -97,7 +97,7 @@
 				Birth weight 
 			</td>
 			<td>
-<input type='text' id='1.1.9'     max='4500'  min='2500'  field_type='number'  absoluteMin='100'  name='concept[Birth weight]'  tt_pageStyleclass='NumbersOnlyWithDecimal'  absoluteMax='8000'  pos='8'  tt_onUnLoad='if (__$("1.1.7").value.toLowerCase().trim() == "alive"){checkWeightSize("1.1.9")}'  helpText='<%= params["prefix"] %> Birth Weight (grams)' />
+<input type='text' id='1.1.9'     min='2500'  pos='8'  helpText='<%= params["prefix"] %> Birth Weight (grams)'  absoluteMax='8000'  field_type='number'  max='4500'  tt_onUnLoad='if (__$("1.1.7").value.toLowerCase().trim() == "alive"){checkWeightSize("1.1.9")}'  name='concept[Birth weight]'  tt_pageStyleclass='NumbersOnlyWithDecimal'  absoluteMin='100' />
 			</td>
 		</tr>
 		<tr>
@@ -105,7 +105,7 @@
 				Height (CM) 
 			</td>
 			<td>
-<input type='text' id='1.1.10'  name='concept[Birth Length]'   max='60.0'  min='15.0'  absoluteMin='0'  field_type='number'  absoluteMax='100'  pos='9'  condition='__$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive"'  tt_pageStyleClass='NumbersOnlyWithUnknown'  helpText='<%= params["prefix"] %> Birth Length (cm)' />
+<input type='text' id='1.1.10'  name='concept[Birth Length]'   pos='9'  min='15.0'  helpText='<%= params["prefix"] %> Birth Length (cm)'  absoluteMax='100'  tt_pageStyleClass='NumbersOnlyWithUnknown'  condition='__$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive"'  field_type='number'  max='60.0'  absoluteMin='0' />
 			</td>
 		</tr>
 		<tr>
@@ -113,7 +113,7 @@
 				APGAR 
 			</td>
 			<td>
-<input type='text' id='1.1.11'  name='concept[Apgar minute one]'   tt_onLoad='showApgarControl(1); __$("keyboard").style.display = "none"'  absoluteMin='1'  field_type='number'  pos='10'  absoluteMax='10'  condition='__$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive"'  tt_pageStyleClass='NoKeyboard'  helpText='<%= params["prefix"] %> 1<sup>st</sup> Minute APGAR' />
+<input type='text' id='1.1.11'  name='concept[Apgar minute one]'   pos='10'  helpText='<%= params["prefix"] %> 1<sup>st</sup> Minute APGAR'  absoluteMax='10'  tt_pageStyleClass='NoKeyboard'  tt_onLoad='showApgarControl(1); __$("keyboard").style.display = "none"'  condition='__$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive"'  field_type='number'  absoluteMin='1' />
 			</td>
 		</tr>
 		<tr>
@@ -121,7 +121,7 @@
 				APGAR 
 			</td>
 			<td>
-<input type='text' id='1.1.12'  name='concept[Apgar minute five]'   tt_onLoad='showApgarControl(5); __$("keyboard").style.display = "none"'  absoluteMin='1'  field_type='number'  pos='11'  absoluteMax='10'  condition='__$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive"'  tt_pageStyleClass='NoKeyboard'  helpText='<%= params["prefix"] %> 5<sup>th</sup> Minute APGAR' />
+<input type='text' id='1.1.12'  name='concept[Apgar minute five]'   pos='11'  helpText='<%= params["prefix"] %> 5<sup>th</sup> Minute APGAR'  absoluteMax='10'  tt_pageStyleClass='NoKeyboard'  tt_onLoad='showApgarControl(5); __$("keyboard").style.display = "none"'  condition='__$("1.1.4").value.toLowerCase().trim() == "this facility" && __$("1.1.7").value.toLowerCase().trim() == "alive"'  field_type='number'  absoluteMin='1' />
 			</td>
 		</tr>
 		<tr>
@@ -129,7 +129,7 @@
 				Delivery mode 
 			</td>
 			<td>
-<select id='1.1.13'   name='concept[Delivery mode]'  pos='12'  helpText='<%= params["prefix"] %> Delivery Mode' >
+<select id='1.1.13'   pos='12'  helpText='<%= params["prefix"] %> Delivery Mode'  name='concept[Delivery mode]' >
 <option></option>
 <option value='Caesarean section'>Caesarean section</option>
  <option value='Breech delivery'>Breech delivery</option>
@@ -143,7 +143,7 @@
 				Newborn baby complications 
 			</td>
 			<td>
-<select id='1.1.14'   name='concept[Newborn baby complications]'  condition='__$("1.1.7").value.toLowerCase().trim() == "alive"'  pos='13'  helpText='<%= params["prefix"] %> Newborn Complications' >
+<select id='1.1.14'   pos='13'  helpText='<%= params["prefix"] %> Newborn Complications'  condition='__$("1.1.7").value.toLowerCase().trim() == "alive"'  name='concept[Newborn baby complications]' >
 <option></option>
 <option value='Other'>Other</option>
  <option value='Sepsis'>Sepsis</option>
@@ -171,7 +171,7 @@
 				Breast feeding initiated within 60 minutes? 
 			</td>
 			<td>
-<select id='1.1.15' name='concept[Breast feeding initiated within 60 minutes? ]'  tt_BeforeUnload='checkFeedingStart("1.1.15")'  condition='__$("1.1.7").value.toLowerCase().trim() == "alive"'  pos='15'  helpText='<%= params["prefix"] %> Breast Feeding Initiated Within 60 Minutes?' >
+<select id='1.1.15' name='concept[Breast feeding initiated within 60 minutes? ]'  pos='15'  tt_BeforeUnload='checkFeedingStart("1.1.15")'  helpText='<%= params["prefix"] %> Breast Feeding Initiated Within 60 Minutes?'  condition='__$("1.1.7").value.toLowerCase().trim() == "alive"' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -183,7 +183,7 @@
 				Tetracycline eye ointment given? 
 			</td>
 			<td>
-<select id='1.16.1' name='concept[Tetracycline eye ointment given? ]'  condition='__$("1.1.7").value.toLowerCase().trim() == "alive"'  pos='16'  helpText='<%= params["prefix"] %> Tetracycline Eye Ointment Given?' >
+<select id='1.16.1' name='concept[Tetracycline eye ointment given? ]'  pos='16'  helpText='<%= params["prefix"] %> Tetracycline Eye Ointment Given?'  condition='__$("1.1.7").value.toLowerCase().trim() == "alive"' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -195,7 +195,7 @@
 				Resuscitation Required? 
 			</td>
 			<td>
-<select id='1.17' name='concept[Resuscitation Required? ]' helpText='Resuscitation Required? ' disabled='disabled'  pos='17' >
+<select id='1.17' name='concept[Resuscitation Required? ]' helpText='Resuscitation Required? ' pos='17'  disabled='disabled' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -207,7 +207,7 @@
 				Resuscitation Type 
 			</td>
 			<td>
-<select id='1.18.2.1' name='concept[Resuscitation Type ]' helpText='Resuscitation Type ' tt_onLoad='$("keyboard").style.display = "none";'  condition='__$("1.17").value.trim().toUpperCase() == "YES"'  pos='18' >
+<select id='1.18.2.1' name='concept[Resuscitation Type ]' helpText='Resuscitation Type ' pos='18'  tt_onLoad='$("keyboard").style.display = "none";'  condition='__$("1.17").value.trim().toUpperCase() == "YES"' >
 <option></option>
 <option value='Heart massage'>Heart massage</option>
  <option value='Suctioning'>Suctioning</option>
@@ -220,7 +220,7 @@
 				Comments 
 			</td>
 			<td>
-<textarea type='text' id='1.19.1'  name='concept[clinician notes]'   field_type='textarea'  pos='19'  helpText='Notes (Optional)'  optional='true' > </textarea>
+<textarea type='text' id='1.19.1'  name='concept[clinician notes]'   pos='19'  helpText='Notes (Optional)'  field_type='textarea'  optional='true' > </textarea>
 			</td>
 		</tr>
 		<tr>
@@ -228,7 +228,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.20.1'   helpText='Next URL '  value='/two_protocol_patients/mother_delivery_details?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>'  name='next_url'  type='hidden'  pos='20' />
+<input  id='1.20.1'   helpText='Next URL '  pos='20'  type='hidden'  name='next_url'  value='/two_protocol_patients/mother_delivery_details?user_id=<%= @user.id %>&patient_id=<%= @patient.id %>' />
 			</td>
 		</tr>
 	</table>

@@ -552,361 +552,361 @@ class Patient < ActiveRecord::Base
     location_id = ProgramEncounterDetail.find(:first, :order => ["encounter_datetime DESC"], :joins => [:encounter],
       :conditions => ["program_id = ? AND DATE(encounter_datetime) > ? AND patient_id = ?",
         Program.find_by_name("MATERNITY PROGRAM").id, (session_date - 7.day), self.patient_id]
-      ).encounter.location_id rescue nil
-      Location.find(location_id) rescue nil
-    end
+    ).encounter.location_id rescue nil
+    Location.find(location_id) rescue nil
+  end
 
-    def is_discharged_mother?(session_date = Date.today)
+  def is_discharged_mother?(session_date = Date.today)
     
-      ProgramEncounterDetail.find(:all, :limit => 20, :order => ["encounter_datetime DESC"], :joins => [:encounter],
-        :conditions => ["program_id = ? AND DATE(encounter_datetime) > ? AND encounter_type = ? AND patient_id = ? AND encounter.voided = 0",
-          Program.find_by_name("MATERNITY PROGRAM").id, (session_date - 7.day),
-          EncounterType.find_by_name("UPDATE OUTCOME").id, self.patient_id]).collect{|enc|
-        enc.encounter.observations.collect{|obs|
-          obs.answer_string.upcase if obs.concept.name.name.upcase.strip == "DISCHARGED"
-        } rescue []
-      }.flatten.delete_if{|val| val.blank?}.present? rescue false
+    ProgramEncounterDetail.find(:all, :limit => 20, :order => ["encounter_datetime DESC"], :joins => [:encounter],
+      :conditions => ["program_id = ? AND DATE(encounter_datetime) > ? AND encounter_type = ? AND patient_id = ? AND encounter.voided = 0",
+        Program.find_by_name("MATERNITY PROGRAM").id, (session_date - 7.day),
+        EncounterType.find_by_name("UPDATE OUTCOME").id, self.patient_id]).collect{|enc|
+      enc.encounter.observations.collect{|obs|
+        obs.answer_string.upcase if obs.concept.name.name.upcase.strip == "DISCHARGED"
+      } rescue []
+    }.flatten.delete_if{|val| val.blank?}.present? rescue false
    
-    end
+  end
 
-    def next_undischarged_baby(session_date = Date.today)
-      #check current mother discharge
-      @type = RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id rescue nil
-      @baby = nil
-      Relationship.find(:all, :order => ["date_created"], :conditions => ["voided = 0 AND person_a = ? AND relationship = ? and DATE(date_created) > ?",
-          self.patient_id, @type,  (session_date - 7.day)]).each{|baby|
+  def next_undischarged_baby(session_date = Date.today)
+    #check current mother discharge
+    @type = RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id rescue nil
+    @baby = nil
+    Relationship.find(:all, :order => ["date_created"], :conditions => ["voided = 0 AND person_a = ? AND relationship = ? and DATE(date_created) > ?",
+        self.patient_id, @type,  (session_date - 7.day)]).each{|baby|
 
-        next if @baby.present?
+      next if @baby.present?
        
-        @baby = baby if !Patient.find(baby.person_b).is_discharged?
-      }
+      @baby = baby if !Patient.find(baby.person_b).is_discharged?
+    }
 
-      @baby
-    end
+    @baby
+  end
 
-    def is_discharged?
-      concept_id = ConceptName.find_by_name("STATUS OF BABY").concept_id
-      check = Observation.find_by_concept_id_and_person_id(concept_id, self.patient_id).present? rescue false
-      check
-    end
+  def is_discharged?
+    concept_id = ConceptName.find_by_name("STATUS OF BABY").concept_id
+    check = Observation.find_by_concept_id_and_person_id(concept_id, self.patient_id).present? rescue false
+    check
+  end
 
-    def gravida
-      concept_id = ConceptName.find_by_name("Gravida").concept_id
-      Observation.find_all_by_concept_id_and_person_id(concept_id, self.patient_id).collect{|ob| ob.answer_string.to_i rescue nil}.compact.max.to_i rescue 0;
-    end
+  def gravida
+    concept_id = ConceptName.find_by_name("Gravida").concept_id
+    Observation.find_all_by_concept_id_and_person_id(concept_id, self.patient_id).collect{|ob| ob.answer_string.to_i rescue nil}.compact.max.to_i rescue 0;
+  end
 
-    def known_babies
+  def known_babies
     
-    end
+  end
 
-    def recent_admission_date(session_date = Date.today)
-      Observation.find(:last, :select => ["value_datetime"],
-        :order => ["obs_datetime"],
-        :conditions => ["person_id = ? AND concept_id = ? AND DATE(value_datetime) > ?", self.patient_id,
-          ConceptName.find_by_name("ADMISSION DATE").concept_id,
-          (session_date.to_date - 30.days)]).value_datetime.strftime("%d/%b/%Y") rescue nil
-    end
+  def recent_admission_date(session_date = Date.today)
+    Observation.find(:last, :select => ["value_datetime"],
+      :order => ["obs_datetime"],
+      :conditions => ["person_id = ? AND concept_id = ? AND DATE(value_datetime) > ?", self.patient_id,
+        ConceptName.find_by_name("ADMISSION DATE").concept_id,
+        (session_date.to_date - 30.days)]).value_datetime.strftime("%d/%b/%Y") rescue nil
+  end
 
-    def recent_delivery_outcome(session_date = Date.today)
-      self.encounters.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
-        :conditions => ["encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND obs.value_coded = ? AND DATE(encounter_datetime) >= ?",
-          EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name("OUTCOME").concept_id,
-          ConceptName.find_by_name("DELIVERED").concept_id, (session_date.to_date - 2.days)]).encounter_id rescue nil
-    end
+  def recent_delivery_outcome(session_date = Date.today)
+    self.encounters.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
+      :conditions => ["encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND obs.value_coded = ? AND DATE(encounter_datetime) >= ?",
+        EncounterType.find_by_name("UPDATE OUTCOME").id, ConceptName.find_by_name("OUTCOME").concept_id,
+        ConceptName.find_by_name("DELIVERED").concept_id, (session_date.to_date - 2.days)]).encounter_id rescue nil
+  end
 
-    def recent_admission(session_date = Date.today)
-      self.encounters.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
-        :conditions => ["encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ?",
-          EncounterType.find_by_name("ADMIT PATIENT").id, ConceptName.find_by_name("ADMISSION DATE").concept_id,
-          (session_date.to_date - 3.months)]) rescue nil
-    end
+  def recent_admission(session_date = Date.today)
+    self.encounters.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
+      :conditions => ["encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ?",
+        EncounterType.find_by_name("ADMIT PATIENT").id, ConceptName.find_by_name("ADMISSION DATE").concept_id,
+        (session_date.to_date - 3.months)]) rescue nil
+  end
 
-    def recent_kangaroo_admission(session_date = Date.today)
+  def recent_kangaroo_admission(session_date = Date.today)
 
-      @kroo_location = Location.find_by_name("Kangaroo Ward")
+    @kroo_location = Location.find_by_name("Kangaroo Ward")
 
-      return nil if @kroo_location.blank?
+    return nil if @kroo_location.blank?
     
-      self.encounters.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
-        :conditions => ["encounter.encounter_location = ? AND encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ?",
-          @kroo_location.id, EncounterType.find_by_name("ADMIT PATIENT").id, ConceptName.find_by_name("ADMISSION DATE").concept_id,
-          (session_date.to_date - 3.months)]) rescue nil
+    self.encounters.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations] ,
+      :conditions => ["encounter.location_id = ? AND encounter.voided = 0 AND encounter_type = ? AND obs.concept_id = ? AND DATE(encounter_datetime) >= ?",
+        @kroo_location.id, EncounterType.find_by_name("ADMIT PATIENT").id, ConceptName.find_by_name("ADMISSION DATE").concept_id,
+        (session_date.to_date - 3.months)]) rescue nil
+  end
+
+  def maternal_history(today = Date.today)
+    result = {}
+    enc = Encounter.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations],
+      :conditions => ["patient_id = ? AND encounter_type = ? AND concept_id = ? AND obs.voided = 0 AND DATE(encounter_datetime) > ?",
+        self.id, EncounterType.find_by_name("UPDATE OUTCOME").id,  ConceptName.find_by_name("OUTCOME").concept_id,
+        (today - 8.months).to_date]).observations.each{|ob|
+    
+      result[ob.concept.name.name.upcase] = ob.answer_string
+      
+    }
+
+    result["HIV STATUS"] = self.hiv_status
+
+    vxam = {}
+    vxam_enc =  Observation.find(:last,
+      :conditions => ["person_id = ? AND concept_id = ? AND voided = 0 AND DATE(obs_datetime) > ?",
+        self.id,  ConceptName.find_by_name("MEMBRANES").concept_id, (today - 8.months).to_date]).encounter rescue []
+    
+    vxam_enc.observations.each{|ob|
+      
+      vxam[ob.concept.name.name.upcase] = ob.answer_string
+      
+    } unless vxam_enc.blank?
+
+    if ((vxam["RUPTURE TIME"].present? && vxam["RUPTURE DATE"].present?) rescue false)
+      vxam["RUPTURE DELAY"] = "#{vxam['RUPTURE DATE'].to_date.to_s} &nbsp&nbsp  #{vxam['RUPTURE TIME']}"
+      
+      dod =  self.valid_delivery_time(today)
+      doa =  self.valid_admission_time(dod)
+      
+      diff = ((doa.to_time - vxam["RUPTURE DELAY"].to_time)/3600) rescue nil
+      
+      result["ROM"] = "At &nbsp&nbsp #{vxam["RUPTURE DELAY"]}  &nbsp&nbsp (#{diff.round} hrs from admission) " rescue "Unknown"
     end
+      
+    result["VXAM"] = vxam
+    result
 
-    def maternal_history(today = Date.today)
-      result = {}
-      enc = Encounter.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations],
-        :conditions => ["patient_id = ? AND encounter_type = ? AND concept_id = ? AND obs.voided = 0 AND DATE(encounter_datetime) > ?",
-          self.id, EncounterType.find_by_name("UPDATE OUTCOME").id,  ConceptName.find_by_name("OUTCOME").concept_id,
-          (today - 8.months).to_date]).observations.each{|ob|
+  end
+
+  def valid_delivery_time(session_date = Date.today)
+    date = Observation.find(:last, :order => ["obs_datetime ASC"],
+      :conditions => ["DATE(obs_datetime) >= ? AND voided = 0 AND concept_id = ?",
+        (session_date.to_date - 9.months), ConceptName.find_by_name("DATE OF DELIVERY").concept_id]).answer_string.strip rescue nil
+    return nil if date.blank?
     
-        result[ob.concept.name.name.upcase] = ob.answer_string
-      
-      }
+    time = Observation.find(:last, :order => ["obs_datetime ASC"],
+      :conditions => ["DATE(obs_datetime) >= ? AND voided = 0 AND concept_id = ?",
+        (session_date.to_date - 9.months), ConceptName.find_by_name("TIME OF DELIVERY").concept_id]).answer_string.strip rescue nil
+    return nil if time.blank?
 
-      result["HIV STATUS"] = self.hiv_status
-
-      vxam = {}
-      vxam_enc =  Observation.find(:last,
-        :conditions => ["person_id = ? AND concept_id = ? AND voided = 0 AND DATE(obs_datetime) > ?",
-          self.id,  ConceptName.find_by_name("MEMBRANES").concept_id, (today - 8.months).to_date]).encounter rescue []
+    "#{date.to_date.to_s} #{time}"
     
-      vxam_enc.observations.each{|ob|
-      
-        vxam[ob.concept.name.name.upcase] = ob.answer_string
-      
-      } unless vxam_enc.blank?
+  end
 
-      if ((vxam["RUPTURE TIME"].present? && vxam["RUPTURE DATE"].present?) rescue false)
-        vxam["RUPTURE DELAY"] = "#{vxam['RUPTURE DATE'].to_date.to_s} &nbsp&nbsp  #{vxam['RUPTURE TIME']}"
-      
-        dod =  self.valid_delivery_time(today)
-        doa =  self.valid_admission_time(dod)
-      
-        diff = ((doa.to_time - vxam["RUPTURE DELAY"].to_time)/3600) rescue nil
-      
-        result["ROM"] = "At &nbsp&nbsp #{vxam["RUPTURE DELAY"]}  &nbsp&nbsp (#{diff.round} hrs from admission) " rescue "Unknown"
-      end
-      
-      result["VXAM"] = vxam
-      result
+  def valid_admission_time(session_date = Date.today)
+    date = Observation.find(:last, :order => ["obs_datetime ASC"],
+      :conditions => ["DATE(obs_datetime) >= ?  AND DATE(obs_datetime) <= ? AND  voided = 0 AND concept_id = ?",
+        (session_date.to_date - 9.months), session_date.to_date, ConceptName.find_by_name("ADMISSION DATE").concept_id]).answer_string.strip rescue nil
+    return nil if date.blank?
 
-    end
+    time = Observation.find(:last, :order => ["obs_datetime ASC"],
+      :conditions => ["DATE(obs_datetime) >= ? AND DATE(obs_datetime) <= ? AND voided = 0 AND concept_id = ?",
+        (session_date.to_date - 9.months), session_date.to_date, ConceptName.find_by_name("ADMISSION TIME").concept_id]).answer_string.strip rescue nil
+    return nil if time.blank?
 
-    def valid_delivery_time(session_date = Date.today)
-      date = Observation.find(:last, :order => ["obs_datetime ASC"],
-        :conditions => ["DATE(obs_datetime) >= ? AND voided = 0 AND concept_id = ?",
-          (session_date.to_date - 9.months), ConceptName.find_by_name("DATE OF DELIVERY").concept_id]).answer_string.strip rescue nil
-      return nil if date.blank?
+    "#{date.to_date.to_s} #{time}"
+
+  end
+
+  def birth_history(today = Date.today)
     
-      time = Observation.find(:last, :order => ["obs_datetime ASC"],
-        :conditions => ["DATE(obs_datetime) >= ? AND voided = 0 AND concept_id = ?",
-          (session_date.to_date - 9.months), ConceptName.find_by_name("TIME OF DELIVERY").concept_id]).answer_string.strip rescue nil
-      return nil if time.blank?
+    result = {}
 
-      "#{date.to_date.to_s} #{time}"
-    
-    end
-
-    def valid_admission_time(session_date = Date.today)
-      date = Observation.find(:last, :order => ["obs_datetime ASC"],
-        :conditions => ["DATE(obs_datetime) >= ?  AND DATE(obs_datetime) <= ? AND  voided = 0 AND concept_id = ?",
-          (session_date.to_date - 9.months), session_date.to_date, ConceptName.find_by_name("ADMISSION DATE").concept_id]).answer_string.strip rescue nil
-      return nil if date.blank?
-
-      time = Observation.find(:last, :order => ["obs_datetime ASC"],
-        :conditions => ["DATE(obs_datetime) >= ? AND DATE(obs_datetime) <= ? AND voided = 0 AND concept_id = ?",
-          (session_date.to_date - 9.months), session_date.to_date, ConceptName.find_by_name("ADMISSION TIME").concept_id]).answer_string.strip rescue nil
-      return nil if time.blank?
-
-      "#{date.to_date.to_s} #{time}"
-
-    end
-
-    def birth_history(today = Date.today)
-    
-      result = {}
-
-      Encounter.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations],
-        :conditions => ["patient_id = ? AND encounter_type = ? AND concept_id = ? AND obs.voided = 0 AND DATE(encounter_datetime) > ?",
-          self.id, EncounterType.find_by_name("BABY DELIVERY").id,  ConceptName.find_by_name("Date of delivery").concept_id,
-          (today - 8.months).to_date]).observations.each{|ob|
+    Encounter.find(:last, :order => ["encounter_datetime ASC"], :joins => [:observations],
+      :conditions => ["patient_id = ? AND encounter_type = ? AND concept_id = ? AND obs.voided = 0 AND DATE(encounter_datetime) > ?",
+        self.id, EncounterType.find_by_name("BABY DELIVERY").id,  ConceptName.find_by_name("Date of delivery").concept_id,
+        (today - 8.months).to_date]).observations.each{|ob|
       
-        result[ob.concept.name.name.upcase] = ob.answer_string
+      result[ob.concept.name.name.upcase] = ob.answer_string
       
-      }
+    }
 
-      result
-    end
+    result
+  end
 
-    def maternal_complications(today = Date.today)
+  def maternal_complications(today = Date.today)
 
-      result = {}
-      legal_concepts = ["Diagnosis", "Complications"].collect{|name| ConceptName.find_by_name(name).concept_id}
+    result = {}
+    legal_concepts = ["Diagnosis", "Complications"].collect{|name| ConceptName.find_by_name(name).concept_id}
     
-      Observation.find(:all, :conditions => ["person_id = ? AND voided = 0 AND DATE(obs_datetime) >= ? AND concept_id IN (?)",
-          self.id, (today - 8.months).to_date, legal_concepts
-        ]).each{|ob|
+    Observation.find(:all, :conditions => ["person_id = ? AND voided = 0 AND DATE(obs_datetime) >= ? AND concept_id IN (?)",
+        self.id, (today - 8.months).to_date, legal_concepts
+      ]).each{|ob|
 
-        (result[ob.concept.name.name.upcase] += ", " + ob.answer_string) rescue (result[ob.concept.name.name.upcase] = ob.answer_string)
+      (result[ob.concept.name.name.upcase] += ", " + ob.answer_string) rescue (result[ob.concept.name.name.upcase] = ob.answer_string)
 
-      }
+    }
     
-      result["DRUGS"] = self.drugs(today)
+    result["DRUGS"] = self.drugs(today)
    
-      result
+    result
     
-    end
+  end
 
-    def birth_complications(today = Date.today)
+  def birth_complications(today = Date.today)
 
 
-      result = {}
-      legal_concepts = ["Diagnosis", "Newborn baby complications", "Adverse event action taken", "Baby on NVP?"].collect{|name| ConceptName.find_by_name(name).concept_id}
+    result = {}
+    legal_concepts = ["Diagnosis", "Newborn baby complications", "Adverse event action taken", "Baby on NVP?"].collect{|name| ConceptName.find_by_name(name).concept_id}
 
-      Observation.find(:all, :conditions => ["person_id = ? AND voided = 0 AND DATE(obs_datetime) >= ? AND concept_id IN (?)",
-          self.id, (today - 8.months).to_date, legal_concepts
-        ]).each{|ob|
+    Observation.find(:all, :conditions => ["person_id = ? AND voided = 0 AND DATE(obs_datetime) >= ? AND concept_id IN (?)",
+        self.id, (today - 8.months).to_date, legal_concepts
+      ]).each{|ob|
 
-        (result[ob.concept.name.name.upcase] += ", " + ob.answer_string) rescue (result[ob.concept.name.name.upcase] = ob.answer_string)
+      (result[ob.concept.name.name.upcase] += ", " + ob.answer_string) rescue (result[ob.concept.name.name.upcase] = ob.answer_string)
 
-      }
+    }
 
-      result["DRUGS"] = self.drugs(today) + ((result["BABY ON NVP?"].match(/Yes/i) rescue false) ? " , NVP" : "")
+    result["DRUGS"] = self.drugs(today) + ((result["BABY ON NVP?"].match(/Yes/i) rescue false) ? " , NVP" : "")
 
   
-      result
+    result
     
-    end
+  end
 
-    def admission_details(today = Date.today)
-      result = {}
-      self.encounters.find(:all, :order => ["encounter_datetime ASC"],
-        :conditions => ["encounter_type = ? AND voided = 0 AND DATE(encounter_datetime) >= ?",
-          EncounterType.find_by_name("ADMIT PATIENT").id, (today - 8.months).to_date]).collect{|enc|
-        enc.observations.each{|ob|
-          name = ob.concept.name.name.upcase
-          name = "BLOOD SUGAR" if ob.concept.concept_id == ConceptName.find_by_name("Blood Sugar").concept_id
-          result[name] = ob.answer_string
-
-        }}
-      result
-    end
-
-    def referral_details(today = Date.today)
-
-      result = {}
-    
-      enc =  self.encounters.find(:last, :order => ["encounter_datetime ASC"],
-        :conditions => ["encounter_type = ? AND voided = 0 AND DATE(encounter_datetime) >= ?",
-          EncounterType.find_by_name("REFERRAL").id, (today - 8.months).to_date])
-    
-      return result if enc.blank?
-
+  def admission_details(today = Date.today)
+    result = {}
+    self.encounters.find(:all, :order => ["encounter_datetime ASC"],
+      :conditions => ["encounter_type = ? AND voided = 0 AND DATE(encounter_datetime) >= ?",
+        EncounterType.find_by_name("ADMIT PATIENT").id, (today - 8.months).to_date]).collect{|enc|
       enc.observations.each{|ob|
         name = ob.concept.name.name.upcase
+        name = "BLOOD SUGAR" if ob.concept.concept_id == ConceptName.find_by_name("Blood Sugar").concept_id
         result[name] = ob.answer_string
-      }
+
+      }}
+    result
+  end
+
+  def referral_details(today = Date.today)
+
+    result = {}
     
-      result["PROVIDER_NAME"] = User.find(enc.provider_id).name rescue nil
-
-      result
+    enc =  self.encounters.find(:last, :order => ["encounter_datetime ASC"],
+      :conditions => ["encounter_type = ? AND voided = 0 AND DATE(encounter_datetime) >= ?",
+        EncounterType.find_by_name("REFERRAL").id, (today - 8.months).to_date])
     
-    end
+    return result if enc.blank?
 
-    def drugs(today = Date.today)
+    enc.observations.each{|ob|
+      name = ob.concept.name.name.upcase
+      result[name] = ob.answer_string
+    }
     
-      self.encounters.find(:all,
-        :conditions => ["encounter_type = ? AND voided = 0 AND DATE(encounter_datetime) >= ?",
-          EncounterType.find_by_name("TREATMENT").id, (today - 8.months).to_date]).collect{|enc|
-        enc.drug_orders.collect{|drg| drg.drug.name}}.flatten.uniq.compact.join(" , ")
-    end
+    result["PROVIDER_NAME"] = User.find(enc.provider_id).name rescue nil
 
-    def serial_number
-
-      ident = self.patient_identifiers.find_by_identifier_type(PatientIdentifierType.find_by_name("SERIAL NUMBER").id)
-      return "" if ident.blank?
-      ident.identifier
-
-    end
-
-    def birth_weight
+    result
     
-      ob = Observation.find_by_concept_id_and_person_id_and_voided(ConceptName.find_by_name("BIRTH WEIGHT").concept_id, self.id, 0)
-      return -1 if (ob.answer_string.to_i == 0 rescue true)
+  end
+
+  def drugs(today = Date.today)
     
-      ob.answer_string.to_i
+    self.encounters.find(:all,
+      :conditions => ["encounter_type = ? AND voided = 0 AND DATE(encounter_datetime) >= ?",
+        EncounterType.find_by_name("TREATMENT").id, (today - 8.months).to_date]).collect{|enc|
+      enc.drug_orders.collect{|drg| drg.drug.name}}.flatten.uniq.compact.join(" , ")
+  end
+
+  def serial_number
+
+    ident = self.patient_identifiers.find_by_identifier_type(PatientIdentifierType.find_by_name("SERIAL NUMBER").id)
+    return "" if ident.blank?
+    ident.identifier
+
+  end
+
+  def birth_weight
     
-    end
+    ob = Observation.find_by_concept_id_and_person_id_and_voided(ConceptName.find_by_name("BIRTH WEIGHT").concept_id, self.id, 0)
+    return -1 if (ob.answer_string.to_i == 0 rescue true)
+    
+    ob.answer_string.to_i
+    
+  end
 
-    def kmc_started?
-      self.encounters.find(:all,
-        :conditions => ["encounter_type = ? AND voided = 0",
-          EncounterType.find_by_name("KANGAROO REVIEW VISIT").id]).length > 0 ? "Yes" : "No"
-    end
+  def kmc_started?
+    self.encounters.find(:all,
+      :conditions => ["encounter_type = ? AND voided = 0",
+        EncounterType.find_by_name("KANGAROO REVIEW VISIT").id]).length > 0 ? "Yes" : "No"
+  end
 
-    def self.total_admissions(start_date = DateTime.now, end_date = DateTime.now)
+  def self.total_admissions(start_date = DateTime.now, end_date = DateTime.now)
 
-      patients = Patient.find_by_sql(["SELECT client.patient_id AS client_id FROM patient client
+    patients = Patient.find_by_sql(["SELECT client.patient_id AS client_id FROM patient client
         INNER JOIN obs ob ON ob.person_id = client.patient_id AND ob.voided = 0
             AND ob.concept_id = (SELECT concept_id FROM concept_name WHERE name = 'Outcome' LIMIT 1)
             AND value_coded = (SELECT concept_id FROM concept_name WHERE name = 'Delivered' LIMIT 1)
         WHERE DATE(ob.obs_datetime) BETWEEN  ? AND ?", start_date, end_date]).collect{|pat| pat.client_id.to_i rescue nil}.uniq
-      patients
+    patients
 
-    end
+  end
 
-    def self.total_mothers_in_range(start_date, end_date, patients)
+  def self.total_mothers_in_range(start_date, end_date, patients)
 
-      @relationship_type_query = RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id
+    @relationship_type_query = RelationshipType.find_by_a_is_to_b_and_b_is_to_a("Parent", "Child").id
 
-      @delivery_id = ConceptName.find_by_name("DELIVERED").concept_id
-      @lmp_id = ConceptName.find_by_name("DATE OF LAST MENSTRUAL PERIOD").concept_id
-      @fundus_id = ConceptName.find_by_name("FUNDUS").concept_id
-      @outcome_id = ConceptName.find_by_name("OUTCOME").concept_id
+    @delivery_id = ConceptName.find_by_name("DELIVERED").concept_id
+    @lmp_id = ConceptName.find_by_name("DATE OF LAST MENSTRUAL PERIOD").concept_id
+    @fundus_id = ConceptName.find_by_name("FUNDUS").concept_id
+    @outcome_id = ConceptName.find_by_name("OUTCOME").concept_id
 
 
-      @lmp = "SELECT DATE_ADD(MAX(o.value_datetime), INTERVAL 1 WEEK) FROM obs o WHERE o.person_id = p.patient_id AND o.concept_id = #{@lmp_id}"
+    @lmp = "SELECT DATE_ADD(MAX(o.value_datetime), INTERVAL 1 WEEK) FROM obs o WHERE o.person_id = p.patient_id AND o.concept_id = #{@lmp_id}"
 
-      @delivery_date = "SELECT MAX(os.obs_datetime) FROM obs os WHERE os.person_id = p.patient_id
+    @delivery_date = "SELECT MAX(os.obs_datetime) FROM obs os WHERE os.person_id = p.patient_id
                        AND os.concept_id = #{@outcome_id} AND os.value_coded = #{@delivery_id}"
 
-      @lmp_by_fundus = "SELECT DATE_SUB(o.obs_datetime, INTERVAL COALESCE(MAX(o.value_numeric), MAX(o.value_text)) WEEK) FROM obs o
+    @lmp_by_fundus = "SELECT DATE_SUB(o.obs_datetime, INTERVAL COALESCE(MAX(o.value_numeric), MAX(o.value_text)) WEEK) FROM obs o
                         WHERE o.person_id = p.patient_id AND o.concept_id = #{@fundus_id}
                         AND DATE(o.obs_datetime) BETWEEN '#{start_date.to_s}' AND '#{end_date.to_s}'
-      "
+    "
 
-      @delivery_week = "COALESCE(ROUND(DATEDIFF((#{@delivery_date}), COALESCE((#{@lmp}), (#{@lmp_by_fundus})))/7), '')"
+    @delivery_week = "COALESCE(ROUND(DATEDIFF((#{@delivery_date}), COALESCE((#{@lmp}), (#{@lmp_by_fundus})))/7), '')"
 
-      Patient.find_by_sql(["SELECT p.patient_id, (#{@delivery_week}) AS weeks
+    Patient.find_by_sql(["SELECT p.patient_id, (#{@delivery_week}) AS weeks
             FROM patient p WHERE patient_id IN (?)", patients])
-    end
-
-    def self.deaths(patients, start_date, end_date)
-
-      data = Observation.find(:all, :select => ["person_id"], :conditions => ["person_id IN (?) AND concept_id = ? AND DATE(value_datetime) BETWEEN ? AND ?",
-          patients, ConceptName.find_by_name("Date of Death").concept_id, start_date.to_date, end_date.to_date]).collect{|e| e.person_id}.uniq rescue []
-
-      data
-
-    end
-
-    def apgar
-      apgar1 = Observation.find(:first, :conditions => ["person_id = ? AND concept_id = ?",
-          self.id, ConceptName.find_by_name("APGAR MINUTE ONE").concept_id]).answer_string.to_i rescue "?"
-      apgar2 = Observation.find(:first, :conditions => ["person_id = ? AND concept_id = ?",
-          self.id, ConceptName.find_by_name("APGAR MINUTE FIVE").concept_id]).answer_string.to_i rescue "?"
-
-      return "(#{apgar1}, #{apgar2})"
-    end
-
-    def delivery_details
-      result = {}
-      self.encounters.all(:conditions => ["encounter_type = ?",
-          EncounterType.find_by_name("BABY DELIVERY").id]).each do |encounter|
-        encounter.observations.each do |observation|
-          result[observation.concept.name.name] = observation.answer_string
-        end
-      end
-
-      result
-    
-    end
-
-    def location_changes(session_date = Date.today)
-      result = {}
-      self.encounters.all(:select => ["location_id , DATE(encounter_datetime) date"], :order => ["encounter_datetime ASC"],
-        :conditions => ["voided = 0 AND DATE(encounter_datetime) >= ?", (session_date.to_date - 1.month)]).each{|obj|
-
-        (result[obj.date] << obj.location_id) rescue (result[obj.date] = [obj.location_id] )
-
-      }
-
-      result.keys.each do |key|
-        result[key] = result[key].inject([]){|arr, location| arr << location unless arr.last == location; arr}
-      end
-
-      result
-    end
-  
   end
+
+  def self.deaths(patients, start_date, end_date)
+
+    data = Observation.find(:all, :select => ["person_id"], :conditions => ["person_id IN (?) AND concept_id = ? AND DATE(value_datetime) BETWEEN ? AND ?",
+        patients, ConceptName.find_by_name("Date of Death").concept_id, start_date.to_date, end_date.to_date]).collect{|e| e.person_id}.uniq rescue []
+
+    data
+
+  end
+
+  def apgar
+    apgar1 = Observation.find(:first, :conditions => ["person_id = ? AND concept_id = ?",
+        self.id, ConceptName.find_by_name("APGAR MINUTE ONE").concept_id]).answer_string.to_i rescue "?"
+    apgar2 = Observation.find(:first, :conditions => ["person_id = ? AND concept_id = ?",
+        self.id, ConceptName.find_by_name("APGAR MINUTE FIVE").concept_id]).answer_string.to_i rescue "?"
+
+    return "(#{apgar1}, #{apgar2})"
+  end
+
+  def delivery_details
+    result = {}
+    self.encounters.all(:conditions => ["encounter_type = ?",
+        EncounterType.find_by_name("BABY DELIVERY").id]).each do |encounter|
+      encounter.observations.each do |observation|
+        result[observation.concept.name.name] = observation.answer_string
+      end
+    end
+
+    result
+    
+  end
+
+  def location_changes(session_date = Date.today)
+    result = {}
+    self.encounters.all(:select => ["location_id , DATE(encounter_datetime) date"], :order => ["encounter_datetime ASC"],
+      :conditions => ["voided = 0 AND DATE(encounter_datetime) >= ?", (session_date.to_date - 1.month)]).each{|obj|
+
+      (result[obj.date] << obj.location_id) rescue (result[obj.date] = [obj.location_id] )
+
+    }
+
+    result.keys.each do |key|
+      result[key] = result[key].inject([]){|arr, location| arr << location unless arr.last == location; arr}
+    end
+
+    result
+  end
+  
+end

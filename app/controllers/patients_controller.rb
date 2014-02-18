@@ -532,6 +532,7 @@ class PatientsController < ApplicationController
       @links = {"Baby Examination" => "/two_protocol_patients/baby_examination?patient_id=#{@patient.id}&user_id=#{@user.id}",
         "Admit Baby" => "/two_protocol_patients/admit_baby?patient_id=#{@patient.id}&user_id=#{@user.id}",
         "Refer Baby" => "/two_protocol_patients/refer_baby?patient_id=#{@patient.id}&user_id=#{@user.id}",
+        "Kangaroo Review Visit" => "/two_protocol_patients/kangaroo_review_visit?patient_id=#{@patient.id}&user_id=#{@user.id}",
         "Notes" => "/two_protocol_patients/notes?patient_id=#{@patient.id}&user_id=#{@user.id}"
       }
       

@@ -83,17 +83,7 @@ class EncountersController < ApplicationController
       params[:patient_id] = mother_id
       patient = Patient.find(mother_id)      
     end
-    
-    if params[:encounter_type].downcase.squish == "kangaroo review visit"
-
-      admitted_in_kangaroo = Patient.find(params[:patient_id]).wards_hash.split("|").collect{|p|
-        p.split("--")[0].upcase if p.split("--")[1].match(/kangaroo/i)
-      }.compact.include?(fake_identifier.upcase) rescue false
-
-      redirect_to "/encounters/missing_baby?message=baby_not_admitted_in_kangaroo_ward&national_id=#{fake_identifier}&ward=kangaroo" and return if !admitted_in_kangaroo
-      
-    end
-    
+       
     #create baby given condition
     if (!@baby_location) and (my_baby.first.patient.patient_id.blank? rescue true) and params[:encounter_type].downcase.strip == "baby delivery" and !params["concept"]["Time of delivery"].blank?
       
