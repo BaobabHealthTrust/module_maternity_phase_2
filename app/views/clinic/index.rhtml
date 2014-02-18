@@ -12,8 +12,10 @@
     try{
       try{
         var  tabs = __$("tabContainer").getElementsByClassName("inactive-tab");
+        
       }catch(ex){
         var tabs = []
+        setTimeout(function(){checkTabs()}, 10);
       }
       
       try{
@@ -42,7 +44,7 @@
     }
   }
 
-  setTimeout(function(){checkTabs()}, 10);
+  setTimeout(function(){checkTabs()}, 1);
 </script>
 <div id="home">
   <div id="project_name">

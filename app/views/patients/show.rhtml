@@ -194,8 +194,8 @@ end
 
   function checkTabs(){
     try{
-      var  tabs = document.getElementsByClassName("inactive-tab");
-      // var  tabs_a = document.getElementsByClassName("active-tab");
+      var  tabs = __$("tabContainer").getElementsByClassName("inactive-tab"); 
+     
       var current_tab = getCookie("<%= request.remote_ip %>:patient_dashboard");
 
       if (current_tab){
@@ -206,6 +206,15 @@ end
         tabs[i].onmousedown = function(){
           updateTabs(this)
         }
+      }
+
+      try{
+        var  tabs_a = __$("tabContainer").getElementsByClassName("active-tab");
+        tabs_a[0].onmousedown = function(){
+          updateTabs(this)
+        }
+      }catch(ex){
+        var tabs_a = []
       }
      
     }catch(ex){
