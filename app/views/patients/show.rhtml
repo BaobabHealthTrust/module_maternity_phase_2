@@ -9,6 +9,7 @@
 <%
 
 next_task = @next_user_task[0].gsub('_',' ') rescue nil
+session_date = session[:datetime].to_date rescue Date.today
 
 %>
 

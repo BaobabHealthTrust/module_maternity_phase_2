@@ -19,7 +19,7 @@
 				Admission date 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  min='<%= @patient.valid_delivery_time.to_date rescue nil%>'  pos='2'  tt_onLoad='$("Unknown").style.display = "none"'  field_type='date' />
+<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  min='<%= @patient.valid_delivery_time.to_date rescue nil%>'  field_type='date'  pos='2'  tt_onLoad='$("Unknown").style.display = "none"' />
 			</td>
 		</tr>
 		<tr>
@@ -27,7 +27,7 @@
 				Admission time 
 			</td>
 			<td>
-<input type='text' id='1.4'  name='concept[Admission time ]' helpText='Admission time '  pos='3'  field_type='advancedTime' />
+<input type='text' id='1.4'  name='concept[Admission time ]' helpText='Admission time '  field_type='advancedTime'  pos='3' />
 			</td>
 		</tr>
 		<tr>
@@ -35,7 +35,7 @@
 				Baby weight at admission (grams) 
 			</td>
 			<td>
-<input type='text' id='1.5'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  min='2000'  pos='4'  absoluteMax='10000'  tt_pageStyleClass='NumbersOnlyWithDecimal'  field_type='number'  max='5000'  absoluteMin='100' />
+<input type='text' id='1.5'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  min='2000'  absoluteMin='100'  field_type='number'  absoluteMax='10000'  tt_pageStyleClass='NumbersOnlyWithDecimal'  max='5000'  pos='4' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Baby temperature (<sup>o</sup>C) 
 			</td>
 			<td>
-<input type='text' id='1.6'  name='concept[temperature]' helpText='Baby temperature (<sup>o</sup>C) '  min='36'  pos='5'  absoluteMax='70'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  field_type='number'  max='38'  absoluteMin='0' />
+<input type='text' id='1.6'  name='concept[temperature]' helpText='Baby temperature (<sup>o</sup>C) '  absoluteMin='0'  min='36'  field_type='number'  absoluteMax='70'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  max='38'  pos='5' />
 			</td>
 		</tr>
 		<tr>
@@ -51,7 +51,7 @@
 				Reason for admission 
 			</td>
 			<td>
-<input type='text' id='1.7'   helpText='Reason for admission '  pos='6'  name='concept[Reason for admission][]'  ajaxUrl='/encounters/diagnoses?set=nursery_admission_diagnoses&search_string=' />
+<input type='text' id='1.7'   helpText='Reason for admission '  ajaxUrl='/encounters/diagnoses?set=nursery_admission_diagnoses&search_string='  name='concept[Reason for admission][]'  pos='6' />
 			</td>
 		</tr>
 		<tr>
@@ -59,7 +59,7 @@
 				Next reason for admission (Optional) 
 			</td>
 			<td>
-<input type='text' id='1.8'   helpText='Next reason for admission (Optional) '  pos='7'  optional='true'  name='concept[Reason for admission][]'  ajaxUrl='/encounters/diagnoses?set=nursery_admission_diagnoses&search_string=' />
+<input type='text' id='1.8'   helpText='Next reason for admission (Optional) '  ajaxUrl='/encounters/diagnoses?set=nursery_admission_diagnoses&search_string='  name='concept[Reason for admission][]'  pos='7'  optional='true' />
 			</td>
 		</tr>
 		<tr>
@@ -67,7 +67,7 @@
 				Blood sugar (mg/dL) 
 			</td>
 			<td>
-<input type='text' id='1.9'   helpText='Blood sugar (mg/dL) '  min='30'  pos='8'  field_type='number'  max='150'  name='concept[Blood sugar]' />
+<input type='text' id='1.9'   helpText='Blood sugar (mg/dL) '  min='30'  field_type='number'  name='concept[Blood sugar]'  max='150'  pos='8' />
 			</td>
 		</tr>
 		<tr>
@@ -75,7 +75,7 @@
 				Vitamin K given 
 			</td>
 			<td>
-<select id='1.10'  helpText='Vitamin K given ' pos='9'  name='concept[Vitamin K given?]' >
+<select id='1.10'  helpText='Vitamin K given ' name='concept[Vitamin K given?]'  pos='9' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -87,7 +87,7 @@
 				Suckling reflex available? 
 			</td>
 			<td>
-<select id='1.11'  helpText='Suckling reflex available? ' pos='10'  name='concept[Observation on suckling reflex]' >
+<select id='1.11'  helpText='Suckling reflex available? ' name='concept[Observation on suckling reflex]'  pos='10' >
 <option></option>
 <option value='Yes'>Yes</option>
  <option value='No'>No</option>
@@ -99,7 +99,7 @@
 				General Condition 
 			</td>
 			<td>
-<input type='text' id='1.12'  name='concept[General condition]'   pos='11'  helpText='General condition of baby'  tt_pageStyleClass='NoKeyboard'  tt_onLoad='showGeneralConditionControl(); __$("keyboard").style.display = "none"' />
+<input type='text' id='1.12'  name='concept[General condition]'   tt_pageStyleClass='NoKeyboard'  helpText='General condition of baby'  pos='11'  tt_onLoad='showGeneralConditionControl(); __$("keyboard").style.display = "none"' />
 			</td>
 		</tr>
 		<tr>
@@ -107,7 +107,7 @@
 				Plan of action 
 			</td>
 			<td>
-<textarea type='text' id='1.13'   helpText='Plan of action '  pos='12'  field_type='textarea'  name='concept[Plan]' > </textarea>
+<textarea type='text' id='1.13'   helpText='Plan of action '  field_type='textarea'  name='concept[Plan]'  pos='12' > </textarea>
 			</td>
 		</tr>
 		<tr>
@@ -115,7 +115,7 @@
 				Comments 
 			</td>
 			<td>
-<textarea type='text' id='1.14'   helpText='Comments '  pos='13'  field_type='textarea'  optional='true'  name='concept[clinician notes]' > </textarea>
+<textarea type='text' id='1.14'   helpText='Comments '  field_type='textarea'  name='concept[clinician notes]'  pos='13'  optional='true' > </textarea>
 			</td>
 		</tr>
 		<tr>
@@ -123,7 +123,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.15'   helpText='Next URL '  pos='14'  type='hidden'  name='next_url'  value='/patients/baby_admissions_note?identifier=<%= @patient.national_id%>&user_id=<%= @user.id %>&patient_id=<%= @patient.id %>' />
+<input  id='1.15'   helpText='Next URL '  name='next_url'  type='hidden'  pos='14'  value='/patients/baby_admissions_note?identifier=<%= @patient.national_id%>&user_id=<%= @user.id %>&patient_id=<%= @patient.id %>' />
 			</td>
 		</tr>
 	</table>
