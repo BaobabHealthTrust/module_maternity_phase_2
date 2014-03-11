@@ -8,9 +8,9 @@ O.1.1.1.3. Tertiary
 O.1.1.1.4. None
 O.1.1.1.5. Other
 
-Q.1.1.1.5.1. Specify Other Religion [concept: OTHER, field_type: text, condition: __$("1.1.1").value == "Other", pos: 1]
+Q.1.1.2. Religion [concept: RELIGION, field_type: text, ajaxURL: /encounters/religion?search_string=, pos: 1]
 
-Q.1.1.2. Religion [concept: RELIGION, field_type: text, ajaxURL: /encounters/religion?search_string=, pos: 2]
+Q.1.1.2.1. Specify Other Religion [concept: OTHER, field_type: text, condition: __$("1.1.2").value == "Other", pos: 2]
 
 Q.1.1.3. Next Of Kin First Name [concept: Guardian First Name, field_type: text, pos: 3]
 
