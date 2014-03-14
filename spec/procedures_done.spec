@@ -31,24 +31,26 @@ Q.1.1.14. Reason For Procedure [name: concept[DILATION AND CURETTAGE DIAGNOSIS][
 
 Q.1.1.15. Reason For Procedure [name: concept[LAPARATOMY DIAGNOSIS DIAGNOSIS][], concept: LAPARATOMY DIAGNOSIS DIAGNOSIS, condition: __$("1.1.1").value.trim().toUpperCase() == "EXPLORATORY LAPARATOMY +/- ADNEXECTOMY", pos: 14, field_type: text, ajaxURL: /encounters/procedure_diagnoses?procedure=laparatomy&search_string=]
 
-Q.1.1.16. Select team member involved [name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 15]
+Q.1.1.16. Date Procedure Done [name: concept[DATE OF SURGERY], concept: LAPARATOMY DIAGNOSIS DIAGNOSIS, pos: 15, field_type: date]
 
-Q.1.1.17. Select next team member involved (Optional) [optional: true, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 16]
+Q.1.1.17. Select team member involved [name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 16]
 
-Q.1.1.18. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.17").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 17]
+Q.1.1.18. Select next team member involved (Optional) [optional: true, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 17]
 
-Q.1.1.19. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.18").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 18]
+Q.1.1.19. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.17").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 18]
 
-Q.1.1.20. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.19").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 19]
+Q.1.1.20. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.18").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 19]
 
-Q.1.1.21. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.20").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 20]
+Q.1.1.21. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.19").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 20]
 
-Q.1.1.22. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.21").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 21]
+Q.1.1.22. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.20").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 21]
 
-Q.1.1.23. Select next team member involved (Optional)[optional: true, condition: try{$("1.1.22").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 22]
+Q.1.1.23. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.21").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 22]
 
-Q.1.1.24. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.23").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 23]
+Q.1.1.24. Select next team member involved (Optional)[optional: true, condition: try{$("1.1.22").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 23]
 
-Q.1.1.25. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.24").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 24]
+Q.1.1.25. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.23").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 24]
 
-Q.1.1.26. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.25").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 25]
+Q.1.1.25. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.24").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 25]
+
+Q.1.1.26. Select next team member involved (Optional) [optional: true, condition: try{$("1.1.25").value.length > 0}catch(e){false}, name: concept[TREATMENT GROUP][], ajaxURL: /clinic/users?user_id=<%= params["user_id"]%>&search_string=, pos: 26]

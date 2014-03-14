@@ -19,7 +19,7 @@
 				Admission date 
 			</td>
 			<td>
-<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  tt_onLoad='$("Unknown").style.display = "none"'  min='<%= @patient.valid_delivery_time.to_date rescue nil%>'  pos='2'  field_type='date' />
+<input type='text' id='1.3'  name='concept[Admission date ]' helpText='Admission date '  min='<%= @patient.valid_delivery_time.to_date rescue nil%>'  field_type='date'  pos='2'  tt_onLoad='$("Unknown").style.display = "none"' />
 			</td>
 		</tr>
 		<tr>
@@ -27,7 +27,7 @@
 				Admission time 
 			</td>
 			<td>
-<input type='text' id='1.4'  name='concept[Admission time ]' helpText='Admission time '  pos='3'  field_type='advancedTime' />
+<input type='text' id='1.4'  name='concept[Admission time ]' helpText='Admission time '  field_type='advancedTime'  pos='3' />
 			</td>
 		</tr>
 		<tr>
@@ -35,7 +35,7 @@
 				Baby weight at admission (grams) 
 			</td>
 			<td>
-<input type='text' id='1.5'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  min='2000'  absoluteMin='100'  max='5000'  pos='4'  field_type='number'  absoluteMax='10000'  tt_pageStyleClass='NumbersOnlyWithDecimal' />
+<input type='text' id='1.5'  name='concept[Baby weight at admission]' helpText='Baby weight at admission (grams) '  tt_pageStyleClass='NumbersOnlyWithDecimal'  min='2000'  absoluteMin='100'  field_type='number'  absoluteMax='10000'  max='5000'  pos='4' />
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				Baby temperature (<sup>o</sup>C) 
 			</td>
 			<td>
-<input type='text' id='1.6'  name='concept[temperature]' helpText='Baby temperature (<sup>o</sup>C) '  min='36'  absoluteMin='0'  max='38'  pos='5'  field_type='number'  absoluteMax='70'  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal' />
+<input type='text' id='1.6'  name='concept[temperature]' helpText='Baby temperature (<sup>o</sup>C) '  tt_pageStyleClass='Numeric NumbersOnlyWithDecimal'  absoluteMin='0'  min='36'  field_type='number'  absoluteMax='70'  max='38'  pos='5' />
 			</td>
 		</tr>
 		<tr>
@@ -51,7 +51,7 @@
 				Reason for admission 
 			</td>
 			<td>
-<input type='text' id='1.7'   helpText='Reason for admission '  name='concept[Reason for admission][]'  pos='6'  ajaxUrl='/encounters/diagnoses?set=nursery_admission_diagnoses&search_string=' />
+<input type='text' id='1.7'   helpText='Reason for admission '  name='concept[Reason for admission][]'  ajaxUrl='/encounters/diagnoses?set=nursery_admission_diagnoses&search_string='  pos='6' />
 			</td>
 		</tr>
 		<tr>
@@ -59,7 +59,7 @@
 				Next reason for admission (Optional) 
 			</td>
 			<td>
-<input type='text' id='1.8'   helpText='Next reason for admission (Optional) '  optional='true'  name='concept[Reason for admission][]'  pos='7'  ajaxUrl='/encounters/diagnoses?set=nursery_admission_diagnoses&search_string=' />
+<input type='text' id='1.8'   helpText='Next reason for admission (Optional) '  optional='true'  name='concept[Reason for admission][]'  ajaxUrl='/encounters/diagnoses?set=nursery_admission_diagnoses&search_string='  pos='7' />
 			</td>
 		</tr>
 		<tr>
@@ -67,7 +67,7 @@
 				Blood sugar (mg/dL) 
 			</td>
 			<td>
-<input type='text' id='1.9'   helpText='Blood sugar (mg/dL) '  min='30'  max='150'  name='concept[Blood sugar]'  pos='8'  field_type='number' />
+<input type='text' id='1.9'   helpText='Blood sugar (mg/dL) '  field_type='number'  min='30'  max='150'  name='concept[Blood sugar]'  pos='8' />
 			</td>
 		</tr>
 		<tr>
@@ -99,7 +99,7 @@
 				General Condition 
 			</td>
 			<td>
-<input type='text' id='1.12'  name='concept[General condition]'   tt_onLoad='showGeneralConditionControl(); __$("keyboard").style.display = "none"'  helpText='General condition of baby'  pos='11'  tt_pageStyleClass='NoKeyboard' />
+<input type='text' id='1.12'  name='concept[General condition]'   helpText='General condition of baby'  tt_pageStyleClass='NoKeyboard'  pos='11'  tt_onLoad='showGeneralConditionControl(); __$("keyboard").style.display = "none"' />
 			</td>
 		</tr>
 		<tr>
@@ -107,7 +107,7 @@
 				Plan of action 
 			</td>
 			<td>
-<textarea type='text' id='1.13'   helpText='Plan of action '  name='concept[Plan]'  pos='12'  field_type='textarea' > </textarea>
+<textarea type='text' id='1.13'   helpText='Plan of action '  field_type='textarea'  name='concept[Plan]'  pos='12' > </textarea>
 			</td>
 		</tr>
 		<tr>
@@ -115,7 +115,7 @@
 				Comments 
 			</td>
 			<td>
-<textarea type='text' id='1.14'   helpText='Comments '  optional='true'  name='concept[clinician notes]'  pos='13'  field_type='textarea' > </textarea>
+<textarea type='text' id='1.14'   helpText='Comments '  field_type='textarea'  optional='true'  name='concept[clinician notes]'  pos='13' > </textarea>
 			</td>
 		</tr>
 		<tr>
@@ -123,7 +123,7 @@
 				Next URL 
 			</td>
 			<td>
-<input  id='1.15'   helpText='Next URL '  value='/patients/baby_admissions_note?identifier=<%= @patient.national_id%>&user_id=<%= @user.id %>&patient_id=<%= @patient.id %>'  type='hidden'  name='next_url'  pos='14' />
+<input  id='1.15'   helpText='Next URL '  type='hidden'  value='/patients/baby_admissions_note?identifier=<%= @patient.national_id%>&user_id=<%= @user.id %>&patient_id=<%= @patient.id %>'  name='next_url'  pos='14' />
 			</td>
 		</tr>
 	</table>

@@ -23,7 +23,7 @@
 				Delivery Mode 
 			</td>
 			<td>
-<select id='1.1.2' name='concept[STATUS OF BABY]'  helpText='<%= params["baby_name"]%> discharge outcome'  pos='1'  field_type='text'  tt_OnLoad='$("touchscreenInput" + tstCurrentPage).value = "<%= params['value']%>"; if ("<%= params["value"]%>".trim().toLowerCase() == "dead"){gotoNextPage()}' >
+<select id='1.1.2' name='concept[STATUS OF BABY]'  helpText='<%= params["baby_name"]%> discharge outcome'  field_type='text'  tt_OnLoad='$("touchscreenInput" + tstCurrentPage).value = "<%= params['value']%>"; if ("<%= params["value"]%>".trim().toLowerCase() == "dead"){gotoNextPage()}'  pos='1' >
 <option></option>
 <option value='Alive'>Alive</option>
  <option value='Dead'>Dead</option>
