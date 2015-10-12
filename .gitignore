@@ -5,3 +5,5 @@ nbproject/
 *.yml
 script/analyze_protocol
 script/clean
+config/database.yml
+config/application.yml
