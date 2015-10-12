@@ -120,24 +120,33 @@ class PatientsController < ApplicationController
 
       print_string = Baby.mother_wrist_band_barcode_label(@patient.id, ward_loc, provider_name, Date.today)
       
+      if !print_string.blank?
+
+      send_data(print_string,
+        :type=>"application/label; charset=utf-8",
+        :stream=> false,
+        :filename=>"#{params[:patient_id]}#{rand(10000)}.bcl",
+        :disposition => "inline") and return
+    	end
+      
     elsif params[:cat] == "baby"
       
       baby_id = params[:baby_id]
       
       print_string = Baby.baby_wrist_band_barcode_label(baby_id, @patient.id) rescue (raise "Unable to find patient (#{params[:baby_id]}) or generate a baby wrist band label for that baby")
       
-    else
-      print_string = (raise "Unable to resolve relations")
-    end
-
-    if !print_string.blank?
+       if !print_string.blank?
 
       send_data(print_string,
         :type=>"application/label; charset=utf-8",
         :stream=> false,
         :filename=>"#{params[:patient_id]}#{rand(10000)}.bcs",
         :disposition => "inline") and return
-    end
+    	end
+      
+    else
+      print_string = (raise "Unable to resolve relations")
+    end   
 
     redirect_to "/patients/wrist_band?user_id=#{params[:user_id]}&patient_id=#{@patient.id}"
 
